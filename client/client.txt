@@ -1,0 +1,2 @@
+** ADD all the frontend files here **
+Delete this file after reading this
