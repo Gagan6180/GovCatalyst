@@ -61,4 +61,79 @@ Respond with ONLY valid JSON in exactly this format, no markdown formatting, no 
   }
 }
 
-module.exports = { processChallengeInput };
+/**
+ * Scores a startup's proposal against a challenge statement using Gemini AI.
+ * Returns score (0-100), breakdown, strengths, risks, and recommendation.
+ */
+async function scoreProposalWithAI({ challenge, startup, proposal_summary }) {
+  const prompt = `You are a strict and fair government innovation procurement evaluator.
+Evaluate how well the startup's proposal and profile solve the government challenge.
+
+GOVERNMENT CHALLENGE:
+Title: ${challenge.title}
+Outcome Statement: ${challenge.outcome_statement || challenge.raw_problem_input}
+Sector: ${challenge.sector || 'General'}
+Required Tech Tags: ${(challenge.tech_tags || []).join(', ')}
+Budget Ceiling: ${challenge.budget_ceiling ? `₹${challenge.budget_ceiling}` : 'Not specified'}
+
+STARTUP PROFILE:
+Company Name: ${startup.company_name}
+Sector: ${startup.sector || 'General'}
+Stage: ${startup.stage || 'Early'}
+Startup Tech Tags: ${(startup.tech_tags || []).join(', ')}
+Pitch Summary: ${startup.pitch_summary || 'Not provided'}
+DPIIT Status: ${startup.verification_status || 'unverified'}
+
+PROPOSAL SUBMITTED BY STARTUP:
+"${proposal_summary}"
+
+Scoring Guidelines (0 to 100):
+- 85-100: Exceptional fit, directly addresses measurable outcomes with proven/viable technical approach.
+- 75-84: Strong fit, meets key technical criteria with clear viability for a pilot.
+- 60-74: Moderate fit, partially addresses challenge but lacks specificity, measurable KPIs, or technical depth.
+- 0-59: Poor fit, irrelevant tech stack, or generic copy-paste proposal.
+
+Respond ONLY with valid JSON in this exact structure without markdown or backticks:
+{
+  "score": 82,
+  "strengths": ["Clear AI computer vision architecture", "Direct alignment with 40% reduction KPI"],
+  "risks": ["Deployment timeline needs verification on field"],
+  "feedback_summary": "Strong proposal with high domain fit and measurable outcomes.",
+  "recommendation": "SHORTLIST"
+}`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: GEMINI_MODEL,
+      contents: prompt,
+    });
+
+    const rawText = response.text?.trim() || '';
+    const cleaned = rawText.replace(/```(?:json)?/gi, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    const score = typeof parsed.score === 'number' ? Math.min(Math.max(Math.round(parsed.score), 0), 100) : 70;
+
+    return {
+      score,
+      strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
+      risks: Array.isArray(parsed.risks) ? parsed.risks : [],
+      feedback_summary: parsed.feedback_summary || 'Evaluation completed.',
+      recommendation: score >= 75 ? 'SHORTLIST' : 'REJECT'
+    };
+  } catch (err) {
+    console.error('Gemini proposal scoring error:', err.message || err);
+    // Fallback heuristic scoring if AI call fails
+    let fallbackScore = 65;
+    if (startup.verification_status === 'verified_dpiit') fallbackScore += 10;
+    return {
+      score: fallbackScore,
+      strengths: ['DPIIT Verified Startup'],
+      risks: ['AI auto-evaluation unavailable; scored via baseline heuristic'],
+      feedback_summary: 'Preliminary baseline score applied.',
+      recommendation: fallbackScore >= 75 ? 'SHORTLIST' : 'REJECT'
+    };
+  }
+}
+
+module.exports = { processChallengeInput, scoreProposalWithAI };
