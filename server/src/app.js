@@ -16,6 +16,8 @@ app.get("/", (req, res) => {
 //api-routes
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
+const challengeRoutes = require('./routes/challengeRoutes');
+app.use('/api/challenges', challengeRoutes);
 
 // Start the server
 app.listen(process.env.PORT, () => {
