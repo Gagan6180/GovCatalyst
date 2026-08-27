@@ -1,0 +1,37 @@
+/* Admin Module Custom Styles */
+.role-badge-superadmin {
+    background: #6f42c1;
+    color: #fff;
+}
+
+.role-badge-deptadmin {
+    background: #003366;
+    color: #fff;
+}
+
+.role-badge-evaluator {
+    background: #0dcaf0;
+    color: #000;
+}
+
+.role-badge-startup {
+    background: #fd7e14;
+    color: #fff;
+}
+
+.role-badge-validator {
+    background: #198754;
+    color: #fff;
+}
+
+.permission-pill {
+    background: #eef2f7;
+    color: #334155;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    display: inline-block;
+    border: 1px solid #cbd5e1;
+}
