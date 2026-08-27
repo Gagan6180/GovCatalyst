@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 -- =========================================
 -- 1. USERS & ROLES
 -- =========================================
@@ -260,3 +261,71 @@ CREATE TABLE otp_verifications (
     is_used BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT now()
 );
+=======
+-- GovCatalyst SIH26136 Database Seed SQL
+-- Innovation Procurement Pilot Schema & Seed Data
+
+CREATE TABLE IF NOT EXISTS pilots (
+    id VARCHAR(64) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    problem_statement TEXT NOT NULL,
+    department VARCHAR(255) NOT NULL,
+    startup VARCHAR(255) NOT NULL,
+    startup_lead VARCHAR(255) NOT NULL,
+    solution VARCHAR(255) NOT NULL,
+    objective TEXT NOT NULL,
+    baseline_objective VARCHAR(255) NOT NULL,
+    target_objective VARCHAR(255) NOT NULL,
+    min_acceptable_result VARCHAR(255) NOT NULL,
+    success_condition TEXT NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    duration_weeks INT DEFAULT 8,
+    users_count INT DEFAULT 10,
+    budget_allocated DECIMAL(12, 2) NOT NULL,
+    budget_spent DECIMAL(12, 2) DEFAULT 0.00,
+    pilot_owner VARCHAR(255) NOT NULL,
+    status VARCHAR(64) DEFAULT 'DRAFT',
+    outcome VARCHAR(64) DEFAULT 'PENDING',
+    committee_decision VARCHAR(64) DEFAULT 'PENDING',
+    committee_reason TEXT,
+    security_status VARCHAR(64) DEFAULT 'LOW RISK',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Preloaded Official SIH26136 Demo Scenario
+INSERT INTO pilots (
+    id, name, problem_statement, department, startup, startup_lead, solution,
+    objective, baseline_objective, target_objective, min_acceptable_result, success_condition,
+    location, start_date, end_date, duration_weeks, users_count, budget_allocated, budget_spent,
+    pilot_owner, status, outcome, committee_decision, committee_reason, security_status
+) VALUES (
+    'PILOT-2026-INFR-001',
+    'AI-Powered Highway & Bridge Infrastructure Inspection Pilot',
+    'PS-2026-NHAI-042: Manual visual inspection of concrete bridges takes 10 hours per bridge deck with subjective error rates.',
+    'National Highways Authority & Ministry of Road Transport',
+    'InspectAI Technologies Pvt Ltd (Startup A)',
+    'Dr. Vikram Sen (Chief Technology Officer)',
+    'Autonomous Drone Computer-Vision Defect Detection & Structural Assessment System',
+    'Test whether the startup''s AI-based infrastructure inspection solution can reduce inspection time while maintaining acceptable accuracy.',
+    '10 hours per bridge inspection.',
+    'At least 40% reduction in inspection time (6 hours or less).',
+    '30% reduction (7 hours or less).',
+    'Target KPIs are achieved without critical security, safety or operational failures.',
+    'NH-48 Corridor (Sector 12, 18, and 24 Bridge Overpasses)',
+    '2026-06-01',
+    '2026-07-27',
+    8,
+    10,
+    500000.00,
+    460000.00,
+    'Shri Rajesh Verma (Chief Engineer, Quality & Standards)',
+    'COMPLETED',
+    'SUCCESSFUL',
+    'SCALE',
+    'The AI solution reduced bridge inspection time by 42% while surpassing target accuracy (91% vs 90% target) with zero critical incidents.',
+    'LOW RISK'
+) ON CONFLICT (id) DO NOTHING;
+>>>>>>> 7b555a4 (feat: add government innovation pilot module)
