@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Milestone-Based Contracting — GovCatalyst | महाराष्ट्र शासन</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="milestones.css">
+</head>
+<body>
+
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+            <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
+    <div class="top-bar-clean">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <span class="badge bg-warning text-dark font-monospace" style="font-size: 11px;">MSInS</span>
+                <strong style="color: #ffffff; font-size: 17px; letter-spacing: -0.3px;">GovCatalyst</strong>
+            </a>
+            <!-- 🇮🇳 ONLY Tricolor Hamburger Menu on Right -->
+            <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu" title="All Modules Menu (10)">
+                <span class="tri-bar bar-saffron"></span>
+                <span class="tri-bar bar-white"></span>
+                <span class="tri-bar bar-green"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-gov">
+        <div class="container">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> Home</a> › <span class="text-dark fw-semibold">Milestone Contracting</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="py-4">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2><i class="bi bi-diagram-3-fill text-primary me-2"></i>Milestone-Based Legal Contracting & State Machine</h2>
+                    <p>Contract execution lifecycle with state machine transitions, bilateral e-signatures, and deliverables tracking</p>
+                </div>
+                <div class="d-flex gap-2">
+                    
+            <button class="btn btn-gold" onclick="GovUtils.showToast('New Milestone Contract Initiated', 'info')"><i class="bi bi-plus-circle me-1"></i> New Contract</button>
+            <button class="btn btn-gov-outline" onclick="GovUtils.showToast('Validating Bilateral Signatures...', 'success')"><i class="bi bi-pen me-1"></i> Sign-Off Matrix</button>
+        
+                </div>
+            </div>
+
+            <!-- Summary Stats Row -->
+            
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary">4</div>
+                        <div class="stat-label">Active Contracts</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-success">12 / 16</div>
+                        <div class="stat-label">Milestones Completed</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-warning">2</div>
+                        <div class="stat-label">Pending Verification</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-info">₹2.4 Cr</div>
+                        <div class="stat-label">Committed Contract Pool</div>
+                    </div>
+                </div>
+            </div>
+        
+            
+            </div>
+
+            <!-- Visual Horizontal Milestone Pipeline -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-navy"><i class="bi bi-bezier2 me-2"></i>Milestone State Progression Pipeline</span>
+                    <span class="badge bg-secondary font-monospace" id="pipeline-status-badge">Sequential Execution</span>
+                </div>
+                <div class="gov-card-body">
+                    <div class="pipeline" id="visual-pipeline">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Milestone Cards List (Actionable State Machine) -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-navy mb-0"><i class="bi bi-list-check me-2"></i>Milestones & Deliverable Verification Workflows</h5>
+                <small class="text-muted">Click "Advance State" to simulate milestone verification progression</small>
+            </div>
+
+            <div class="row g-3 mb-4" id="milestones-cards-container">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Legal Framework Clauses Accordion -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-navy"><i class="bi bi-shield-check me-2"></i>Bilateral Legal Framework Clauses (GFR Rule 194)</span>
+                    <span class="badge bg-primary">6 Standard Clauses</span>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="accordion accordion-flush" id="clauses-accordion">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>GovCatalyst</h5>
+                    <p style="font-size:13px;">Startup-Friendly Innovation Procurement Portal</p>
+                    <p style="font-size:13px;">Government of Maharashtra</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="milestones.html">Milestone Contracting</a></li>
+                        <li><a href="performance.html">KPI Performance M&E</a></li>
+                        <li><a href="payments.html">Milestone Payments</a></li>
+                        <li><a href="scaleup.html">Scale-up Transition</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Contract Security</h5>
+                    <p style="font-size:13px;">IP Retained by Startup Entity</p>
+                    <p style="font-size:13px;">Government Perpetual Usage License</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <!-- Modal for Bilateral Legal Agreement -->
+    <div class="gov-modal-overlay" id="gov-modal-overlay">
+        <div class="gov-modal">
+            <div class="gov-modal-header">
+                <h5 id="gov-modal-title">Bilateral Innovation Pilot Agreement</h5>
+                <button class="gov-modal-close" id="gov-modal-close">&times;</button>
+            </div>
+            <div class="gov-modal-body" id="gov-modal-body"></div>
+        </div>
+    </div>
+
+    <div class="toast-container-gov"></div>
+
+    <script src="common.js"></script>
+    <script src="milestones.js"></script>
+</body>
+</html>

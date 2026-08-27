@@ -1,186 +1,505 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-IN">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GovCatalyst — SIH26136 Startup-Friendly Government Innovation Procurement (Pilot Module)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GovCatalyst — Startup-Friendly Innovation Procurement | महाराष्ट्र शासन</title>
+    <meta name="description"
+        content="GovCatalyst — Startup-friendly public procurement mechanism for Government of Maharashtra. Identify, pilot, procure, and scale innovative startup solutions. SIH 26136.">
+    <meta property="og:title" content="GovCatalyst — महाराष्ट्र शासनाचे नवोपक्रम खरेदी पोर्टल">
+    <meta property="og:description"
+        content="स्टार्टअप-अनुकूल नवोपक्रम खरेदी पोर्टल. विभागीय आव्हाने, स्टार्टअप शोध, पात्रता, मूल्यांकन आणि प्रायोगिक व्यवस्थापन.">
+    <meta name="author" content="Government of Maharashtra">
+    <meta name="keywords"
+        content="GovCatalyst, Maharashtra Government, Startup Procurement, SIH 26136, Innovation, MSInS, DPIIT">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- Top Institutional Navigation Bar -->
-  <header id="top-navbar" class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        
-        <!-- Brand & Emblem -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-sky-400 flex items-center justify-center text-white font-black text-lg shadow-lg ring-2 ring-indigo-400/30">
-            GC
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold tracking-tight text-base sm:text-lg text-white">GovCatalyst &bull; PILOT MODULE</span>
-              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">SIH26136</span>
-            </div>
-            <div class="text-[11px] text-slate-400 font-medium truncate max-w-xs sm:max-w-md hidden sm:block">
-              Startup-Friendly Public Innovation Procurement Trial & Evaluation
-            </div>
-          </div>
-        </div>
+<body>
 
-        <!-- Pilot Selector & Role Switcher -->
-        <div class="flex items-center gap-3">
-          <!-- Active Pilot Indicator -->
-          <div class="hidden lg:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="header-pilot-name" class="text-xs font-semibold text-slate-200 max-w-[200px] truncate">AI Highway Inspection</span>
-            <span id="header-status-badge" class="badge-status badge-completed text-[10px]">COMPLETED</span>
-          </div>
-
-          <!-- Role Switcher -->
-          <div class="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-1 rounded-lg border border-slate-700">
-            <span class="text-[11px] font-semibold text-slate-400 hidden sm:inline">Role:</span>
-            <select id="role-selector" class="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer">
-              <option value="GOVT_OFFICER" class="bg-slate-900 text-white">Govt Officer (Pilot Owner)</option>
-              <option value="STARTUP_LEAD" class="bg-slate-900 text-white">Startup Lead (InspectAI)</option>
-              <option value="SECURITY_OFFICER" class="bg-slate-900 text-white">Cybersecurity Officer</option>
-              <option value="COMMITTEE_MEMBER" class="bg-slate-900 text-white">Evaluation Committee</option>
-            </select>
-          </div>
-
-          <!-- Load Demo Button -->
-          <button id="btn-load-demo" title="Reset and reload official SIH26136 Drone AI Inspection Demo Scenario" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-            <span class="hidden sm:inline">Demo Scenario</span>
-          </button>
-        </div>
-
-      </div>
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
     </div>
-  </header>
 
-  <!-- App Body Layout -->
-  <div class="flex-1 flex overflow-hidden">
-
-    <!-- Sidebar Navigation -->
-    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between hidden md:flex">
-      <div class="p-4 space-y-1">
-        <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Core Navigation</div>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="dashboard">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-          Monitoring Dashboard
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="details">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          Pilot Details & Scope
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="plan">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-          5-Phase Execution Plan
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="agreement">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-          Agreements & Data / IP
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="payments">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Payment Milestones
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="cybersecurity">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-          Cybersecurity & Risks
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="kpis">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-          KPI Telemetry & Math
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="issues">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-          Issues & User Feedback
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="evidence">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/></svg>
-          Evidence Repository
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="evaluation">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
-          Evaluation & Scale-Up
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="audit">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Audit Trail Log
-        </button>
-
-        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition text-emerald-400 hover:text-emerald-300" data-view="outputs">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-          15 Core Pilot Outputs
-        </button>
-      </div>
-
-      <!-- Legal Footnote -->
-      <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500">
-        <div>GovCatalyst Platform</div>
-        <div class="text-[10px] text-slate-600 mt-0.5">SIH26136 &bull; GFR Rule 194</div>
-      </div>
+    <!-- Right-Edge Fixed Floating Quick Action Toolbar (india.gov.in exact) -->
+    <aside class="floating-quick-sidebar" aria-label="Quick Access Sidebar">
+        <button title="Feedback & Citizen Support" aria-label="Feedback"
+            onclick="GovUtils.showToast('Grievance & Feedback Desk Connected', 'info')"><i
+                class="bi bi-chat-left-text"></i></button>
+        <button title="Independent Validator & Helpdesk" aria-label="Helpdesk"
+            onclick="window.location.href='admin.html'"><i class="bi bi-shield-check"></i></button>
+        <button title="Procurement Calendar & Milestones" aria-label="Calendar"
+            onclick="window.location.href='milestones.html'"><i class="bi bi-calendar4-week"></i></button>
+        <button title="Share Portal" aria-label="Share"
+            onclick="GovUtils.showToast('Portal Link Copied to Clipboard', 'success')"><i
+                class="bi bi-share"></i></button>
+        <button title="Theme & Contrast Mode" aria-label="Theme"
+            onclick="GovUtils.showToast('High Contrast Mode Enabled', 'info')"><i class="bi bi-palette"></i></button>
     </aside>
 
-    <!-- Main Dynamic Content Container -->
-    <main id="main-content" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
-      <div id="view-container" class="max-w-7xl mx-auto">
-        <!-- Rendered dynamically by app.js -->
-      </div>
+    <!-- Hero Section (Exact india.gov.in Landing Portal) -->
+    <section class="hero-section">
+        <!-- Background Slider with Transforming Cross-Fade Layers -->
+        <div class="hero-bg-slider" id="hero-bg-slider">
+            <div class="hero-slide active"
+                style="background-image: linear-gradient(rgba(11, 25, 44, 0.78), rgba(11, 25, 44, 0.85)), url('https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1600');"
+                data-location-en="Gateway of India, Mumbai" data-location-mr="गेटवे ऑफ इंडिया, मुंबई"></div>
+            <div class="hero-slide"
+                style="background-image: linear-gradient(rgba(11, 25, 44, 0.75), rgba(11, 25, 44, 0.82)), url('https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600');"
+                data-location-en="Tarkarli Beach, Sindhudurg" data-location-mr="तारकर्ली समुद्रकिनारा, सिंधुदुर्ग">
+            </div>
+            <div class="hero-slide"
+                style="background-image: linear-gradient(rgba(11, 25, 44, 0.75), rgba(11, 25, 44, 0.82)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600');"
+                data-location-en="Western Ghats & Sahyadri, Maharashtra"
+                data-location-mr="सह्याद्री व पश्चिम घाट, महाराष्ट्र"></div>
+            <div class="hero-slide"
+                style="background-image: linear-gradient(rgba(11, 25, 44, 0.75), rgba(11, 25, 44, 0.82)), url('https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=1600');"
+                data-location-en="Bandra-Worli Sea Link, Mumbai" data-location-mr="वांद्रे-वरळी सी लिंक, मुंबई"></div>
+            <div class="hero-slide"
+                style="background-image: linear-gradient(rgba(11, 25, 44, 0.75), rgba(11, 25, 44, 0.84)), url('https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=1600');"
+                data-location-en="Ajanta & Ellora Caves, Chhatrapati Sambhajinagar"
+                data-location-mr="अजिंठा व वेरूळ लेणी, छत्रपती संभाजीनगर"></div>
+        </div>
+
+        <!-- Top Right-Aligned Transparent Utility Toolbar (Exact india.gov.in layout) -->
+        <div class="hero-top-toolbar">
+            <a href="#main-content" data-lang-key="skipContent">Skip to main content</a>
+            <span class="sep">|</span>
+            <button id="top-calendar-btn" title="Calendar & Milestones" class="top-icon-btn"
+                onclick="window.location.href='milestones.html'"><i class="bi bi-calendar3"></i></button>
+            <span class="sep">|</span>
+            <button id="top-access-btn" title="Accessibility Tools" class="top-icon-btn"
+                onclick="GovUtils.showToast('Accessibility: Normal & High Contrast Supported', 'info')"><i
+                    class="bi bi-universal-access-circle"></i></button>
+            <span class="sep">|</span>
+            <button id="top-lang-toggle" title="Switch Language (English / मराठी)" class="lang-glyph-btn">अ/A</button>
+            <span class="sep">|</span>
+            <!-- 🇮🇳 National Flag 3-Line Hamburger Menu -->
+            <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu"
+                title="All Modules Menu (10)">
+                <span class="tri-bar bar-saffron"></span>
+                <span class="tri-bar bar-white"></span>
+                <span class="tri-bar bar-green"></span>
+            </button>
+        </div>
+
+        <!-- Hero Center Content -->
+        <div class="hero-content-wrapper">
+            <!-- Ashoka Lion Capital National Emblem -->
+            <div class="ashoka-emblem-wrap">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+                    alt="National Emblem of India" class="ashoka-emblem-img">
+                <div class="ashoka-motto">सत्यमेव जयते</div>
+            </div>
+
+            <!-- Main Brand Title + BETA Badge -->
+            <h1 class="hero-brand-title">
+                <span>Maharashtra.gov.in</span>
+                <span class="beta-badge-pill">BETA</span>
+            </h1>
+            <h2 class="hero-subtitle-text" data-lang-key="govName">Government of Maharashtra</h2>
+            <p class="hero-tagline-text" data-lang-key="welcome">Where Government Information Converges &bull;
+                GovCatalyst Innovation Hub</p>
+
+            <!-- Search Box (Exact india.gov.in layout with Crimson Red Search Button) -->
+            <div class="hero-search-container">
+                <span class="search-icon-left"><i class="bi bi-search"></i></span>
+                <input type="text" data-lang-placeholder="searchHere" placeholder="Search for" id="hero-search">
+                <select class="category-dropdown" id="hero-search-cat" aria-label="Select Category">
+                    <option value="all">All Categories ⌵</option>
+                    <option value="challenges.html">Problem Statements</option>
+                    <option value="startups.html">Startup Directory</option>
+                    <option value="eligibility.html">Eligibility Matrix</option>
+                    <option value="evaluation.html">Evaluations</option>
+                    <option value="pilot-design.html">Pilot Charters</option>
+                    <option value="milestones.html">Milestone Contracts</option>
+                    <option value="performance.html">Performance M&E</option>
+                    <option value="payments.html">Escrow Releases</option>
+                    <option value="scaleup.html">GeM Transition</option>
+                    <option value="admin.html">Governance & Audit</option>
+                </select>
+                <button class="search-action-btn" id="hero-search-btn" data-lang-key="search">Search</button>
+            </div>
+
+            <!-- Trending Searches (GovCatalyst Innovation Procurement Domain) -->
+            <div class="trending-bar-exact">
+                <span class="trend-title" data-lang-key="trendSearch">Trending Searches :</span>
+                <a href="challenges.html">GFR Rule 194 Norms</a>
+                <a href="eligibility.html">DPIIT Exemption Matrix</a>
+                <a href="challenges.html">Smart Water Grid Challenge</a>
+                <a href="pilot-design.html">Sandbox Pilot Charter</a>
+                <a href="payments.html">Smart Escrow Release</a>
+                <a href="scaleup.html">GeM Custom Bid Drafter</a>
+            </div>
+        </div>
+
+        <!-- Location Caption Badge on Bottom Right -->
+        <div class="hero-location-tag" id="hero-location-badge">
+            <i class="bi bi-geo-alt-fill text-warning me-1"></i> <span id="hero-location-text">Gateway of India,
+                Mumbai</span>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="main-content" style="padding: 20px 0 40px;">
+        <!-- Top Horizontal Stats Ribbon (Matching india.gov.in) -->
+        <div class="container">
+            <div class="gov-stats-ribbon">
+                <div class="stats-ribbon-item">
+                    <div class="stats-ribbon-icon"><i class="bi bi-gear-wide-connected"></i></div>
+                    <div>
+                        <div class="num">1,450+</div>
+                        <div class="label">Online Challenges</div>
+                    </div>
+                </div>
+                <div class="stats-ribbon-item">
+                    <div class="stats-ribbon-icon"><i class="bi bi-diagram-3"></i></div>
+                    <div>
+                        <div class="num">3,680+</div>
+                        <div class="label">Startup Schemes</div>
+                    </div>
+                </div>
+                <div class="stats-ribbon-item">
+                    <div class="stats-ribbon-icon"><i class="bi bi-people"></i></div>
+                    <div>
+                        <div class="num">2,306+</div>
+                        <div class="label">Pilot Evaluations</div>
+                    </div>
+                </div>
+                <div class="stats-ribbon-item">
+                    <div class="stats-ribbon-icon"><i class="bi bi-geo-alt"></i></div>
+                    <div>
+                        <div class="num">3,975+</div>
+                        <div class="label">Sandbox Sites</div>
+                    </div>
+                </div>
+                <div class="stats-ribbon-item">
+                    <div class="stats-ribbon-icon"><i class="bi bi-award"></i></div>
+                    <div>
+                        <div class="num">₹1,207 Cr</div>
+                        <div class="label">Escrow Released</div>
+                    </div>
+                </div>
+                <div class="stats-ribbon-item">
+                    <div class="stats-ribbon-icon"><i class="bi bi-bullseye"></i></div>
+                    <div>
+                        <div class="num">10</div>
+                        <div class="label">Stages Workflow</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crimson Red Online / Innovation Services Banner (Exact india.gov.in Layout) -->
+            <div class="gov-red-showcase-wrap">
+                <!-- Left Red Box -->
+                <div class="showcase-red-block">
+                    <div>
+                        <h3 class="showcase-red-title">Online Services</h3>
+                        <div class="showcase-tiles-grid">
+                            <a href="challenges.html" class="showcase-tile">
+                                <i class="bi bi-bank2"></i>
+                                <div class="tile-count">1092+</div>
+                                <div class="tile-name">Central / AI</div>
+                            </a>
+                            <a href="startups.html" class="showcase-tile">
+                                <i class="bi bi-building"></i>
+                                <div class="tile-count">12,314+</div>
+                                <div class="tile-name">State / DPIIT</div>
+                            </a>
+                            <a href="pilot-design.html" class="showcase-tile">
+                                <i class="bi bi-shield-check"></i>
+                                <div class="tile-count">33</div>
+                                <div class="tile-name">Key Services</div>
+                            </a>
+                            <a href="eligibility.html" class="showcase-tile">
+                                <i class="bi bi-journal-text"></i>
+                                <div class="tile-count">18</div>
+                                <div class="tile-name">GFR Categories</div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="showcase-red-footer">
+                        <span>Avail online Services & Save time</span>
+                        <a href="challenges.html" class="btn-white-pill">View All</a>
+                    </div>
+                </div>
+
+                <!-- Right White Cards Carousel -->
+                <div class="showcase-white-block">
+                    <div class="showcase-cards-row">
+                        <a href="pilot-design.html" class="showcase-card">
+                            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500"
+                                alt="Sandbox Pilot Charter" class="showcase-card-img">
+                            <div class="showcase-card-body">
+                                Sandbox Pilot Charter with Risk Safeguards...
+                            </div>
+                        </a>
+                        <a href="milestones.html" class="showcase-card">
+                            <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=500"
+                                alt="Milestone Contracting" class="showcase-card-img">
+                            <div class="showcase-card-body">
+                                Milestone Legal Contracting & State Machine...
+                            </div>
+                        </a>
+                        <a href="scaleup.html" class="showcase-card">
+                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500"
+                                alt="GeM Transition" class="showcase-card-img">
+                            <div class="showcase-card-body">
+                                GeM Scale-Up Specification Drafter & Transition...
+                            </div>
+                        </a>
+                    </div>
+                    <div class="showcase-pagination-bar">
+                        <div class="carousel-dots-red">
+                            <span class="dot-red"></span>
+                            <span class="dot-gray"></span>
+                            <span class="dot-gray"></span>
+                            <span class="dot-gray"></span>
+                        </div>
+                        <button class="carousel-square-btn" title="Next Services" aria-label="Next"
+                            onclick="GovUtils.showToast('Browsing Next Procurement Showcase', 'info')"><i
+                                class="bi bi-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section: 10 Core Modules -->
+            <div class="text-center mb-4">
+                <h3 class="fw-bold" style="color: var(--gov-navy);">Core Modules</h3>
+                <p class="text-muted">Complete end-to-end innovation procurement lifecycle</p>
+            </div>
+
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="challenges.html" class="module-card">
+                        <div class="m-icon">📋</div>
+                        <div class="m-name">Challenge Builder</div>
+                        <div class="m-desc">Create outcome-based problem statements</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="startups.html" class="module-card">
+                        <div class="m-icon">🚀</div>
+                        <div class="m-name">Startup Discovery</div>
+                        <div class="m-desc">Find & match startups to challenges</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="eligibility.html" class="module-card">
+                        <div class="m-icon">✅</div>
+                        <div class="m-name">Eligibility Screening</div>
+                        <div class="m-desc">Relaxed criteria rule engine</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="evaluation.html" class="module-card">
+                        <div class="m-icon">⭐</div>
+                        <div class="m-name">Expert Evaluation</div>
+                        <div class="m-desc">Multi-evaluator scoring dashboard</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="pilot-design.html" class="module-card">
+                        <div class="m-icon">🧪</div>
+                        <div class="m-name">Pilot Design</div>
+                        <div class="m-desc">Sandbox pilot template generator</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="milestones.html" class="module-card">
+                        <div class="m-icon">📊</div>
+                        <div class="m-name">Milestone Tracking</div>
+                        <div class="m-desc">State-machine contract tracker</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="performance.html" class="module-card">
+                        <div class="m-icon">📈</div>
+                        <div class="m-name">Performance M&E</div>
+                        <div class="m-desc">KPI tracking & health score</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="payments.html" class="module-card">
+                        <div class="m-icon">💰</div>
+                        <div class="m-name">Payment Release</div>
+                        <div class="m-desc">Escrow-style milestone payments</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="scaleup.html" class="module-card">
+                        <div class="m-icon">🔄</div>
+                        <div class="m-name">Scale-up Transition</div>
+                        <div class="m-desc">Procurement pathway engine</div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2-4">
+                    <a href="admin.html" class="module-card">
+                        <div class="m-icon">⚙️</div>
+                        <div class="m-name">Admin & Governance</div>
+                        <div class="m-desc">RBAC, audit trail, sign-offs</div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="row g-3 mb-5">
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-challenges">4</div>
+                        <div class="stat-label">Challenges</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-startups">6</div>
+                        <div class="stat-label">Startups</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-pilots">2</div>
+                        <div class="stat-label">Active Pilots</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-kpis">5</div>
+                        <div class="stat-label">KPIs Tracked</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-payments">₹10L</div>
+                        <div class="stat-label">Released</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat-audit">12</div>
+                        <div class="stat-label">Audit Entries</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="gov-card gold-top">
+                <div class="gov-card-header">
+                    <i class="bi bi-info-circle me-2"></i> About GovCatalyst — SIH Problem Statement 26136
+                </div>
+                <div class="gov-card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p><strong>Problem:</strong> Government departments face operational problems that could
+                                benefit from innovative startup solutions, but conventional procurement processes are
+                                designed for standardised goods and established vendors.</p>
+                            <p><strong>Solution:</strong> GovCatalyst provides a structured end-to-end mechanism for
+                                challenge identification, startup discovery, eligibility screening, expert evaluation,
+                                sandbox/pilot design, milestone-based contracting, performance measurement, payment
+                                release, independent validation, and scale-up decisions.</p>
+                            <p class="mb-0"><strong>Organization:</strong> Government of Maharashtra — Maharashtra State
+                                Innovation Society (MSInS), Department of Skills, Employment, Entrepreneurship and
+                                Innovation</p>
+                        </div>
+                        <div class="col-md-4">
+                            <table class="table table-sm" style="font-size: 13px;">
+                                <tr>
+                                    <td class="fw-bold">Problem ID</td>
+                                    <td>26136</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Category</td>
+                                    <td>Software</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Theme</td>
+                                    <td>Miscellaneous</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Framework</td>
+                                    <td>GFR Rule 194</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </main>
 
-  </div>
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 data-lang-key="siteName">GovCatalyst</h5>
+                    <p style="font-size:13px;" data-lang-key="siteSubtitle">Startup-Friendly Innovation Procurement
+                        Portal</p>
+                    <p style="font-size:13px;" data-lang-key="govName">Government of Maharashtra</p>
+                    <p style="font-size:12px; opacity:0.6;">Maharashtra State Innovation Society (MSInS)<br>Dept. of
+                        Skills, Employment, Entrepreneurship & Innovation</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 data-lang-key="quickLinks">Quick Links</h5>
+                    <ul>
+                        <li><a href="challenges.html">Challenge Builder</a></li>
+                        <li><a href="startups.html">Startup Discovery</a></li>
+                        <li><a href="eligibility.html">Eligibility Screening</a></li>
+                        <li><a href="evaluation.html">Expert Evaluation</a></li>
+                        <li><a href="admin.html">Administration</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 data-lang-key="legal">Legal</h5>
+                    <p style="font-size:13px;">Problem Statement: SIH 26136</p>
+                    <p style="font-size:13px;">GFR Rule 194 · Innovation Procurement</p>
+                    <p style="font-size:13px;">Startup India · DPIIT Recognition</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center" data-lang-key="copyright">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
 
-  <!-- Full Report / Document Viewer Modal -->
-  <div id="report-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden overflow-y-auto">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
-      <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-        <div class="flex items-center gap-2">
-          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-          <h2 class="font-bold text-slate-900 text-sm sm:text-base">Official Document & Report Preview</h2>
-        </div>
-        <div class="flex items-center gap-2">
-          <button id="btn-print-modal" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-            Print / Save as PDF
-          </button>
-          <button id="btn-close-modal" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          </button>
-        </div>
-      </div>
-      <!-- Modal Content Body -->
-      <div id="report-modal-content" class="p-6 overflow-y-auto flex-1 bg-slate-100/50">
-        <!-- Injected dynamically -->
-      </div>
+    <!-- Bottom Tricolor -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
     </div>
-  </div>
 
-  <!-- Toast Alerts Container -->
-  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm pointer-events-none"></div>
+    <!-- Modal -->
+    <div class="gov-modal-overlay" id="gov-modal-overlay">
+        <div class="gov-modal">
+            <div class="gov-modal-header">
+                <h5 id="gov-modal-title">Document Preview</h5>
+                <button class="gov-modal-close" id="gov-modal-close">&times;</button>
+            </div>
+            <div class="gov-modal-body" id="gov-modal-body"></div>
+        </div>
+    </div>
 
-  <!-- Application Scripts -->
-  <script src="data.js"></script>
-  <script src="reports.js"></script>
-  <script src="app.js"></script>
+    <!-- Toast Container -->
+    <div class="toast-container-gov"></div>
+
+    <script src="common.js"></script>
+    <style>
+        /* Landing page specific: 5-column grid for modules */
+        @media (min-width: 992px) {
+            .col-lg-2-4 {
+                flex: 0 0 20%;
+                max-width: 20%;
+            }
+        }
+    </style>
 </body>
+
 </html>

@@ -1,0 +1,57 @@
+/* Startups Module Custom Styles */
+.startup-card {
+    transition: all 0.25s ease;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.startup-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 51, 102, 0.08);
+    border-color: #b8c8d8;
+}
+
+.match-badge-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #d1e7dd;
+    color: #0f5132;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+    line-height: 1.1;
+    border: 2px solid #a3cfbb;
+}
+
+.match-card-winner {
+    border: 2px solid #198754 !important;
+    background: #fdfefe;
+}
+
+.dpiit-badge {
+    background: #e8f4fd;
+    color: #0d6efd;
+    border: 1px solid #b6d4fe;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.gem-badge {
+    background: #e6f7ef;
+    color: #198754;
+    border: 1px solid #a3cfbb;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+}

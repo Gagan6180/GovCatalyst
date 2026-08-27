@@ -1,0 +1,38 @@
+/* Scaleup Module Custom Styles */
+.transition-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.transition-step-item:last-child {
+    border-bottom: none;
+}
+
+.step-num-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--gov-navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-num-circle.done {
+    background: #198754;
+}
+
+.gem-spec-box {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    padding: 14px;
+    font-size: 13px;
+}

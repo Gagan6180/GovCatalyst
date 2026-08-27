@@ -1,0 +1,51 @@
+/* Evaluation Module Custom Styles */
+.rank-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.rank-1 {
+    background: #ffd700;
+    color: #003366;
+    border: 2px solid #e6c200;
+    box-shadow: 0 2px 6px rgba(255, 215, 0, 0.4);
+}
+
+.rank-2 {
+    background: #c0c0c0;
+    color: #333;
+    border: 2px solid #a8a8a8;
+}
+
+.rank-3 {
+    background: #cd7f32;
+    color: #fff;
+    border: 2px solid #b87333;
+}
+
+.rank-other {
+    background: #f0f0f0;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.evaluator-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 6px;
+    background: #fff;
+}
+
+.evaluator-chip:hover {
+    background: #f8f9fa;
+}

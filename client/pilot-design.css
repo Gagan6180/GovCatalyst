@@ -1,0 +1,32 @@
+/* Pilot Design Module Custom Styles */
+.safeguard-tag {
+    background: #eef2f7;
+    color: #003366;
+    border: 1px solid #c9d8eb;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.safeguard-tag i {
+    color: #198754;
+}
+
+.risk-pill-low {
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.risk-pill-medium {
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.risk-pill-high {
+    background: #f8d7da;
+    color: #842029;
+}
