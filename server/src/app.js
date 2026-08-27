@@ -7,6 +7,7 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Basic Route
 app.get("/", (req, res) => {
@@ -18,6 +19,9 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 const challengeRoutes = require('./routes/challengeRoutes');
 app.use('/api/challenges', challengeRoutes);
+const applicationRoutes = require('./routes/applicationRoutes');
+app.use('/api/applications', applicationRoutes);
+
 
 // Start the server
 app.listen(process.env.PORT, () => {
