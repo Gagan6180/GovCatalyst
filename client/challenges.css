@@ -1,0 +1,27 @@
+/* Challenges Module Custom Styles */
+.font-monospace {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.text-navy {
+    color: var(--gov-navy);
+}
+
+.template-card {
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.template-card:hover {
+    border-color: var(--gov-gold);
+    background-color: #fcfbf6;
+}
+
+.btn-ai-glow {
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenge Builder — GovCatalyst | महाराष्ट्र शासन</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="challenges.css">
+</head>
+<body>
+
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+            <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
+    <div class="top-bar-clean">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <span class="badge bg-warning text-dark font-monospace" style="font-size: 11px;">MSInS</span>
+                <strong style="color: #ffffff; font-size: 17px; letter-spacing: -0.3px;">GovCatalyst</strong>
+            </a>
+            <!-- 🇮🇳 ONLY Tricolor Hamburger Menu on Right -->
+            <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu" title="All Modules Menu (10)">
+                <span class="tri-bar bar-saffron"></span>
+                <span class="tri-bar bar-white"></span>
+                <span class="tri-bar bar-green"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-gov">
+        <div class="container">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> Home</a> › <span class="text-dark fw-semibold">Challenge Statement Builder</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="py-4">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2><i class="bi bi-file-earmark-diff text-primary me-2"></i>Outcome-Based Challenge Builder</h2>
+                    <p>Formulate measurable, outcome-focused government challenges with AI-assisted rewriting & template library (GFR Rule 194)</p>
+                </div>
+                <div class="d-flex gap-2">
+                    
+            <button class="btn btn-gold" id="btn-toggle-builder"><i class="bi bi-plus-circle me-1"></i> Create Challenge</button>
+            <button class="btn btn-gov-outline" onclick="GovUtils.showToast('Exporting GFR 194 Register...', 'info')"><i class="bi bi-download me-1"></i> Export Register</button>
+        
+                </div>
+            </div>
+
+            <!-- Summary Stats Row -->
+            
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary" id="cnt-total">3</div>
+                        <div class="stat-label">Total Challenges</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-success" id="cnt-published">2</div>
+                        <div class="stat-label">Open / Published</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-info" id="cnt-matched">1</div>
+                        <div class="stat-label">Matched to Startups</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-secondary" id="cnt-draft">1</div>
+                        <div class="stat-label">Draft Statements</div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Collapsible Form: Create New Challenge -->
+            <div class="gov-card gold-top mb-4" id="card-form" style="display: none;">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-magic me-2"></i>Guided Challenge Formulation Form</span>
+                    <button type="button" class="btn-close" id="btn-close-form" aria-label="Close"></button>
+                </div>
+                <div class="gov-card-body">
+                    <form id="form-challenge">
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Challenge / Need Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="inp-title" placeholder="e.g., Drone-assisted bridge structural health monitoring..." required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Government Department <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-dept" required>
+                                    <option value="">Select Department...</option>
+                                    <option value="Public Works Department (PWD)">Public Works Department (PWD)</option>
+                                    <option value="Water Supply & Sanitation Dept">Water Supply & Sanitation Dept</option>
+                                    <option value="Revenue & Forest Department">Revenue & Forest Department</option>
+                                    <option value="General Administration Department">General Administration Department</option>
+                                    <option value="School Education & Sports Dept">School Education & Sports Dept</option>
+                                    <option value="Energy & New Renewable Energy Dept">Energy & Renewable Energy Dept</option>
+                                    <option value="Maharashtra State Innovation Society">MSInS Innovation Cell</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Category</label>
+                                <select class="form-select" id="inp-cat">
+                                    <option value="AI/ML">AI / Machine Learning</option>
+                                    <option value="IoT">Internet of Things (IoT)</option>
+                                    <option value="Software">Software & Cloud</option>
+                                    <option value="CleanTech">CleanTech & Energy</option>
+                                    <option value="Blockchain">Blockchain & Security</option>
+                                    <option value="EdTech">EdTech & Learning</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label fw-semibold">Choose Template from Library</label>
+                                <select class="form-select" id="sel-template">
+                                    <option value="">-- Apply Outcome-Based Procurement Template --</option>
+                                    <option value="T1">T1: Digital Service Delivery (Citizen Turnaround Time)</option>
+                                    <option value="T2">T2: Process Automation (Inspection & Operations)</option>
+                                    <option value="T3">T3: Data Analytics & AI (Computer Vision / Prediction)</option>
+                                    <option value="T4">T4: Citizen Engagement & Grievance Redressal</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label fw-semibold mb-0">Departmental Pain Point / Operational Need <span class="text-danger">*</span></label>
+                                    <span class="text-muted small">Describe problem in plain department language</span>
+                                </div>
+                                <textarea class="form-control" id="inp-desc" rows="3" placeholder="Describe the current operational friction, time lost, human risk, or service delays..." required></textarea>
+                            </div>
+
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-warning fw-bold text-dark" id="btn-ai-rewrite">
+                                    <i class="bi bi-robot me-1"></i> AI Rewrite → Convert to Measurable Outcome Statement
+                                </button>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="p-3 bg-light rounded border">
+                                    <label class="form-label fw-bold text-navy"><i class="bi bi-bullseye me-1"></i>Generated Outcome-Based Statement (Non-Rigid Spec)</label>
+                                    <textarea class="form-control bg-white font-monospace" id="inp-outcome" rows="3" placeholder="The outcome statement will automatically be structured with measurable baseline, target improvement % and test scope." required></textarea>
+                                    <small class="text-muted mt-1 d-block">GFR Rule 194 compliance: Focuses on desired outcomes rather than specifying restrictive vendor technical specs.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-secondary" id="btn-cancel-form">Cancel</button>
+                                <button type="submit" class="btn btn-gov"><i class="bi bi-save me-1"></i> Save as Draft</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Filter & Search Table Header -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span class="fw-bold"><i class="bi bi-list-columns-reverse me-2"></i>Department Challenge Statements Registry</span>
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control form-control-sm" id="search-challenge" placeholder="Search challenges...">
+                        <select class="form-select form-select-sm" id="filter-status" style="width: auto;">
+                            <option value="">All Statuses</option>
+                            <option value="Draft">Draft</option>
+                            <option value="Published">Published</option>
+                            <option value="Matched">Matched</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table-gov mb-0" id="table-challenges">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Challenge Title</th>
+                                    <th>Department</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Created Date</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="challenges-tbody">
+                                <!-- Populated by challenges.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>GovCatalyst</h5>
+                    <p style="font-size:13px;">Startup-Friendly Innovation Procurement Portal</p>
+                    <p style="font-size:13px;">Government of Maharashtra</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="challenges.html">Challenge Builder</a></li>
+                        <li><a href="startups.html">Startup Discovery</a></li>
+                        <li><a href="eligibility.html">Eligibility Screening</a></li>
+                        <li><a href="admin.html">Audit & Governance</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Legal</h5>
+                    <p style="font-size:13px;">SIH 26136 · GFR Rule 194</p>
+                    <p style="font-size:13px;">Maharashtra State Innovation Society</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <!-- Modal for viewing challenge details -->
+    <div class="gov-modal-overlay" id="gov-modal-overlay">
+        <div class="gov-modal">
+            <div class="gov-modal-header">
+                <h5 id="gov-modal-title">Challenge Details</h5>
+                <button class="gov-modal-close" id="gov-modal-close">&times;</button>
+            </div>
+            <div class="gov-modal-body" id="gov-modal-body"></div>
+        </div>
+    </div>
+
+    <div class="toast-container-gov"></div>
+
+    <script src="common.js"></script>
+    <script src="challenges.js"></script>
+</body>
+</html>

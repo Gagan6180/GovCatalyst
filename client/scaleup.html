@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scale-up & Procurement Transition — GovCatalyst | महाराष्ट्र शासन</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="scaleup.css">
+</head>
+<body>
+
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+            <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
+    <div class="top-bar-clean">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <span class="badge bg-warning text-dark font-monospace" style="font-size: 11px;">MSInS</span>
+                <strong style="color: #ffffff; font-size: 17px; letter-spacing: -0.3px;">GovCatalyst</strong>
+            </a>
+            <!-- 🇮🇳 ONLY Tricolor Hamburger Menu on Right -->
+            <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu" title="All Modules Menu (10)">
+                <span class="tri-bar bar-saffron"></span>
+                <span class="tri-bar bar-white"></span>
+                <span class="tri-bar bar-green"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-gov">
+        <div class="container">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> Home</a> › <span class="text-dark fw-semibold">Scale-Up & GeM Transition</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="py-4">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2><i class="bi bi-graph-up-arrow text-primary me-2"></i>Scale-Up & GeM Procurement Transition</h2>
+                    <p>Transition successful sandbox pilots into full-scale public tenders with automated GeM custom bid specification drafting</p>
+                </div>
+                <div class="d-flex gap-2">
+                    
+            <button class="btn btn-gold" id="btn-gen-gem-spec"><i class="bi bi-file-earmark-code me-1"></i> Generate GeM Spec</button>
+            <button class="btn btn-gov-outline" onclick="GovUtils.showToast('Publishing GeM Custom Bid Package...', 'info')"><i class="bi bi-cloud-upload me-1"></i> Publish to GeM</button>
+        
+                </div>
+            </div>
+
+            <!-- Summary Stats Row -->
+            
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-success">5</div>
+                        <div class="stat-label">Graduated Pilots</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary">4</div>
+                        <div class="stat-label">GeM Custom Bid Drafts</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-info">₹18.5 Cr</div>
+                        <div class="stat-label">Estimated Scale-Up Value</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-warning">83.3%</div>
+                        <div class="stat-label">Conversion Rate</div>
+                    </div>
+                </div>
+            </div>
+        
+            
+                </div>
+            </div>
+
+            <!-- Comparison Table: Pilot Results vs. Commercial Procurement Thresholds -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-navy"><i class="bi bi-bar-chart-steps me-2"></i>Sandbox Verification vs. Full Procurement Eligibility Thresholds</span>
+                    <span class="badge bg-success">100% Commercial Compliance</span>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table-gov mb-0" id="table-scale-comparison">
+                            <thead>
+                                <tr>
+                                    <th>Procurement Benchmark Parameter</th>
+                                    <th>Required Scale Threshold</th>
+                                    <th>Sandbox Verified Outcome</th>
+                                    <th>Audit Verification Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparison-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GeM Listing Draft Card & Transition Steps -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="gov-card h-100">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-cart3 me-2"></i>Auto-Generated GeM Listing Blueprint</span>
+                            <span class="badge bg-success">Ready for Portal Push</span>
+                        </div>
+                        <div class="gov-card-body" id="gem-draft-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="gov-card h-100">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-list-ol me-2"></i>Commercial Scale-Up Transition Checklist</span>
+                            <span class="badge bg-primary" id="transition-progress-badge">4 of 5 Complete</span>
+                        </div>
+                        <div class="gov-card-body" id="transition-steps-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>GovCatalyst</h5>
+                    <p style="font-size:13px;">Startup-Friendly Innovation Procurement Portal</p>
+                    <p style="font-size:13px;">Government of Maharashtra</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="scaleup.html">Scale-up Engine</a></li>
+                        <li><a href="admin.html">Audit & Governance</a></li>
+                        <li><a href="performance.html">Performance M&E</a></li>
+                        <li><a href="payments.html">Payments</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Scale Framework</h5>
+                    <p style="font-size:13px;">GeM Custom Category Integration</p>
+                    <p style="font-size:13px;">GFR Rule 194 Innovation Rollout</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <!-- Modal for GeM Listing Document -->
+    <div class="gov-modal-overlay" id="gov-modal-overlay">
+        <div class="gov-modal">
+            <div class="gov-modal-header">
+                <h5 id="gov-modal-title">GeM Listing Document Draft</h5>
+                <button class="gov-modal-close" id="gov-modal-close">&times;</button>
+            </div>
+            <div class="gov-modal-body" id="gov-modal-body"></div>
+        </div>
+    </div>
+
+    <div class="toast-container-gov"></div>
+
+    <script src="common.js"></script>
+    <script src="scaleup.js"></script>
+</body>
+</html>
