@@ -165,6 +165,38 @@
                 </div>
             </div>
 
+            
+            <!-- Intelligent Startup Matching Engine (GFR 194) -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-cpu me-2"></i>AI-Powered Startup Capability & Needs Matching Engine</span>
+                    <span class="badge bg-primary text-white">Rule 194 Alignment</span>
+                </div>
+                <div class="gov-card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Select Open Department Challenge to Match:</label>
+                            <select class="form-select" id="sel-match-challenge">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-5 d-flex align-items-end">
+                            <button class="btn btn-gold w-100" id="btn-run-match">
+                                <i class="bi bi-lightning-charge-fill me-1"></i> Run Intelligent Match Engine
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Match Results Container -->
+                    <div id="match-results-container" class="mt-4" style="display: none;">
+                        <h6 class="fw-bold text-navy mb-3"><i class="bi bi-award-fill text-warning me-1"></i>Top Matching Candidate Startups:</h6>
+                        <div class="row g-3" id="match-cards-grid">
+                            <!-- Populated dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
             <!-- Startups Directory Filters -->
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
                 <h5 class="fw-bold text-navy mb-0"><i class="bi bi-grid-3x3-gap me-2"></i>Verified Innovators Directory (<span id="count-startups">0</span>)</h5>

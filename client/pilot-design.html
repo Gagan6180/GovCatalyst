@@ -86,8 +86,95 @@
                     </div>
                 </div>
             </div>
-        
-            
+
+            <!-- Collapsible Pilot Charter Builder Form -->
+            <div class="gov-card mb-4" id="card-pilot-form" style="display: none;">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-shield-plus me-2"></i>Create Sandbox Pilot Charter & Safeguards</span>
+                    <button type="button" class="btn-close" id="btn-close-pilot-form"></button>
+                </div>
+                <div class="gov-card-body">
+                    <form id="form-pilot-design">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Pilot Initiative Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="inp-pilot-name" placeholder="e.g., Pune AI Smart Traffic Flow Pilot" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Target Challenge <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-pilot-challenge" required></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Selected Startup <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-pilot-startup" required></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Testing Location / Testbed</label>
+                                <input type="text" class="form-control" id="inp-pilot-location" placeholder="e.g. Ward 4 PWD Corridor, Pune" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Pilot Duration (Days)</label>
+                                <input type="number" class="form-control" id="inp-pilot-duration" value="90" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Risk Level Assessment</label>
+                                <select class="form-select" id="inp-pilot-risk">
+                                    <option value="Low">Low (Safe-Fail Simulation)</option>
+                                    <option value="Medium">Medium (Restricted Field Site)</option>
+                                    <option value="High">High (Live Department Workflows)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Data Scope & Isolation Boundary</label>
+                                <input type="text" class="form-control" id="inp-pilot-datascope" placeholder="e.g. Synthetic citizen metadata, isolated VLAN">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Success Threshold Criteria</label>
+                                <input type="text" class="form-control" id="inp-pilot-threshold" placeholder="e.g. >= 20% latency reduction, 0 data breach">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Select Mandatory Risk Safeguards</label>
+                                <div class="row g-2" id="safeguards-container">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-secondary me-2" id="btn-cancel-pilot-form">Cancel</button>
+                                <button type="submit" class="btn btn-gov"><i class="bi bi-check2-circle me-1"></i> Deploy Sandbox Pilot Charter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Active Pilots Registry -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-card-checklist me-2"></i>Active Sandbox Pilots Registry (<span id="pilots-count">0</span>)</span>
+                    <span class="badge bg-warning text-dark font-monospace">GFR 194 Safe-Fail</span>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-gov mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Pilot ID</th>
+                                    <th>Pilot Initiative</th>
+                                    <th>Dept Challenge</th>
+                                    <th>Startup Entity</th>
+                                    <th>Duration</th>
+                                    <th>Risk Level</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pilots-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </main>

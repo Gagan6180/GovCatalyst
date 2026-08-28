@@ -129,6 +129,52 @@
                 </div>
             </div>
 
+            <!-- Pilot Selector & Health Score Header -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-speedometer2 me-2"></i>Sandbox Live Telemetry & Health Score</span>
+                    <button class="btn btn-sm btn-outline-light" id="btn-simulate-telemetry">
+                        <i class="bi bi-broadcast me-1"></i> Stream Live Telemetry
+                    </button>
+                </div>
+                <div class="gov-card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-8">
+                            <label class="form-label fw-semibold">Select Monitored Sandbox Pilot:</label>
+                            <select class="form-select" id="sel-perf-pilot">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="p-2 rounded bg-light border">
+                                <small class="text-muted d-block">Overall Pilot Health Score</small>
+                                <span class="fs-4 fw-extrabold text-success" id="val-health-score">94.2%</span>
+                                <span class="badge bg-success ms-2" id="val-health-label">Excellent</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-3 pt-3 border-top" id="pilot-meta-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Metric Cards Grid -->
+            <div class="row g-3 mb-4" id="kpi-cards-grid">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Real-Time Telemetry Stream Terminal -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-terminal me-2"></i>Live IoT Sensor & Field Telemetry Stream</span>
+                    <span class="badge bg-success"><i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> LIVE</span>
+                </div>
+                <div class="gov-card-body bg-dark text-light font-monospace p-3" style="max-height: 220px; overflow-y: auto;" id="telemetry-stream">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
         </div>
     </main>
 

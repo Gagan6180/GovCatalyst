@@ -143,6 +143,50 @@
                 </div>
             </div>
 
+            <!-- Pilot Scale-Up Assessment Selector -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-award me-2"></i>Graduated Pilot Scale-Up Assessment</span>
+                    <button class="btn btn-sm btn-gold" id="btn-generate-gem-doc">
+                        <i class="bi bi-file-earmark-arrow-up me-1"></i> Auto-Draft GeM Custom Bid Spec
+                    </button>
+                </div>
+                <div class="gov-card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Select Graduated Sandbox Pilot:</label>
+                            <select class="form-select" id="sel-scale-pilot">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="p-3 bg-light border rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-navy" id="val-decision-title">Recommended for Scale-Up</span>
+                                    <span class="badge bg-success" id="val-decision-badge">Approved</span>
+                                    <span class="badge bg-primary ms-1" id="val-pathway-badge">GeM Transition</span>
+                                    <span class="badge bg-info text-dark ms-1" id="val-success-score">92.5%</span>
+                                </div>
+                                <small class="text-muted d-block mt-1" id="val-decision-reason">Exceeded all KPI milestones with zero risk flags.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GeM Custom Bid Package Preview -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-file-earmark-code me-2"></i>GeM Custom Bid Specifications Package</span>
+                    <button class="btn btn-sm btn-success" id="btn-push-gem">
+                        <i class="bi bi-cloud-upload me-1"></i> Push Direct to GeM Portal
+                    </button>
+                </div>
+                <div class="gov-card-body font-monospace p-3 bg-light" id="gem-spec-preview">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
         </div>
     </main>
 

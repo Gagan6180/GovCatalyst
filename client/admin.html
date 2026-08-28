@@ -52,7 +52,7 @@
                 </div>
                 <div class="d-flex gap-2">
                     
-            <button class="btn btn-gold" id="btn-validator-sign"><i class="bi bi-pen me-1"></i> Validator Sign-Off</button>
+            <button class="btn btn-gold" id="btn-toggle-add-user"><i class="bi bi-pen me-1"></i> Validator Sign-Off</button>
             <button class="btn btn-gov-outline" onclick="GovUtils.showToast('Exporting Forensic Audit Certificate...', 'info')"><i class="bi bi-award me-1"></i> 65B Certificate</button>
         
                 </div>
@@ -63,7 +63,7 @@
             <div class="row g-3 mb-4">
                 <div class="col-6 col-md-3">
                     <div class="stat-card">
-                        <div class="stat-number text-primary" id="cnt-audit-events">28</div>
+                        <div class="stat-number text-primary" id="cnt-audit-events"><span id="audit-count">28</span></div>
                         <div class="stat-label">Audit Log Events</div>
                     </div>
                 </div>
@@ -75,13 +75,13 @@
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-card">
-                        <div class="stat-number text-info">4 Roles</div>
+                        <div class="stat-number text-info"><span id="users-count">4</span> Roles</div>
                         <div class="stat-label">RBAC Security Active</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-card">
-                        <div class="stat-number text-warning">6 Signed Off</div>
+                        <div class="stat-number text-warning"><span id="signoffs-count">6</span> Signed Off</div>
                         <div class="stat-label">Validator Approvals</div>
                     </div>
                 </div>
@@ -155,6 +155,87 @@
             <div class="tab-content-pane" id="tab-rbac" style="display: none;">
                 <div class="row g-3" id="rbac-cards-grid">
                     <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Collapsible Add User Form -->
+            <div class="gov-card mb-4" id="card-add-user" style="display: none;">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-person-plus me-2"></i>Create New System User & Assign RBAC Role</span>
+                    <button type="button" class="btn-close" id="btn-close-add-user"></button>
+                </div>
+                <div class="gov-card-body">
+                    <form id="form-add-user">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="inp-u-name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Official Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="inp-u-email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">System Role <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-u-role" required>
+                                    <option value="Department Admin">Department Admin</option>
+                                    <option value="Evaluator">Domain Expert / Evaluator</option>
+                                    <option value="Independent Validator">Independent Validator</option>
+                                    <option value="Startup">Startup Representative</option>
+                                    <option value="Super Admin">State Super Admin</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Department / Entity</label>
+                                <input type="text" class="form-control" id="inp-u-dept" placeholder="e.g. PWD / MSInS / IIT Bombay">
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-secondary me-2" id="btn-cancel-add-user">Cancel</button>
+                                <button type="submit" class="btn btn-gov"><i class="bi bi-check2-circle me-1"></i> Save User Profile</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Audit Trail & System Log -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span><i class="bi bi-shield-lock me-2"></i>Section 65B Certified Forensic Audit Trail</span>
+                    <div class="d-flex gap-2">
+                        <input type="text" class="form-control form-control-sm" id="search-audit" placeholder="Search audit logs..." style="width: 200px;">
+                        <select class="form-select form-select-sm" id="filter-audit-module" style="width: 150px;">
+                            <option value="">All Modules</option>
+                            <option value="Challenges">Challenges</option>
+                            <option value="Startups">Startups</option>
+                            <option value="Eligibility">Eligibility</option>
+                            <option value="Evaluation">Evaluation</option>
+                            <option value="Pilots">Pilots</option>
+                            <option value="Milestones">Milestones</option>
+                            <option value="Payments">Payments</option>
+                            <option value="Scaleup">Scaleup</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-gov mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp (IST)</th>
+                                    <th>User & Role</th>
+                                    <th>Module</th>
+                                    <th>Action Log</th>
+                                    <th>Cryptographic Hash</th>
+                                    <th class="text-center">Integrity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
