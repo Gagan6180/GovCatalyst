@@ -21,6 +21,9 @@ const challengeRoutes = require('./routes/challengeRoutes');
 app.use('/api/challenges', challengeRoutes);
 const applicationRoutes = require('./routes/applicationRoutes');
 app.use('/api/applications', applicationRoutes);
+const pilotRoutes = require('./routes/pilot.routes');
+app.use('/api/pilots', pilotRoutes);
+
 
 
 // Start the server
