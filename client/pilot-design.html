@@ -119,6 +119,24 @@
                             <div class="col-md-3">
                                 <label class="form-label fw-semibold">Data Access Level</label>
                                 <select class="form-select" id="inp-pilot-data-level">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">13-State Lifecycle Status</label>
+                                <select class="form-select font-monospace" id="inp-pilot-state">
+                                    <option value="DRAFT">1. DRAFT (Initial Sandbox Scoping)</option>
+                                    <option value="AGREEMENT_PENDING">2. AGREEMENT_PENDING (Legal Drafting)</option>
+                                    <option value="AGREEMENT_APPROVED">3. AGREEMENT_APPROVED (Bilateral Signed)</option>
+                                    <option value="SECURITY_CHECK">4. SECURITY_CHECK (Cybersecurity Gate)</option>
+                                    <option value="DATA_IP_CHECK">5. DATA_IP_CHECK (Anonymization Cleared)</option>
+                                    <option value="READY_FOR_DEPLOYMENT">6. READY_FOR_DEPLOYMENT (Sandbox Open)</option>
+                                    <option value="DEPLOYMENT">7. DEPLOYMENT (Sensor / Model Install)</option>
+                                    <option value="ACTIVE_PILOT" selected>8. ACTIVE_PILOT (Live Field Testing)</option>
+                                    <option value="MONITORING">9. MONITORING (Telemetry & KPI Run)</option>
+                                    <option value="PILOT_COMPLETED">10. PILOT_COMPLETED (Testing Finished)</option>
+                                    <option value="EVALUATION">11. EVALUATION (Independent Validator)</option>
+                                    <option value="COMPLETED">12. COMPLETED (Outcome Certified)</option>
+                                    <option value="SCALE">13. SCALE (GeM / Public Procurement)</option>
+                                </select>
                                     <option value="anonymized">Anonymized Metadata</option>
                                     <option value="restricted" selected>Restricted Testbed Sandbox</option>
                                     <option value="full">Full Operational Jurisdiction</option>

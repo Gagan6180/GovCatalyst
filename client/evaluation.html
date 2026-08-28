@@ -154,35 +154,42 @@
                             </div>
                         </div>
 
-                        <!-- Score Range Sliders -->
+                                                <!-- 5-Criterion Score Range Sliders matching backend /api/evaluations/criteria -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex justify-content-between">
-                                    <span>Innovation & Novelty (30%)</span>
-                                    <span class="badge bg-primary" id="val-inno">85 / 100</span>
-                                </label>
-                                <input type="range" class="form-range" id="rng-inno" min="0" max="100" value="85">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold d-flex justify-content-between">
                                     <span>Technical Feasibility (25%)</span>
-                                    <span class="badge bg-primary" id="val-feas">80 / 100</span>
+                                    <span class="badge bg-primary" id="val-feas">8.5 / 10</span>
                                 </label>
-                                <input type="range" class="form-range" id="rng-feas" min="0" max="100" value="80">
+                                <input type="range" class="form-range" id="rng-feas" min="0" max="10" step="0.5" value="8.5">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold d-flex justify-content-between">
-                                    <span>Scalability & Replicability (25%)</span>
-                                    <span class="badge bg-primary" id="val-scal">75 / 100</span>
+                                    <span>Innovation & Novelty (20%)</span>
+                                    <span class="badge bg-primary" id="val-inno">9.0 / 10</span>
                                 </label>
-                                <input type="range" class="form-range" id="rng-scal" min="0" max="100" value="75">
+                                <input type="range" class="form-range" id="rng-inno" min="0" max="10" step="0.5" value="9.0">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label fw-semibold d-flex justify-content-between">
-                                    <span>Cost Effectiveness (20%)</span>
-                                    <span class="badge bg-primary" id="val-cost">90 / 100</span>
+                                    <span>Alignment with Outcomes (25%)</span>
+                                    <span class="badge bg-primary" id="val-align">8.0 / 10</span>
                                 </label>
-                                <input type="range" class="form-range" id="rng-cost" min="0" max="100" value="90">
+                                <input type="range" class="form-range" id="rng-align" min="0" max="10" step="0.5" value="8.0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Cost Effectiveness (15%)</span>
+                                    <span class="badge bg-primary" id="val-cost">7.5 / 10</span>
+                                </label>
+                                <input type="range" class="form-range" id="rng-cost" min="0" max="10" step="0.5" value="7.5">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Scalability & Replication (15%)</span>
+                                    <span class="badge bg-primary" id="val-scal">8.5 / 10</span>
+                                </label>
+                                <input type="range" class="form-range" id="rng-scal" min="0" max="10" step="0.5" value="8.5">
                             </div>
                         </div>
 

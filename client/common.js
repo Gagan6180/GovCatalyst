@@ -156,11 +156,12 @@ window.GovData = {
         { id: 'EV-003', name: 'Dr. Sunita Rao', expertise: 'Policy & Public Administration', department: 'GAD', coiDeclared: false, coiDetails: '' }
     ],
 
-    evaluationRubric: [
-        { category: 'Innovation', weight: 30, maxScore: 10, description: 'Novelty of approach, technology differentiation, and creative problem solving' },
-        { category: 'Feasibility', weight: 25, maxScore: 10, description: 'Technical and operational feasibility within government infrastructure constraints' },
-        { category: 'Scalability', weight: 25, maxScore: 10, description: 'Ability to scale across multiple departments, districts, and states' },
-        { category: 'Cost Effectiveness', weight: 20, maxScore: 10, description: 'Value for money, total cost of ownership, and budget efficiency' }
+        evaluationRubric: [
+        { category: 'Technical Feasibility', weight: 25, maxScore: 10, description: 'Technical and operational feasibility within government infrastructure constraints' },
+        { category: 'Innovation & Novelty', weight: 20, maxScore: 10, description: 'Novelty of approach, technology differentiation, and creative problem solving' },
+        { category: 'Alignment with Outcomes', weight: 25, maxScore: 10, description: 'Direct alignment with departmental problem statement and measurable baseline targets' },
+        { category: 'Cost Effectiveness', weight: 15, maxScore: 10, description: 'Value for money, total cost of ownership, and budget efficiency' },
+        { category: 'Scalability & Replication', weight: 15, maxScore: 10, description: 'Ability to scale across multiple departments, 36 districts, and state agencies' }
     ],
 
     evaluationScores: [
