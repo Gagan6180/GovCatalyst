@@ -41,6 +41,8 @@ app.use('/api/evaluations', evaluationRoutes);
 const validationRoutes = require('./routes/validationRoutes');
 app.use('/api/validations', validationRoutes);
 
+
+
 // Start the server if started directly
 if (require.main === module) {
     app.listen(port, () => {
