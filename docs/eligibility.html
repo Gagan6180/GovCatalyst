@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eligibility Screening Engine — GovCatalyst | महाराष्ट्र शासन</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="eligibility.css">
+</head>
+<body>
+
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+            <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
+    <div class="top-bar-clean">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <span class="badge bg-warning text-dark font-monospace" style="font-size: 11px;">MSInS</span>
+                <strong style="color: #ffffff; font-size: 17px; letter-spacing: -0.3px;">GovCatalyst</strong>
+            </a>
+            <!-- 🇮🇳 ONLY Tricolor Hamburger Menu on Right -->
+            <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu" title="All Modules Menu (10)">
+                <span class="tri-bar bar-saffron"></span>
+                <span class="tri-bar bar-white"></span>
+                <span class="tri-bar bar-green"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-gov">
+        <div class="container">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> Home</a> › <span class="text-dark fw-semibold">Eligibility & Exemption Screening</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="py-4">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2><i class="bi bi-patch-check-fill text-primary me-2"></i>Eligibility & Exemption Screening</h2>
+                    <p>Automated rule engine for DPIIT-recognized startup procurement exemptions under GFR Rule 194 & Maharashtra Startup Policy</p>
+                </div>
+                <div class="d-flex gap-2">
+                    
+            <button class="btn btn-gold" id="btn-batch-eval"><i class="bi bi-lightning-charge me-1"></i> Batch Screen All</button>
+            <button class="btn btn-gov-outline" onclick="GovUtils.showToast('Audit Log Section 65B Verified', 'success')"><i class="bi bi-shield-lock me-1"></i> GFR Audit Log</button>
+        
+                </div>
+            </div>
+
+            <!-- Summary Stats Row -->
+            
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary" id="cnt-evaluated">12</div>
+                        <div class="stat-label">Startups Screened</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-success" id="cnt-full-exempt">10</div>
+                        <div class="stat-label">Full Exemptions Granted</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-warning" id="cnt-partial-exempt">2</div>
+                        <div class="stat-label">Partial Waivers</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-info">100%</div>
+                        <div class="stat-label">GFR 194 Audit Pass Rate</div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Single Startup Interactive Auto-Screening Checklist -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-5">
+                    <div class="gov-card h-100">
+                        <div class="gov-card-header">
+                            <i class="bi bi-person-check me-2"></i>Select Candidate Startup to Screen
+                        </div>
+                        <div class="gov-card-body">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Choose Registered Startup Entity:</label>
+                                <select class="form-select" id="sel-screening-su">
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+
+                            <div id="screening-su-summary" class="p-3 bg-light rounded border mb-3">
+                                <!-- Startup quick summary -->
+                            </div>
+
+                            <!-- Verdict Card -->
+                            <div id="verdict-box" class="p-4 rounded text-center border">
+                                <div id="verdict-icon" class="display-6 mb-2"></div>
+                                <h4 id="verdict-title" class="fw-bold mb-1"></h4>
+                                <p id="verdict-desc" class="small mb-0"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="gov-card h-100">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-check2-all me-2"></i>Real-Time Compliance Audit Checklist</span>
+                            <span id="checklist-counter" class="badge bg-primary"></span>
+                        </div>
+                        <div class="gov-card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table-gov mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Rule Criterion</th>
+                                            <th>Entity Data Provided</th>
+                                            <th>Evaluation Note</th>
+                                            <th class="text-center">Verdict</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="checklist-tbody">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch Screening Summary Table -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-navy"><i class="bi bi-table me-2"></i>All Startups Qualification & Screening Status Summary</span>
+                    <button class="btn btn-sm btn-outline-primary" id="btn-export-screening">
+                        <i class="bi bi-download me-1"></i> Export Screening Log
+                    </button>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table-gov mb-0" id="table-batch-screening">
+                            <thead>
+                                <tr>
+                                    <th>Entity Name</th>
+                                    <th>Sector</th>
+                                    <th>DPIIT Cert</th>
+                                    <th>Turnover</th>
+                                    <th>Prototype</th>
+                                    <th>Criteria Met</th>
+                                    <th>Final Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batch-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>GovCatalyst</h5>
+                    <p style="font-size:13px;">Startup-Friendly Innovation Procurement Portal</p>
+                    <p style="font-size:13px;">Government of Maharashtra</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="challenges.html">Challenge Builder</a></li>
+                        <li><a href="startups.html">Startup Discovery</a></li>
+                        <li><a href="eligibility.html">Eligibility Screening</a></li>
+                        <li><a href="evaluation.html">Expert Evaluation</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Exemption Guidelines</h5>
+                    <p style="font-size:13px;">DPIIT Notification No. G.S.R. 127(E)</p>
+                    <p style="font-size:13px;">Public Procurement Policy for Startups</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <!-- Modal -->
+    <div class="gov-modal-overlay" id="gov-modal-overlay">
+        <div class="gov-modal">
+            <div class="gov-modal-header">
+                <h5 id="gov-modal-title">Screening Verification</h5>
+                <button class="gov-modal-close" id="gov-modal-close">&times;</button>
+            </div>
+            <div class="gov-modal-body" id="gov-modal-body"></div>
+        </div>
+    </div>
+
+    <div class="toast-container-gov"></div>
+
+    <script src="common.js"></script>
+    <script src="eligibility.js"></script>
+</body>
+</html>

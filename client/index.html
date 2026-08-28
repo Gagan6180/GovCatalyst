@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GovCatalyst — SIH26136 Startup-Friendly Government Innovation Procurement (Pilot Module)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Institutional Navigation Bar -->
+  <header id="top-navbar" class="bg-slate-900 text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Brand & Emblem -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-600 to-sky-400 flex items-center justify-center text-white font-black text-lg shadow-lg ring-2 ring-indigo-400/30">
+            GC
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold tracking-tight text-base sm:text-lg text-white">GovCatalyst &bull; PILOT MODULE</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">SIH26136</span>
+            </div>
+            <div class="text-[11px] text-slate-400 font-medium truncate max-w-xs sm:max-w-md hidden sm:block">
+              Startup-Friendly Public Innovation Procurement Trial & Evaluation
+            </div>
+          </div>
+        </div>
+
+        <!-- Pilot Selector & Role Switcher -->
+        <div class="flex items-center gap-3">
+          <!-- Active Pilot Indicator -->
+          <div class="hidden lg:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="header-pilot-name" class="text-xs font-semibold text-slate-200 max-w-[200px] truncate">AI Highway Inspection</span>
+            <span id="header-status-badge" class="badge-status badge-completed text-[10px]">COMPLETED</span>
+          </div>
+
+          <!-- Role Switcher -->
+          <div class="flex items-center gap-1.5 bg-slate-800/90 px-2.5 py-1 rounded-lg border border-slate-700">
+            <span class="text-[11px] font-semibold text-slate-400 hidden sm:inline">Role:</span>
+            <select id="role-selector" class="bg-transparent text-white text-xs font-bold focus:outline-none cursor-pointer">
+              <option value="GOVT_OFFICER" class="bg-slate-900 text-white">Govt Officer (Pilot Owner)</option>
+              <option value="STARTUP_LEAD" class="bg-slate-900 text-white">Startup Lead (InspectAI)</option>
+              <option value="SECURITY_OFFICER" class="bg-slate-900 text-white">Cybersecurity Officer</option>
+              <option value="COMMITTEE_MEMBER" class="bg-slate-900 text-white">Evaluation Committee</option>
+            </select>
+          </div>
+
+          <!-- Load Demo Button -->
+          <button id="btn-load-demo" title="Reset and reload official SIH26136 Drone AI Inspection Demo Scenario" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1.5 transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <span class="hidden sm:inline">Demo Scenario</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- App Body Layout -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 border-r border-slate-800 flex-shrink-0 flex flex-col justify-between hidden md:flex">
+      <div class="p-4 space-y-1">
+        <div class="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Core Navigation</div>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="dashboard">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          Monitoring Dashboard
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="details">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Pilot Details & Scope
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="plan">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+          5-Phase Execution Plan
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="agreement">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+          Agreements & Data / IP
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="payments">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Payment Milestones
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="cybersecurity">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          Cybersecurity & Risks
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="kpis">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          KPI Telemetry & Math
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="issues">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          Issues & User Feedback
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="evidence">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/></svg>
+          Evidence Repository
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="evaluation">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+          Evaluation & Scale-Up
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition" data-view="audit">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Audit Trail Log
+        </button>
+
+        <button class="nav-btn w-full text-left px-3 py-2.5 rounded-lg text-xs font-semibold flex items-center gap-3 transition text-emerald-400 hover:text-emerald-300" data-view="outputs">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+          15 Core Pilot Outputs
+        </button>
+      </div>
+
+      <!-- Legal Footnote -->
+      <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500">
+        <div>GovCatalyst Platform</div>
+        <div class="text-[10px] text-slate-600 mt-0.5">SIH26136 &bull; GFR Rule 194</div>
+      </div>
+    </aside>
+
+    <!-- Main Dynamic Content Container -->
+    <main id="main-content" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+      <div id="view-container" class="max-w-7xl mx-auto">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Full Report / Document Viewer Modal -->
+  <div id="report-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden border border-slate-200">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <h2 class="font-bold text-slate-900 text-sm sm:text-base">Official Document & Report Preview</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-print-modal" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            Print / Save as PDF
+          </button>
+          <button id="btn-close-modal" class="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Modal Content Body -->
+      <div id="report-modal-content" class="p-6 overflow-y-auto flex-1 bg-slate-100/50">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Alerts Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm pointer-events-none"></div>
+
+  <!-- Application Scripts -->
+  <script src="data.js"></script>
+  <script src="reports.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

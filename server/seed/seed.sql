@@ -61,6 +61,8 @@ CREATE TABLE challenges (
     budget_ceiling NUMERIC,
     pilot_duration_days INT,
     risk_level VARCHAR(20),             -- low / medium / high
+    min_turnover_required NUMERIC,
+    min_experience_years INT,
     status challenge_status DEFAULT 'draft',
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP DEFAULT now()

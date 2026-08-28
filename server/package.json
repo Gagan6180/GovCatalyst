@@ -8,9 +8,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "seed:startup": "node seed-startup.js",
+    "seed:dept-admin": "node seed-dept-admin.js",
+    "seed:challenges": "node seed-challenges.js",
+    "seed:superadmin": "node seed-superadmin.js"
   },
   "dependencies": {
+    "@google/genai": "^2.19.0",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
