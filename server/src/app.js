@@ -25,6 +25,8 @@ const pilotRoutes = require('./routes/pilot.routes');
 app.use('/api/pilots', pilotRoutes);
 const evaluationRoutes = require('./routes/evaluationRoutes');
 app.use('/api/evaluations', evaluationRoutes);
+const validationRoutes = require('./routes/validationRoutes');
+app.use('/api/validations', validationRoutes);
 
 
 

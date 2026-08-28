@@ -210,6 +210,49 @@ DRAFT → AGREEMENT_PENDING → AGREEMENT_APPROVED → SECURITY_CHECK
 | `/api/pilots/:id/evidences` | GET/POST | all | List / submit evidence |
 | `/api/pilots/:id/evidences/:evidenceId/verify` | PATCH | validator | Verify / reject evidence |
 
+### Module 6 — Independent Validation Layer
+
+**Branch:** `be/feat-Validation.01`
+
+Provides an independent 3rd-party validator audit trail ensuring objective milestone sign-offs, empirical KPI verification, composite multi-dimension reporting, and certification for procurement and scale-up.
+
+**Workflow:**
+```
+dept_admin assigns validator to a pilot (gov_pilots)
+  → Validator activates assignment
+  → Validator reviews milestones & evidences (signs off milestone verification: verified / partially_verified / failed)
+  → Validator audits KPI performance against baseline/targets and source telemetry (calculates empirical discrepancy %)
+  → Validator generates composite 4-dimension Validation Report:
+       - KPI Achievement (40%)
+       - Data Integrity (25%)
+       - Process Compliance (20%)
+       - Stakeholder Feedback (15%)
+       → Composite Score >= 80: PASS | >= 60: CONDITIONAL_PASS | < 60: FAIL
+  → Validator certifies readiness for procurement & scale-up with clearance conditions
+  → dept_admin can raise objections if findings or discrepancies are contested
+  → Validator responds to resolve objections
+```
+
+| Endpoint | Method | Role | Description |
+|----------|--------|------|-------------|
+| `/api/validations/assign` | POST | dept_admin | Assign an independent validator to a pilot |
+| `/api/validations/assignments/pilot/:pilotId` | GET | dept_admin / validator | View validator assignments for a pilot |
+| `/api/validations/assignments/my` | GET | validator | View assigned pilots in the validator queue |
+| `/api/validations/assignments/:id/activate` | PATCH | validator | Activate assignment |
+| `/api/validations/milestones` | POST | validator | Record a milestone verification check |
+| `/api/validations/milestones/:id/verify` | PATCH | validator | Submit milestone sign-off (verified / partially_verified / failed) |
+| `/api/validations/milestones/pilot/:pilotId` | GET | dept_admin / validator | View milestone verifications + summary stats |
+| `/api/validations/kpis` | POST | validator | Register a KPI audit item |
+| `/api/validations/kpis/:id/validate` | PATCH | validator | Submit KPI attestation (verdict, verified value, discrepancy %) |
+| `/api/validations/kpis/pilot/:pilotId` | GET | dept_admin / validator | View KPI validations for a pilot |
+| `/api/validations/reports` | POST | validator | Save composite 4-dimension validation report draft |
+| `/api/validations/reports/:assignmentId/submit` | POST | validator | Lock and submit final validation report |
+| `/api/validations/reports/assignment/:assignmentId` | GET | dept_admin / validator | View validation report for an assignment |
+| `/api/validations/reports/pilot/:pilotId` | GET | dept_admin / validator | View all validation reports for a pilot |
+| `/api/validations/objections` | POST | dept_admin | Raise objection against a validation report |
+| `/api/validations/objections/:id/respond` | PATCH | validator | Respond to an objection with clarifications |
+| `/api/validations/objections/report/:reportId` | GET | dept_admin / validator | View objections for a report |
+
 ---
 
 ### Database Schema Summary
@@ -233,6 +276,11 @@ DRAFT → AGREEMENT_PENDING → AGREEMENT_APPROVED → SECURITY_CHECK
 | `gov_pilot_feedbacks` | User satisfaction feedback per pilot |
 | `gov_pilot_evidences` | Evidence/document submissions per pilot |
 | `gov_pilot_audit_logs` | Persisted audit trail for all pilot state changes |
+| `validator_assignments` | Independent validator assignments per pilot |
+| `milestone_verifications` | Milestone verification checks and sign-offs |
+| `kpi_validations` | Independent KPI empirical validations & discrepancy records |
+| `validation_reports` | 4-dimension composite validation reports (procurement/scale clearance) |
+| `validation_objections` | Dept admin objections & validator responses |
 | `milestones` | Payment milestone records |
 | `payments` | Payment tracking |
 | `otp_verifications` | OTP store for account activation |
@@ -273,6 +321,7 @@ cp .env.example .env
 # 3. Run DB migrations (in order)
 psql -U postgres -d <DB_NAME> -f seed/pilot_tables.sql
 psql -U postgres -d <DB_NAME> -f seed/evaluation_tables.sql
+psql -U postgres -d <DB_NAME> -f seed/validation_tables.sql
 
 # 4. Seed test data
 npm run seed:superadmin
@@ -305,7 +354,6 @@ Authorization: Bearer <jwt_token>
 | Gap | Priority |
 |-----|----------|
 | Milestone-based contracting & payment release API | 🔴 High |
-| Independent validator workflow (evidence verification flow) | 🔴 High |
 | Scale-up / procurement pathway (committee voting, GeM link) | 🟡 Medium |
 | File/document upload (`multer` + storage) | 🟡 Medium |
 | Startup notification system (payment events, status changes) | 🟡 Medium |
