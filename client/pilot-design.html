@@ -95,9 +95,9 @@
                 </div>
                 <div class="gov-card-body">
                     <form id="form-pilot-design">
-                        <div class="row g-3">
+                                                                        <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Pilot Initiative Name <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">Pilot Initiative Title <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="inp-pilot-name" placeholder="e.g., Pune AI Smart Traffic Flow Pilot" required>
                             </div>
                             <div class="col-md-3">
@@ -108,32 +108,40 @@
                                 <label class="form-label fw-semibold">Selected Startup <span class="text-danger">*</span></label>
                                 <select class="form-select" id="inp-pilot-startup" required></select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-semibold">Testing Location / Testbed</label>
-                                <input type="text" class="form-control" id="inp-pilot-location" placeholder="e.g. Ward 4 PWD Corridor, Pune" required>
+                                <input type="text" class="form-control" id="inp-pilot-location" placeholder="e.g. Ward 4 PWD Corridor, Pune" value="Ward 4 PWD Corridor, Pune" required>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label fw-semibold">Pilot Duration (Days)</label>
                                 <input type="number" class="form-control" id="inp-pilot-duration" value="90" required>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Data Access Level</label>
+                                <select class="form-select" id="inp-pilot-data-level">
+                                    <option value="anonymized">Anonymized Metadata</option>
+                                    <option value="restricted" selected>Restricted Testbed Sandbox</option>
+                                    <option value="full">Full Operational Jurisdiction</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <label class="form-label fw-semibold">Risk Level Assessment</label>
                                 <select class="form-select" id="inp-pilot-risk">
-                                    <option value="Low">Low (Safe-Fail Simulation)</option>
-                                    <option value="Medium">Medium (Restricted Field Site)</option>
-                                    <option value="High">High (Live Department Workflows)</option>
+                                    <option value="low">Low (Safe-Fail Simulation)</option>
+                                    <option value="medium" selected>Medium (Restricted Field Site)</option>
+                                    <option value="high">High (Live Department Workflows)</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Data Scope & Isolation Boundary</label>
-                                <input type="text" class="form-control" id="inp-pilot-datascope" placeholder="e.g. Synthetic citizen metadata, isolated VLAN">
+                                <label class="form-label fw-semibold">Sandbox Scope & Boundaries</label>
+                                <input type="text" class="form-control" id="inp-pilot-datascope" placeholder="e.g. Synthetic citizen metadata, isolated municipal VLAN" value="Isolated testbed corridor Ward 4">
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Success Threshold Criteria</label>
-                                <input type="text" class="form-control" id="inp-pilot-threshold" placeholder="e.g. >= 20% latency reduction, 0 data breach">
+                                <input type="text" class="form-control" id="inp-pilot-threshold" placeholder="e.g. >= 20% latency reduction, 0 data breach" value="≥ 30% reduction in turnaround time, 0 security incidents">
                             </div>
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Select Mandatory Risk Safeguards</label>
+                                <label class="form-label fw-semibold">Mandatory Risk Safeguards</label>
                                 <div class="row g-2" id="safeguards-container">
                                     <!-- Populated by JS -->
                                 </div>
