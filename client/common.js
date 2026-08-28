@@ -492,20 +492,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.insertAdjacentHTML('beforeend', megaMenuHtml);
     }
 
-    // Inject Floating Quick Action Sidebar on all pages if not in DOM
-    if (!document.querySelector('.floating-quick-sidebar')) {
-        const sidebarHtml = `
-            <aside class="floating-quick-sidebar" aria-label="Quick Access Sidebar">
-                <button title="Feedback & Citizen Support" aria-label="Feedback" onclick="GovUtils.showToast('Grievance & Feedback Desk Connected', 'info')"><i class="bi bi-chat-left-text"></i></button>
-                <button title="Independent Validator & Helpdesk" aria-label="Helpdesk" onclick="window.location.href='admin.html'"><i class="bi bi-shield-check"></i></button>
-                <button title="Procurement Calendar & Milestones" aria-label="Calendar" onclick="window.location.href='milestones.html'"><i class="bi bi-calendar4-week"></i></button>
-                <button title="Share Portal" aria-label="Share" onclick="GovUtils.showToast('Portal Link Copied to Clipboard', 'success')"><i class="bi bi-share"></i></button>
-                <button title="Theme & Contrast Mode" aria-label="Theme" onclick="GovUtils.showToast('High Contrast Mode Enabled', 'info')"><i class="bi bi-palette"></i></button>
-            </aside>
-        `;
-        document.body.insertAdjacentHTML('beforeend', sidebarHtml);
-    }
-
     // Mega Menu Open / Close Logic
     const hamburgerBtn = document.getElementById('gov-hamburger-toggle');
     const megaMenu = document.getElementById('gov-mega-menu-overlay');

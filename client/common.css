@@ -1457,48 +1457,6 @@ body {
     transform: translateY(-6.5px) rotate(-45deg);
 }
 
-/* Right-Edge Fixed Floating Quick Action Toolbar */
-.floating-quick-sidebar {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-right: none;
-    border-radius: 12px 0 0 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 6px 4px;
-    z-index: 1040;
-    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
-}
-
-.floating-quick-sidebar button,
-.floating-quick-sidebar a {
-    color: rgba(255, 255, 255, 0.75);
-    background: none;
-    border: none;
-    font-size: 16px;
-    padding: 10px 10px;
-    cursor: pointer;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    text-decoration: none;
-}
-
-.floating-quick-sidebar button:hover,
-.floating-quick-sidebar a:hover {
-    color: #ffffff;
-    background: rgba(37, 99, 235, 0.4);
-    transform: translateX(-3px);
-}
-
 /* Background Slider Container */
 .hero-bg-slider {
     position: absolute;
