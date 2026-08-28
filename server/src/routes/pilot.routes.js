@@ -1,22 +1,56 @@
 /**
- * SIH26136 Pilot Module - Pilot Routes (Canonical)
- * GovCatalyst Government Innovation Procurement
+ * GovCatalyst — Pilot Routes (DB-backed)
+ * SIH26136 Government Innovation Procurement
  */
 
-const express = require('express');
-const router = express.Router();
-const pilotController = require('../controllers/pilot.controller');
-const { authenticateToken } = require('../middleware/auth.middleware');
+const express    = require('express');
+const router     = express.Router();
+const ctrl       = require('../controllers/pilot.controller');
+const { authenticate }  = require('../middleware/authMiddleware');
+const { requireRole }   = require('../middleware/roleMiddleware');
 
-// Apply authentication middleware to all pilot routes
-router.use(authenticateToken);
+// All pilot routes require authentication
+router.use(authenticate);
 
-// Pilot Endpoints
-router.get('/', (req, res) => pilotController.getAllPilots(req, res));
-router.post('/', (req, res) => pilotController.createPilot(req, res));
-router.get('/:id', (req, res) => pilotController.getPilotById(req, res));
-router.patch('/:id/status', (req, res) => pilotController.updateStatus(req, res));
-router.get('/:id/evaluate', (req, res) => pilotController.evaluatePilot(req, res));
-router.get('/:id/report', (req, res) => pilotController.getCompletionReport(req, res));
+// ── Core Pilot ────────────────────────────────────────────────────
+router.get('/',    ctrl.getAllPilots);
+router.post('/',   requireRole('dept_admin', 'super_admin'), ctrl.createPilot);
+router.get('/:id', ctrl.getPilotById);
+
+// Status transition (dept_admin or super_admin)
+router.patch('/:id/status', requireRole('dept_admin', 'super_admin'), ctrl.updateStatus);
+
+// Automated outcome evaluation
+router.post('/:id/evaluate', requireRole('dept_admin', 'super_admin', 'evaluator'), ctrl.evaluatePilot);
+
+// 22-section completion report
+router.get('/:id/report', ctrl.getCompletionReport);
+
+// Audit log
+router.get('/:id/audit', ctrl.getAuditLog);
+
+// ── KPIs ─────────────────────────────────────────────────────────
+router.get( '/:id/kpis',            ctrl.getKpis);
+router.post('/:id/kpis',            requireRole('dept_admin', 'super_admin'), ctrl.addKpi);
+router.patch('/:id/kpis/:kpiId',    requireRole('dept_admin', 'super_admin', 'evaluator'), ctrl.updateKpi);
+
+// ── Risks ─────────────────────────────────────────────────────────
+router.get( '/:id/risks',              ctrl.getRisks);
+router.post('/:id/risks',              requireRole('dept_admin', 'super_admin'), ctrl.addRisk);
+router.patch('/:id/risks/:riskId/status', requireRole('dept_admin', 'super_admin'), ctrl.updateRiskStatus);
+
+// ── Issues ───────────────────────────────────────────────────────
+router.get( '/:id/issues',                   ctrl.getIssues);
+router.post('/:id/issues',                   ctrl.addIssue);   // any auth'd user can log an issue
+router.patch('/:id/issues/:issueId/resolve', requireRole('dept_admin', 'super_admin'), ctrl.resolveIssue);
+
+// ── Feedback ─────────────────────────────────────────────────────
+router.get( '/:id/feedback', ctrl.getFeedback);
+router.post('/:id/feedback', ctrl.addFeedback); // any auth'd user can submit feedback
+
+// ── Evidence ─────────────────────────────────────────────────────
+router.get( '/:id/evidences',                         ctrl.getEvidences);
+router.post('/:id/evidences',                         ctrl.addEvidence);
+router.patch('/:id/evidences/:evidenceId/verify',     requireRole('validator', 'super_admin'), ctrl.verifyEvidence);
 
 module.exports = router;
