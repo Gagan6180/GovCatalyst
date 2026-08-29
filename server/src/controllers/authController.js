@@ -133,7 +133,7 @@ async function getPendingUsers(req, res) {
 async function approveUser(req, res) {
   try {
     const userId = req.params.id || req.params.userId;
-    const approvedBy = req.user?.user_id || 'super_admin';
+    const approvedBy = req.user?.user_id || null;
     const user = await User.updateStatus(userId, 'approved', approvedBy);
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
@@ -158,7 +158,7 @@ async function approveUser(req, res) {
 async function rejectUser(req, res) {
   try {
     const userId = req.params.id || req.params.userId;
-    const rejectedBy = req.user?.user_id || 'super_admin';
+    const rejectedBy = req.user?.user_id || null;
     const user = await User.updateStatus(userId, 'rejected', rejectedBy);
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
