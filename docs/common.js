@@ -107,57 +107,8 @@ window.GovLang = {
 window.GovData = {
 
     // --- MODULE 1: AUTH & REGISTRATION WORKFLOW ---
-    pendingRegistrations: [
-        {
-            id: 'REG-001',
-            name: 'Shri Sandeep More',
-            email: 'sandeep.more@pwd.maharashtra.gov.in',
-            role: 'Dept Admin',
-            roleKey: 'dept_admin',
-            department: 'Public Works Department (PWD)',
-            designation: 'Superintending Engineer',
-            status: 'pending',
-            appliedAt: '2026-08-28 14:30',
-            otpCode: null
-        },
-        {
-            id: 'REG-002',
-            name: 'Prof. Anjali Deshpande',
-            email: 'a.deshpande@iitb.ac.in',
-            role: 'Evaluator',
-            roleKey: 'evaluator',
-            department: 'IIT Bombay / AI Domain Expert',
-            designation: 'Professor of Computer Science',
-            status: 'pending',
-            appliedAt: '2026-08-28 16:45',
-            otpCode: null
-        },
-        {
-            id: 'REG-003',
-            name: 'Shri Rakesh Kulkarni',
-            email: 'rakesh.kulkarni@audit.gov.in',
-            role: 'Validator',
-            roleKey: 'validator',
-            department: 'Directorate of Accounts & Treasury',
-            designation: 'Senior Audit Officer',
-            status: 'approved_awaiting_otp',
-            appliedAt: '2026-08-27 11:20',
-            otpCode: '582914'
-        },
-        {
-            id: 'REG-004',
-            name: 'Dr. Nitin Shinde',
-            email: 'nitin.shinde@privateconsulting.com',
-            role: 'Evaluator',
-            roleKey: 'evaluator',
-            department: 'External Consultant',
-            designation: 'Technical Advisor',
-            status: 'rejected',
-            appliedAt: '2026-08-26 10:15',
-            rejectionReason: 'Non-official email domain; unverified institutional credentials',
-            otpCode: null
-        }
-    ],
+    // Live data fetched from PostgreSQL via GovApi.getPendingUsers()
+    pendingRegistrations: [],
 
 
     // --- MODULE 1: CHALLENGES ---
