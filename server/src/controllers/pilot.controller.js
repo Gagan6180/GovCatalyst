@@ -5,7 +5,8 @@
 
 const {
   Pilot, PilotKpi, PilotRisk, PilotIssue,
-  PilotFeedback, PilotEvidence, PilotAuditLog
+  PilotFeedback, PilotEvidence, PilotAuditLog,
+  PilotTelemetry, PilotAlert
 } = require('../models/pilot.db');
 const pilotService   = require('../services/pilot.service');
 const documentService = require('../services/document.service');
@@ -513,6 +514,255 @@ async function getAuditLog(req, res) {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────
+// TELEMETRY INGESTION (Manual, CSV, IoT, API, Govt Systems)
+// POST /api/pilots/:id/kpis/:kpiId/telemetry
+// ─────────────────────────────────────────────────────────────────
+async function recordKpiTelemetry(req, res) {
+  try {
+    const { id: pilotId, kpiId } = req.params;
+    const { value, sourceType, sourceReference, provenanceMetadata, recordedAt } = req.body;
+
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const kpi = await PilotKpi.findById(kpiId);
+    if (!kpi || kpi.pilot_id !== pilot.id) return formatError(res, 'KPI not found for this pilot', 404);
+
+    if (value === undefined || value === null) {
+      return formatError(res, 'Telemetry reading value is required', 400);
+    }
+
+    // Record telemetry reading
+    const reading = await PilotTelemetry.record({
+      pilotId: pilot.id,
+      kpiId: kpi.id,
+      value: parseFloat(value),
+      sourceType: sourceType || 'MANUAL',
+      sourceReference: sourceReference || `Entered by ${req.user?.name || 'User'}`,
+      provenanceMetadata: provenanceMetadata || {},
+      recordedAt: recordedAt || new Date().toISOString()
+    });
+
+    // Recalculate KPI progress and RAG status
+    const kpiImp = pilotService.calculateKPIImprovement(
+      kpi.baseline,
+      value,
+      kpi.target,
+      kpi.min_acceptable,
+      kpi.direction
+    );
+
+    const updatedKpi = await PilotKpi.update(kpi.id, {
+      current: parseFloat(value),
+      improvementPercent: kpiImp.improvementPercent,
+      status: kpiImp.status
+    });
+
+    // Check for threshold breach alert
+    const alertEval = pilotService.evaluateTelemetryAlert(kpi, value);
+    let triggeredAlert = null;
+    if (alertEval.hasAlert) {
+      triggeredAlert = await PilotAlert.create({
+        pilotId: pilot.id,
+        kpiId: kpi.id,
+        severity: alertEval.severity,
+        title: alertEval.title,
+        message: alertEval.message,
+        expectedValue: alertEval.expectedValue,
+        actualValue: alertEval.actualValue,
+        variancePct: alertEval.variancePct,
+        recipientRole: 'ALL'
+      });
+    }
+
+    // Log audit trail
+    await PilotAuditLog.log({
+      pilotId: pilot.id,
+      userId: req.user?.id || null,
+      action: 'INGEST_KPI_TELEMETRY',
+      detail: `Recorded ${value} ${kpi.unit} from ${sourceType || 'MANUAL'} for ${kpi.name}`,
+      oldValue: kpi.current,
+      newValue: value
+    });
+
+    return formatSuccess(res, {
+      reading,
+      kpi: { ...updatedKpi, rag: kpiImp.rag, progressPercent: kpiImp.progressPercent },
+      alert: triggeredAlert
+    }, 'Telemetry reading recorded successfully', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// BATCH TELEMETRY INGESTION (CSV upload / IoT Stream)
+// POST /api/pilots/:id/telemetry/batch
+// ─────────────────────────────────────────────────────────────────
+async function recordBatchTelemetry(req, res) {
+  try {
+    const { id: pilotId } = req.params;
+    const { readings, sourceType, batchReference } = req.body;
+
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    if (!Array.isArray(readings) || readings.length === 0) {
+      return formatError(res, 'Readings array is required', 400);
+    }
+
+    const recorded = [];
+    const alertsGenerated = [];
+
+    for (const item of readings) {
+      const kpi = await PilotKpi.findById(item.kpiId);
+      if (kpi && kpi.pilot_id === pilot.id) {
+        const val = parseFloat(item.value);
+        const r = await PilotTelemetry.record({
+          pilotId: pilot.id,
+          kpiId: kpi.id,
+          value: val,
+          sourceType: item.sourceType || sourceType || 'CSV_UPLOAD',
+          sourceReference: item.sourceReference || batchReference || 'Batch Stream',
+          provenanceMetadata: item.provenanceMetadata || {},
+          recordedAt: item.recordedAt || new Date().toISOString()
+        });
+        recorded.push(r);
+
+        const kpiImp = pilotService.calculateKPIImprovement(kpi.baseline, val, kpi.target, kpi.min_acceptable, kpi.direction);
+        await PilotKpi.update(kpi.id, {
+          current: val,
+          improvementPercent: kpiImp.improvementPercent,
+          status: kpiImp.status
+        });
+
+        const alertEval = pilotService.evaluateTelemetryAlert(kpi, val);
+        if (alertEval.hasAlert) {
+          const a = await PilotAlert.create({
+            pilotId: pilot.id,
+            kpiId: kpi.id,
+            severity: alertEval.severity,
+            title: alertEval.title,
+            message: alertEval.message,
+            expectedValue: alertEval.expectedValue,
+            actualValue: alertEval.actualValue,
+            variancePct: alertEval.variancePct,
+            recipientRole: 'ALL'
+          });
+          alertsGenerated.push(a);
+        }
+      }
+    }
+
+    return formatSuccess(res, {
+      totalReadings: recorded.length,
+      alertsGeneratedCount: alertsGenerated.length,
+      readings: recorded,
+      alerts: alertsGenerated
+    }, `${recorded.length} telemetry readings batch-ingested successfully`, 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GET PILOT TELEMETRY READINGS
+// GET /api/pilots/:id/telemetry
+// ─────────────────────────────────────────────────────────────────
+async function getPilotTelemetry(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const limit = parseInt(req.query.limit) || 100;
+    const readings = await PilotTelemetry.findByPilot(pilot.id, limit);
+    return formatSuccess(res, readings, 'Telemetry readings retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ALERTS
+// GET /api/pilots/:id/alerts
+// PATCH /api/pilots/:id/alerts/:alertId/ack
+// ─────────────────────────────────────────────────────────────────
+async function getPilotAlerts(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const status = req.query.status || null;
+    const alerts = await PilotAlert.findByPilot(pilot.id, status);
+    return formatSuccess(res, alerts, 'Alerts retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function acknowledgeAlert(req, res) {
+  try {
+    const { alertId } = req.params;
+    const userName = req.user?.name || req.body?.acknowledgedBy || 'Authorized Officer';
+    const alert = await PilotAlert.acknowledge(alertId, userName);
+    if (!alert) return formatError(res, 'Alert not found', 404);
+    return formatSuccess(res, alert, 'Alert acknowledged successfully');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FINAL PILOT EVALUATION REPORT
+// GET /api/pilots/:id/evaluation-report
+// ─────────────────────────────────────────────────────────────────
+async function getPilotEvaluationReport(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const [kpis, risks, evidences, feedbacks] = await Promise.all([
+      PilotKpi.findByPilot(pilot.id),
+      PilotRisk.findByPilot(pilot.id),
+      PilotEvidence.findByPilot(pilot.id),
+      PilotFeedback.findByPilot(pilot.id)
+    ]);
+
+    const report = pilotService.generateEvaluationReport(pilot, kpis, risks, evidences, feedbacks);
+    return formatSuccess(res, report, 'Pilot Evaluation Report generated successfully');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FINAL PROCUREMENT RECOMMENDATION (SCALE / MODIFY & RETEST / STOP)
+// GET /api/pilots/:id/recommendations
+// ─────────────────────────────────────────────────────────────────
+async function getPilotRecommendations(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const [kpis, risks] = await Promise.all([
+      PilotKpi.findByPilot(pilot.id),
+      PilotRisk.findByPilot(pilot.id)
+    ]);
+
+    const outcomeAnalysis = pilotService.calculateAutomatedOutcome(kpis, risks, pilot.security_status);
+    return formatSuccess(res, {
+      pilotId: pilot.id,
+      pilotCode: pilot.pilot_code,
+      recommendation: outcomeAnalysis.recommendation,
+      outcome: outcomeAnalysis.outcome,
+      targetAchievementScore: outcomeAnalysis.targetAchievementScore,
+      rationale: outcomeAnalysis.rationale,
+      procurementAction: outcomeAnalysis.procurementAction
+    }, 'Procurement recommendation calculated');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
 module.exports = {
   getAllPilots, getPilotById, createPilot,
   updateStatus, evaluatePilot, getCompletionReport,
@@ -528,4 +778,10 @@ module.exports = {
   addEvidence, verifyEvidence, getEvidences,
   // Audit
   getAuditLog,
+  // Telemetry & Alerts
+  recordKpiTelemetry, recordBatchTelemetry, getPilotTelemetry,
+  getPilotAlerts, acknowledgeAlert,
+  // Evaluation & Recommendations
+  getPilotEvaluationReport, getPilotRecommendations
 };
+
