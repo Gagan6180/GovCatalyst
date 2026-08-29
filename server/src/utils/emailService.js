@@ -16,31 +16,32 @@ const transporter = nodemailer.createTransport({
  * Universal dispatcher: Sends via Resend HTTP API (if key present) or Nodemailer SMTP
  */
 async function dispatchEmail({ to, subject, html }) {
-  // Option A: If RESEND_API_KEY is provided, use HTTP API (immune to cloud SMTP port blocks)
-  if (process.env.RESEND_API_KEY) {
+  // Option A: If BREVO_API_KEY is provided, use HTTP API (immune to cloud SMTP port blocks)
+  if (process.env.BREVO_API_KEY) {
     try {
-      const res = await fetch('https://api.resend.com/emails', {
+      const res = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
-          'Content-Type': 'application/json'
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
-          from: 'GovCatalyst <onboarding@resend.dev>',
-          to: [to],
+          sender: { name: 'GovCatalyst', email: process.env.SMTP_USER || 'learnova.service@gmail.com' },
+          to: [{ email: to }],
           subject: subject,
-          html: html
+          htmlContent: html
         })
       });
       const data = await res.json();
       if (res.ok) {
-        console.log(`[EMAIL SERVICE (Resend HTTP)] ✅ Email dispatched to ${to} (ID: ${data.id})`);
+        console.log(`[EMAIL SERVICE (Brevo HTTP)] ✅ Email dispatched to ${to} (MessageID: ${data.messageId})`);
         return true;
       } else {
-        console.warn(`[EMAIL SERVICE (Resend HTTP)] Resend API response:`, data);
+        console.warn(`[EMAIL SERVICE (Brevo HTTP)] Brevo API response:`, data);
       }
     } catch (httpErr) {
-      console.error('[EMAIL SERVICE (Resend HTTP)] ❌ Error:', httpErr.message);
+      console.error('[EMAIL SERVICE (Brevo HTTP)] ❌ Error:', httpErr.message);
     }
   }
 
