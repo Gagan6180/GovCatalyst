@@ -2,12 +2,14 @@ const pool = require('../config/db');
 
 const User = {
   async create({ name, email, password_hash, role, department_name, designation }) {
+    // Startups get instant access; gov officials require super admin approval
+    const accountStatus = (role === 'startup') ? 'active' : 'pending';
     const query = `
-      INSERT INTO users (name, email, password_hash, role, department_name, designation)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id, name, email, role, department_name, designation, created_at
+      INSERT INTO users (name, email, password_hash, role, department_name, designation, account_status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING id, name, email, role, department_name, designation, account_status, created_at
     `;
-    const values = [name, email, password_hash, role, department_name || null, designation || null];
+    const values = [name, email, password_hash, role, department_name || null, designation || null, accountStatus];
     const { rows } = await pool.query(query, values);
     return rows[0];
   },
