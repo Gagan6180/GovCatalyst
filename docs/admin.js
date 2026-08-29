@@ -59,10 +59,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const badgePendingCount = document.getElementById('badge-pending-count');
 
     // Render Pending Government Registrations
-    function renderPendingRegistrations() {
+    async function renderPendingRegistrations() {
         if (!pendingUsersTbody) return;
 
-        const pendingList = GovData.pendingRegistrations || [];
+        let pendingList = GovData.pendingRegistrations || [];
+
+        // Fetch live pending users from PostgreSQL backend
+        if (window.GovApi) {
+            try {
+                const res = await GovApi.getPendingUsers();
+                if (res && res.success && Array.isArray(res.users) && res.users.length > 0) {
+                    const dbUsers = res.users.map(u => ({
+                        id: u.id,
+                        name: u.name,
+                        email: u.email,
+                        role: u.role === 'dept_admin' ? 'Dept Admin' : u.role === 'evaluator' ? 'Evaluator' : u.role === 'validator' ? 'Validator' : u.role,
+                        department: u.department_name || 'Government Department',
+                        designation: u.designation || 'Official',
+                        appliedAt: u.created_at ? new Date(u.created_at).toISOString().slice(0, 16).replace('T', ' ') : 'Just now',
+                        status: 'pending',
+                        otpCode: null
+                    }));
+                    pendingList = dbUsers;
+                }
+            } catch (e) {
+                console.log('Pending users live fetch fallback to local:', e.message);
+            }
+        }
+
         const activePending = pendingList.filter(r => r.status === 'pending');
         if (badgePendingCount) badgePendingCount.textContent = activePending.length;
 
@@ -98,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
                 <tr>
-                    <td><small class="font-monospace text-navy fw-bold">${r.id}</small></td>
+                    <td><small class="font-monospace text-navy fw-bold">${r.id.length > 12 ? r.id.slice(0,8) + '...' : r.id}</small></td>
                     <td><span class="fw-semibold text-dark">${r.name}</span></td>
                     <td><small class="font-monospace text-primary">${r.email}</small></td>
                     <td><span class="badge ${getRoleBadgeClass(r.role)} font-monospace">${r.role}</span></td>
@@ -115,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.btn-approve-user').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = btn.dataset.id;
-                const req = GovData.pendingRegistrations.find(r => r.id === id);
+                const req = pendingList.find(r => r.id === id);
                 if (req) {
                     req.status = 'approved_awaiting_otp';
                     req.otpCode = Math.floor(100000 + Math.random() * 900000).toString();
