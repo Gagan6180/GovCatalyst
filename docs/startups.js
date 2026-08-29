@@ -19,8 +19,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCancelReg = document.getElementById('btn-cancel-reg');
     const formStartup = document.getElementById('form-startup');
 
+    // Role-based Access Control (RBAC): Only guests or logged-in Startups can register startups
+    const currentUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser()) || null;
+    if (currentUser && currentUser.role && btnToggleReg) {
+        const normRole = currentUser.role.toLowerCase().replace(/[\s-]/g, '_');
+        if (normRole !== 'startup') {
+            btnToggleReg.style.display = 'none'; // Hide registration button from dept_admin, super_admin, evaluator, validator
+        }
+    }
+
     // Toggle Registration Form
     function toggleReg(show) {
+        if (currentUser && currentUser.role) {
+            const normRole = currentUser.role.toLowerCase().replace(/[\s-]/g, '_');
+            if (normRole !== 'startup') {
+                GovUtils.showToast(`Access Denied: You are signed in as ${currentUser.name} (${currentUser.role}). Government accounts cannot register startups.`, 'error');
+                return;
+            }
+        }
         cardRegForm.style.display = show ? 'block' : 'none';
         if (show) cardRegForm.scrollIntoView({ behavior: 'smooth' });
     }
@@ -140,6 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Form Registration Submission
     formStartup?.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        // RBAC check
+        if (currentUser && currentUser.role) {
+            const normRole = currentUser.role.toLowerCase().replace(/[\s-]/g, '_');
+            if (normRole !== 'startup') {
+                GovUtils.showToast(`Access Denied: Government accounts (${currentUser.role}) cannot register startup profiles.`, 'error');
+                return;
+            }
+        }
+
         const tags = document.getElementById('inp-su-tags').value.split(',').map(t => t.trim()).filter(Boolean);
         const newStartup = {
             id: `SU-00${GovData.startups.length + 1}`,

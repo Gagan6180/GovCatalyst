@@ -43,6 +43,32 @@ async function register(req, res) {
 
     const { name, email, password, role, department_name, designation, company_name, sector, dpiit_reg_number } = value;
 
+    // Prevent self-registration of super_admin
+    if (role === 'super_admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Super Admin accounts cannot be self-registered. Contact system administrator.'
+      });
+    }
+
+    // Block logged-in government officials from registering startup accounts
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const { verifyToken } = require('../utils/authUtils');
+        const token = authHeader.split(' ')[1];
+        const decoded = verifyToken(token);
+        if (decoded && decoded.role && decoded.role !== 'startup') {
+          return res.status(403).json({
+            success: false,
+            message: `Active session detected for ${decoded.role}. Government accounts cannot register startups.`
+          });
+        }
+      } catch (e) {
+        // Ignore invalid token
+      }
+    }
+
     // 2. Edge Case: Register with an email that already exists -> 409
     const existingUser = await User.findByEmail(email);
     if (existingUser) {

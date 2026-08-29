@@ -971,6 +971,17 @@ window.GovAuth = {
             modalEl.classList.add('show');
             document.body.style.overflow = 'hidden';
             this.switchTab(defaultTab);
+            const user = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser());
+            const promptContainer = document.getElementById('auth-status-prompt');
+            if (user && promptContainer) {
+                promptContainer.innerHTML = `<div class="alert alert-info d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <i class="bi bi-person-check-fill me-2 text-primary"></i>
+                        Signed in as <strong>${user.name || user.email}</strong> (<em>${user.role}</em>)
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="GovPageAuth.logout()">Sign Out</button>
+                </div>`;
+            }
         }
     },
 
@@ -1270,6 +1281,26 @@ window.GovAuth = {
     },
 
     async handleStartupRegSubmit() {
+        // RBAC Guard: Block logged-in government officials from registering startups
+        const loggedInUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser());
+        if (loggedInUser && loggedInUser.role) {
+            const normRole = loggedInUser.role.toLowerCase().replace(/[\s-]/g, '_');
+            if (normRole !== 'startup') {
+                GovUtils.showToast(`Access Denied: You are signed in as ${loggedInUser.name} (${loggedInUser.role}). Government officials cannot register startup accounts.`, 'error');
+                const promptContainer = document.getElementById('auth-status-prompt');
+                if (promptContainer) {
+                    promptContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-3">
+                        <i class="bi bi-shield-x fs-4 me-3 text-danger"></i>
+                        <div>
+                            <strong>Access Denied: Role Conflict</strong>
+                            <div class="small">You are currently authenticated as <strong>${loggedInUser.name}</strong> (<em>${loggedInUser.role}</em>). Government accounts cannot register startups. Please sign out first.</div>
+                        </div>
+                    </div>`;
+                }
+                return;
+            }
+        }
+
         const name = document.getElementById('reg-su-rep')?.value;
         const company = document.getElementById('reg-su-company')?.value;
         const email = document.getElementById('reg-su-email')?.value;
@@ -1289,6 +1320,10 @@ window.GovAuth = {
             }
         } catch (e) {
             console.log('Live startup reg fallback to local:', e.message);
+            if (e.status === 403) {
+                GovUtils.showToast(e.message || 'Registration rejected by security policy', 'error');
+                return;
+            }
         }
 
         GovData.users.unshift({
@@ -1319,6 +1354,13 @@ window.GovAuth = {
     },
 
     async handleGovRegSubmit() {
+        // RBAC Guard: Block already logged-in users from duplicate registration
+        const loggedInUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser());
+        if (loggedInUser) {
+            GovUtils.showToast(`You are already signed in as ${loggedInUser.name} (${loggedInUser.role}). Please sign out first.`, 'warning');
+            return;
+        }
+
         const name = document.getElementById('reg-gov-name')?.value;
         const email = document.getElementById('reg-gov-email')?.value;
         const password = document.getElementById('reg-gov-pwd')?.value;
@@ -1681,16 +1723,16 @@ window.GovPageAuth = {
     pageRoles: {
         'index.html':        ['*'],               // Public landing page
         'forgot-password.html': ['*'],            // Public
-        'startups.html':     ['startup', 'super_admin', 'dept_admin', 'evaluator'],
-        'challenges.html':   ['dept_admin', 'super_admin', 'startup', 'evaluator'],
+        'startups.html':     ['*'],               // Public directory browsing (creation is role-gated)
+        'challenges.html':   ['*'],               // Public challenge browsing (creation is role-gated)
         'eligibility.html':  ['startup', 'dept_admin', 'super_admin', 'evaluator'],
         'evaluation.html':   ['evaluator', 'super_admin', 'dept_admin'],
         'pilot-design.html': ['dept_admin', 'startup', 'super_admin', 'validator'],
-        'milestones.html':   ['dept_admin', 'startup', 'super_admin'],
+        'milestones.html':   ['dept_admin', 'startup', 'super_admin', 'validator'],
         'performance.html':  ['dept_admin', 'startup', 'super_admin', 'evaluator', 'validator'],
-        'payments.html':     ['dept_admin', 'super_admin'],
+        'payments.html':     ['dept_admin', 'super_admin', 'startup'],
         'scaleup.html':      ['dept_admin', 'startup', 'super_admin'],
-        'admin.html':        ['super_admin']
+        'admin.html':        ['super_admin', 'dept_admin', 'validator']
     },
 
     /**
@@ -1724,13 +1766,15 @@ window.GovPageAuth = {
     },
 
     /**
-     * Check if user role is allowed on this page
+     * Check if user role is allowed on this page (handles normalized role matching)
      */
     isAuthorized(allowedRoles) {
         if (!allowedRoles || allowedRoles.includes('*')) return true;
         const user = this.getUser();
         if (!user || !user.role) return false;
-        return allowedRoles.includes(user.role);
+        const normUserRole = user.role.toLowerCase().replace(/[\s-]/g, '_');
+        const normAllowed = allowedRoles.map(r => r.toLowerCase().replace(/[\s-]/g, '_'));
+        return normAllowed.includes(normUserRole);
     },
 
     /**
@@ -1786,6 +1830,8 @@ window.GovPageAuth = {
         const user = this.getUser();
         if (!user) return;
 
+        const normRole = (user.role || '').toLowerCase().replace(/[\s-]/g, '_');
+
         const roleColors = {
             'super_admin': '#dc2626',
             'dept_admin': '#2563eb',
@@ -1802,26 +1848,46 @@ window.GovPageAuth = {
             'startup': '🚀 Startup'
         };
 
+        // If top auth button exists on page (e.g. index.html), update it
+        const topAuthBtn = document.getElementById('btn-top-auth');
+        if (topAuthBtn) {
+            topAuthBtn.innerHTML = `<i class="bi bi-person-fill-check"></i> <span>${user.name || user.email} (${roleLabels[normRole] || user.role})</span>`;
+            topAuthBtn.onclick = () => GovPageAuth.showUserMenu();
+        }
+
+        // Avoid duplicate floating badges
+        const oldBadge = document.getElementById('gov-user-badge');
+        if (oldBadge) oldBadge.remove();
+
         const badge = document.createElement('div');
         badge.id = 'gov-user-badge';
         badge.style.cssText = `
             position: fixed; top: 12px; right: 16px; z-index: 9999;
-            background: ${roleColors[user.role] || '#475569'}; color: white;
+            background: ${roleColors[normRole] || '#475569'}; color: white;
             padding: 8px 16px; border-radius: 20px; font-size: 13px;
             font-weight: 600; font-family: 'Inter', sans-serif;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             display: flex; align-items: center; gap: 8px;
         `;
         badge.innerHTML = `
-            <span>${roleLabels[user.role] || user.role}</span>
-            <span style="font-weight: 400; opacity: 0.8; font-size: 11px;">${user.name || user.email}</span>
+            <span>${roleLabels[normRole] || user.role}</span>
+            <span style="font-weight: 400; opacity: 0.85; font-size: 11px;">${user.name || user.email}</span>
             <button onclick="GovPageAuth.logout()" title="Sign Out" style="
                 background: rgba(255,255,255,0.2); border: none; color: white;
-                width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
-                font-size: 12px; display: flex; align-items: center; justify-content: center;
+                width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+                font-size: 11px; display: flex; align-items: center; justify-content: center;
+                margin-left: 4px;
             ">✕</button>
         `;
         document.body.appendChild(badge);
+    },
+
+    showUserMenu() {
+        const user = this.getUser();
+        if (!user) return;
+        if (confirm(`Signed in as: ${user.name || user.email}\nRole: ${user.role}\n\nWould you like to sign out?`)) {
+            this.logout();
+        }
     },
 
     /**

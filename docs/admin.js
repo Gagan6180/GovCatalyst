@@ -21,6 +21,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchAudit = document.getElementById('search-audit');
     const filterAuditModule = document.getElementById('filter-audit-module');
 
+    // RBAC check on Admin Page UI
+    const currentUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser()) || null;
+    const normRole = currentUser && currentUser.role ? currentUser.role.toLowerCase().replace(/[\s-]/g, '_') : '';
+
+    // Only super_admin can manually provision users or manage the pending verification queue
+    if (normRole !== 'super_admin') {
+        if (btnToggleAddUser) btnToggleAddUser.style.display = 'none';
+        const pendingTabBtn = document.querySelector('#admin-tabs [data-tab="tab-pending-users"]');
+        if (pendingTabBtn) pendingTabBtn.parentElement.style.display = 'none';
+    }
+
+    // Default tab navigation for Validator
+    if (normRole === 'validator') {
+        const signoffsTabBtn = document.querySelector('#admin-tabs [data-tab="tab-signoffs"]');
+        if (signoffsTabBtn) {
+            setTimeout(() => signoffsTabBtn.click(), 50);
+        }
+    }
+
     // Tabs switching
     document.querySelectorAll('#admin-tabs .nav-link').forEach(btn => {
         btn?.addEventListener('click', () => {
@@ -39,6 +58,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function toggleAddUser(show) {
+        if (normRole !== 'super_admin') {
+            GovUtils.showToast('Access Denied: Only Super Admin can provision system users.', 'error');
+            return;
+        }
         cardAddUser.style.display = show ? 'block' : 'none';
         if (show) cardAddUser.scrollIntoView({ behavior: 'smooth' });
     }

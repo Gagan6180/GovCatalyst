@@ -21,7 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const preStartupId = urlParams.get('startupId');
     const preChallengeId = urlParams.get('challengeId');
 
+    const currentUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser()) || null;
+    const normRole = currentUser && currentUser.role ? currentUser.role.toLowerCase().replace(/[\s-]/g, '_') : '';
+
+    // Only dept_admin and super_admin can charter new pilots
+    if (currentUser && normRole !== 'dept_admin' && normRole !== 'super_admin') {
+        if (btnTogglePilotForm) btnTogglePilotForm.style.display = 'none';
+    }
+
     function toggleForm(show) {
+        if (currentUser && normRole !== 'dept_admin' && normRole !== 'super_admin') {
+            GovUtils.showToast('Access Denied: Only Department Admins can charter pilot sandboxes.', 'error');
+            return;
+        }
         cardPilotForm.style.display = show ? 'block' : 'none';
         if (show) cardPilotForm.scrollIntoView({ behavior: 'smooth' });
     }
