@@ -660,33 +660,98 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Accessibility Popover Toggle
+    const accessBtn = document.getElementById('top-access-btn');
+    const accessPopover = document.getElementById('access-popover');
+    if (accessBtn && accessPopover) {
+        accessBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const show = accessPopover.style.display === 'none';
+            accessPopover.style.display = show ? 'flex' : 'none';
+        });
+        document.addEventListener('click', (e) => {
+            if (!accessPopover.contains(e.target) && e.target !== accessBtn && !accessBtn.contains(e.target)) {
+                accessPopover.style.display = 'none';
+            }
+        });
+    }
+
     // Accessibility Font Resizer (A- / A / A+)
-    let currentFontSizePercent = 100;
+    let currentFontSizePercent = parseInt(localStorage.getItem('font-size-percent')) || 100;
     const fontDecBtn = document.getElementById('font-dec');
     const fontResetBtn = document.getElementById('font-reset');
     const fontIncBtn = document.getElementById('font-inc');
 
+    function applyFontSize(percent) {
+        currentFontSizePercent = percent;
+        document.documentElement.style.fontSize = percent + '%';
+        // Robust zoom to handle fixed pixel layouts
+        if (document.body) {
+            document.body.style.zoom = percent / 100;
+        }
+        localStorage.setItem('font-size-percent', percent);
+    }
+
+    // Apply saved font size on page load
+    applyFontSize(currentFontSizePercent);
+
     if (fontDecBtn) {
-        fontDecBtn.addEventListener('click', () => {
-            if (currentFontSizePercent > 85) {
-                currentFontSizePercent -= 5;
-                document.documentElement.style.fontSize = currentFontSizePercent + '%';
+        fontDecBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentFontSizePercent > 80) {
+                applyFontSize(currentFontSizePercent - 10);
             }
         });
     }
     if (fontResetBtn) {
-        fontResetBtn.addEventListener('click', () => {
-            currentFontSizePercent = 100;
-            document.documentElement.style.fontSize = '100%';
+        fontResetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyFontSize(100);
         });
     }
     if (fontIncBtn) {
-        fontIncBtn.addEventListener('click', () => {
-            if (currentFontSizePercent < 125) {
-                currentFontSizePercent += 5;
-                document.documentElement.style.fontSize = currentFontSizePercent + '%';
+        fontIncBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentFontSizePercent < 120) {
+                applyFontSize(currentFontSizePercent + 10);
             }
         });
+    }
+
+    // Modern Dark Mode Theme Toggle
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    function updateThemeBtnState(isDark) {
+        if (!themeToggleBtn) return;
+        if (isDark) {
+            themeToggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i> Light Mode';
+            themeToggleBtn.style.backgroundColor = '#f8fafc';
+            themeToggleBtn.style.color = '#0f172a';
+            themeToggleBtn.style.borderColor = '#f8fafc';
+        } else {
+            themeToggleBtn.innerHTML = '<i class="bi bi-moon-stars-fill"></i> Dark Mode';
+            themeToggleBtn.style.backgroundColor = '#0f172a';
+            themeToggleBtn.style.color = '#ffffff';
+            themeToggleBtn.style.borderColor = '#0f172a';
+        }
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isDark = document.documentElement.classList.toggle('dark-mode');
+            localStorage.setItem('dark-mode', isDark ? 'true' : 'false');
+            updateThemeBtnState(isDark);
+            GovUtils.showToast(isDark ? 'Dark Mode Enabled' : 'Light Mode Enabled', 'info');
+        });
+    }
+
+    // Load saved dark-mode theme
+    const savedTheme = localStorage.getItem('dark-mode');
+    if (savedTheme === 'true') {
+        document.documentElement.classList.add('dark-mode');
+        updateThemeBtnState(true);
+    } else {
+        updateThemeBtnState(false);
     }
 
     // Hero Search Handler

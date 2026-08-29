@@ -2,6 +2,22 @@
 <html lang="en-IN">
 
 <head>
+    <!-- Dark Mode & Font Size Fast Load Script (Prevents white flash on load) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('dark-mode');
+            if (savedTheme === 'true') {
+                document.documentElement.classList.add('dark-mode');
+            }
+            const savedZoom = localStorage.getItem('font-size-percent');
+            if (savedZoom) {
+                document.documentElement.style.fontSize = savedZoom + '%';
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (document.body) document.body.style.zoom = parseInt(savedZoom) / 100;
+                });
+            }
+        })();
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GovCatalyst — Startup-Friendly Innovation Procurement | महाराष्ट्र शासन</title>
@@ -52,9 +68,24 @@
             <button id="top-calendar-btn" title="Calendar & Milestones" class="top-icon-btn"
                 onclick="window.location.href='milestones.html'"><i class="bi bi-calendar3"></i></button>
             <span class="sep">|</span>
-            <button id="top-access-btn" title="Accessibility Tools" class="top-icon-btn"
-                onclick="GovUtils.showToast('Accessibility: High Contrast & Screen Reader Supported', 'info')"><i
-                    class="bi bi-universal-access-circle"></i></button>
+            <div style="position: relative; display: inline-block;">
+                <button id="top-access-btn" title="Accessibility Tools" class="top-icon-btn"><i class="bi bi-universal-access-circle"></i></button>
+                <div class="access-popover" id="access-popover" style="display: none;">
+                    <div class="popover-title">Accessibility Options</div>
+                    <div class="popover-row">
+                        <span class="popover-label">Text Size:</span>
+                        <div class="popover-btns">
+                            <button id="font-dec" class="popover-btn">A-</button>
+                            <button id="font-reset" class="popover-btn">A</button>
+                            <button id="font-inc" class="popover-btn">A+</button>
+                        </div>
+                    </div>
+                    <div class="popover-row">
+                        <span class="popover-label">Theme:</span>
+                        <button id="theme-toggle" class="popover-theme-btn"><i class="bi bi-moon-stars-fill"></i> Dark Mode</button>
+                    </div>
+                </div>
+            </div>
             <span class="sep">|</span>
             <button id="top-lang-toggle" title="Switch Language (English / मराठी)" class="lang-glyph-btn"
                 onclick="GovLang.toggle()">अ/A</button>

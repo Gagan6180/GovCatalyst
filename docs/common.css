@@ -2292,3 +2292,178 @@ body {
     background-color: #f1f5f9;
     transform: scale(1.1);
 }
+
+/* ==========================================================================
+   ACCESSIBILITY POPOVER SELECTORS & STYLING
+   ========================================================================== */
+.access-popover {
+    position: absolute;
+    top: 34px;
+    right: 0;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    padding: 12px;
+    width: 210px;
+    z-index: 1000;
+    display: none; /* toggled by JS */
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+}
+
+.access-popover .popover-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    text-align: left;
+}
+
+.access-popover .popover-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.access-popover .popover-label {
+    font-size: 12px;
+    color: #475569;
+    font-weight: 600;
+}
+
+.access-popover .popover-btns {
+    display: flex;
+    gap: 4px;
+}
+
+.access-popover .popover-btn {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    transition: all 0.1s ease;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.access-popover .popover-btn:hover {
+    background-color: #e2e8f0 !important;
+}
+
+.access-popover .popover-theme-btn {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    border: 1px solid #0f172a !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.access-popover .popover-theme-btn:hover {
+    background-color: #1e293b !important;
+}
+
+/* ==========================================================================
+   MODERN DARK MODE THEME (No grayscale filters, preserves image color)
+   ========================================================================== */
+.dark-mode,
+.dark-mode body,
+.dark-mode main,
+.dark-mode footer,
+.dark-mode section,
+.dark-mode .gov-stats-ribbon,
+.dark-mode .showcase-red-block,
+.dark-mode .trending-bar-exact {
+    background-color: #090f1d !important;
+    color: #f8fafc !important;
+}
+
+.dark-mode .gov-card,
+.dark-mode .stat-card,
+.dark-mode .stats-ribbon-item,
+.dark-mode .showcase-tile,
+.dark-mode .gov-card-body,
+.dark-mode .gov-card-header,
+.dark-mode .modal-content {
+    background-color: #121b2d !important;
+    border-color: #202e47 !important;
+    color: #f8fafc !important;
+}
+
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5,
+.dark-mode h6,
+.dark-mode p,
+.dark-mode span,
+.dark-mode strong,
+.dark-mode label,
+.dark-mode li {
+    color: #f8fafc !important;
+}
+
+.dark-mode .num,
+.dark-mode .tile-count {
+    color: #38bdf8 !important;
+}
+
+.dark-mode .text-dark,
+.dark-mode .text-muted,
+.dark-mode .stats-ribbon-item .label {
+    color: #94a3b8 !important;
+}
+
+.dark-mode select,
+.dark-mode input,
+.dark-mode textarea {
+    background-color: #121b2d !important;
+    color: #ffffff !important;
+    border: 1px solid #202e47 !important;
+}
+
+.dark-mode .access-popover {
+    background-color: #121b2d !important;
+    border-color: #202e47 !important;
+}
+
+.dark-mode .access-popover .popover-title {
+    color: #ffffff !important;
+    border-bottom-color: #202e47 !important;
+}
+
+.dark-mode .access-popover .popover-label {
+    color: #94a3b8 !important;
+}
+
+.dark-mode .access-popover .popover-btn {
+    background-color: #202e47 !important;
+    color: #ffffff !important;
+    border-color: #2d3e5a !important;
+}
+
+.dark-mode .access-popover .popover-theme-btn {
+    background-color: #f8fafc !important;
+    color: #090f1d !important;
+    border-color: #f8fafc !important;
+}
+
+
