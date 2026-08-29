@@ -9,6 +9,7 @@ const Joi = require('joi');
 async function register(req, res) {
   try {
     // 1. Edge Case: Missing required fields -> 400 with clear message
+    // 1. Validation schema allowing startup and government official profile fields
     const schema = Joi.object({
       name: Joi.string().required().messages({
         'any.required': 'Name is required.',
@@ -24,25 +25,28 @@ async function register(req, res) {
         'string.min': 'Password must be at least 6 characters long.',
         'string.empty': 'Password cannot be empty.'
       }),
-      role: Joi.string().valid('dept_admin', 'startup', 'evaluator', 'validator').required().messages({
+      role: Joi.string().valid('dept_admin', 'startup', 'evaluator', 'validator', 'super_admin').required().messages({
         'any.required': 'Role is required.',
         'any.only': 'Invalid role provided.'
       }),
       department_name: Joi.string().optional().allow(null, ''),
-      designation: Joi.string().optional().allow(null, '')
-    });
+      designation: Joi.string().optional().allow(null, ''),
+      company_name: Joi.string().optional().allow(null, ''),
+      sector: Joi.string().optional().allow(null, ''),
+      dpiit_reg_number: Joi.string().optional().allow(null, '')
+    }).unknown(true);
 
     const { error, value } = schema.validate(req.body);
     if (error) {
       return res.status(400).json({ success: false, message: error.details[0].message });
     }
 
-    const { name, email, password, role, department_name, designation } = value;
+    const { name, email, password, role, department_name, designation, company_name, sector, dpiit_reg_number } = value;
 
     // 2. Edge Case: Register with an email that already exists -> 409
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
-      return res.status(409).json({ success: false, message: 'Email already registered' });
+      return res.status(409).json({ success: false, message: 'Email already registered. Please log in or check your account status.' });
     }
 
     const password_hash = await hashPassword(password);
@@ -57,7 +61,12 @@ async function register(req, res) {
     });
 
     if (role === 'startup') {
-      await Startup.create({ user_id: newUser.id, company_name: name });
+      await Startup.create({ 
+        user_id: newUser.id, 
+        company_name: company_name || name,
+        sector: sector || null,
+        dpiit_reg_number: dpiit_reg_number || null
+      });
     } else if (role !== 'super_admin') {
       // 3. Notify superadmin for non-startup, non-superadmin registrations
       await sendNewRegistrationToAdmin(newUser);
