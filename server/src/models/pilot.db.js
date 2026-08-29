@@ -367,4 +367,141 @@ const PilotAuditLog = {
   }
 };
 
-module.exports = { Pilot, PilotKpi, PilotRisk, PilotIssue, PilotFeedback, PilotEvidence, PilotAuditLog };
+// ─────────────────────────────────────────
+// PILOT TELEMETRY READINGS (Data Source Provenance)
+// ─────────────────────────────────────────
+const PilotTelemetry = {
+  async record({ pilotId, kpiId, value, sourceType, sourceReference, provenanceMetadata, recordedAt }) {
+    const { rows } = await pool.query(
+      `INSERT INTO gov_kpi_telemetry_readings
+        (pilot_id, kpi_id, value, source_type, source_reference, provenance_metadata, recorded_at)
+       VALUES ($1, $2, $3, $4, $5, $6, COALESCE($7, now()))
+       RETURNING *`,
+      [
+        pilotId, kpiId, value,
+        sourceType || 'MANUAL',
+        sourceReference || 'System Input',
+        JSON.stringify(provenanceMetadata || {}),
+        recordedAt || new Date().toISOString()
+      ]
+    );
+    return rows[0];
+  },
+
+  async recordBatch(pilotId, readings) {
+    if (!Array.isArray(readings) || readings.length === 0) return [];
+    const inserted = [];
+    for (const r of readings) {
+      const res = await this.record({
+        pilotId,
+        kpiId: r.kpiId,
+        value: r.value,
+        sourceType: r.sourceType,
+        sourceReference: r.sourceReference,
+        provenanceMetadata: r.provenanceMetadata,
+        recordedAt: r.recordedAt
+      });
+      inserted.push(res);
+    }
+    return inserted;
+  },
+
+  async findByPilot(pilotId, limit = 100) {
+    const { rows } = await pool.query(
+      `SELECT t.*, k.name as kpi_name, k.kpi_code, k.unit
+       FROM gov_kpi_telemetry_readings t
+       JOIN gov_pilot_kpis k ON t.kpi_id = k.id
+       WHERE t.pilot_id = $1
+       ORDER BY t.recorded_at DESC
+       LIMIT $2`,
+      [pilotId, limit]
+    );
+    return rows;
+  },
+
+  async findByKpi(kpiId, limit = 50) {
+    const { rows } = await pool.query(
+      `SELECT * FROM gov_kpi_telemetry_readings
+       WHERE kpi_id = $1
+       ORDER BY recorded_at DESC
+       LIMIT $2`,
+      [kpiId, limit]
+    );
+    return rows;
+  }
+};
+
+// ─────────────────────────────────────────
+// PILOT ALERTS (Real-Time Threshold Breaches)
+// ─────────────────────────────────────────
+const PilotAlert = {
+  async create({ pilotId, kpiId, severity, title, message, expectedValue, actualValue, variancePct, recipientRole }) {
+    const { rows } = await pool.query(
+      `INSERT INTO gov_pilot_alerts
+        (pilot_id, kpi_id, severity, title, message, expected_value, actual_value, variance_pct, recipient_role, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'ACTIVE')
+       RETURNING *`,
+      [
+        pilotId, kpiId || null,
+        severity || 'WARNING',
+        title, message,
+        expectedValue || null,
+        actualValue || null,
+        variancePct || null,
+        recipientRole || 'ALL'
+      ]
+    );
+    return rows[0];
+  },
+
+  async findByPilot(pilotId, status = null) {
+    let query = `SELECT a.*, k.name as kpi_name, k.kpi_code
+                 FROM gov_pilot_alerts a
+                 LEFT JOIN gov_pilot_kpis k ON a.kpi_id = k.id
+                 WHERE a.pilot_id = $1`;
+    const params = [pilotId];
+
+    if (status) {
+      query += ` AND a.status = $2`;
+      params.push(status);
+    }
+    query += ` ORDER BY a.created_at DESC`;
+
+    const { rows } = await pool.query(query, params);
+    return rows;
+  },
+
+  async acknowledge(id, acknowledgedBy) {
+    const { rows } = await pool.query(
+      `UPDATE gov_pilot_alerts
+       SET status = 'ACKNOWLEDGED', acknowledged_by = $1, acknowledged_at = now()
+       WHERE id = $2
+       RETURNING *`,
+      [acknowledgedBy || 'Authorized User', id]
+    );
+    return rows[0];
+  },
+
+  async resolve(id) {
+    const { rows } = await pool.query(
+      `UPDATE gov_pilot_alerts
+       SET status = 'RESOLVED'
+       WHERE id = $1
+       RETURNING *`,
+      [id]
+    );
+    return rows[0];
+  }
+};
+
+module.exports = {
+  Pilot,
+  PilotKpi,
+  PilotRisk,
+  PilotIssue,
+  PilotFeedback,
+  PilotEvidence,
+  PilotAuditLog,
+  PilotTelemetry,
+  PilotAlert
+};

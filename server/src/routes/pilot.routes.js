@@ -51,6 +51,20 @@ router.post('/:id/feedback', ctrl.addFeedback); // any auth'd user can submit fe
 // ── Evidence ─────────────────────────────────────────────────────
 router.get( '/:id/evidences',                         ctrl.getEvidences);
 router.post('/:id/evidences',                         ctrl.addEvidence);
-router.patch('/:id/evidences/:evidenceId/verify',     requireRole('validator', 'super_admin'), ctrl.verifyEvidence);
+router.patch('/:id/evidences/:evidenceId/verify',     requireRole('validator', 'super_admin', 'evaluator'), ctrl.verifyEvidence);
+
+// ── Telemetry Ingestion (Manual, CSV, IoT, API, Govt Systems) ───
+router.get( '/:id/telemetry',                        ctrl.getPilotTelemetry);
+router.post('/:id/kpis/:kpiId/telemetry',            ctrl.recordKpiTelemetry);
+router.post('/:id/telemetry/batch',                  ctrl.recordBatchTelemetry);
+
+// ── Performance Threshold Alerts ─────────────────────────────────
+router.get(  '/:id/alerts',                          ctrl.getPilotAlerts);
+router.patch('/:id/alerts/:alertId/ack',             ctrl.acknowledgeAlert);
+
+// ── Final Evaluation Report & Recommendations ────────────────────
+router.get('/:id/evaluation-report',                 ctrl.getPilotEvaluationReport);
+router.get('/:id/recommendations',                   ctrl.getPilotRecommendations);
 
 module.exports = router;
+

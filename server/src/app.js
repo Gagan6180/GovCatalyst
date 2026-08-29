@@ -12,10 +12,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static frontend assets
-app.use('/client', express.static(path.join(__dirname, '../../client')));
+// Serve static frontend assets & uploads
 app.use('/docs', express.static(path.join(__dirname, '../../docs')));
-app.use(express.static(path.join(__dirname, '../../client')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use(express.static(path.join(__dirname, '../../docs')));
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -24,7 +24,7 @@ app.get("/api/health", (req, res) => {
 
 // Basic Route
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/index.html'));
+    res.sendFile(path.join(__dirname, '../../docs/index.html'));
 });
 
 //api-routes
@@ -40,6 +40,8 @@ const evaluationRoutes = require('./routes/evaluationRoutes');
 app.use('/api/evaluations', evaluationRoutes);
 const validationRoutes = require('./routes/validationRoutes');
 app.use('/api/validations', validationRoutes);
+const uploadRoutes = require('./routes/uploadRoutes');
+app.use('/api/upload', uploadRoutes);
 
 
 

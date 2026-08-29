@@ -1,0 +1,188 @@
+# GovCatalyst — Backend Gap Analysis
+**Against the Government Innovation Procurement Problem Statement**
+
+---
+
+## What's Already Built ✅
+
+| Area | What Exists |
+|---|---|
+| Auth | JWT login/register, OTP activation, super-admin approval flow |
+| Startup discovery | DPIIT mock-registry verification, startup profile CRUD |
+| Challenge creation | AI-assisted outcome-statement generation (Gemini), tech-tag extraction |
+| Application screening | AI proposal scoring (0–100), auto-shortlist at threshold ≥75 |
+| Pilot lifecycle | State-machine with 13 states (DRAFT → SCALE/REJECT), security gate |
+| Pilot sub-models | KPI, Risk, Issue, Feedback, Evidence, Evaluation DB models |
+| Pilot service | KPI improvement calc, cybersecurity 14-point gate, automated outcome engine |
+| Document service | 22-section completion report + bilateral agreement generator |
+| Audit service | In-memory action log (pilot mutations) |
+| Email notifications | Nodemailer — new registrations, OTP, rejections |
+
+---
+
+## Critical Gaps 🚨
+
+### 1. Pilot Routes Not Wired Into Express App
+**File:** [`app.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/app.js#L17-L24)
+
+`pilot.routes.js` is defined but **never mounted** in `app.js`. The entire pilot module is unreachable via HTTP.
+
+```js
+// Missing from app.js:
+const pilotRoutes = require('./routes/pilot.routes');
+app.use('/api/pilots', pilotRoutes);
+```
+
+Also `pilot.routes.js` imports `auth.middleware` (non-existent file) instead of the actual `authMiddleware.js`, so it would crash on load.
+
+---
+
+### 2. Pilot Controller Uses In-Memory Store — No Database Persistence
+**File:** [`pilot.controller.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/controllers/pilot.controller.js#L12-L80)
+
+All pilot data lives in a `let memoryPilots = [...]` array. This means:
+- Data is lost on every server restart
+- No multi-instance or load-balanced deployment possible
+- The Sequelize-based [`pilot.model.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/models/pilot.model.js) exists but is **completely unused**
+- Sub-models (`pilotKpi.model.js`, `pilotRisk.model.js`, etc.) exist but are never queried
+
+---
+
+### 3. Empty / Stub Controllers and Models
+Several files are **0 bytes** (empty stubs):
+
+| File | Required For |
+|---|---|
+| [`evaluationController.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/controllers/evaluationController.js) | Expert panel evaluation |
+| [`pilotController.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/controllers/pilotController.js) | Duplicate stub (conflicts with `pilot.controller.js`) |
+| [`milestoneModel.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/models/milestoneModel.js) | Milestone-based payment tracking |
+| [`matchingServices.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/services/matchingServices.js) | Startup ↔ challenge matching engine |
+
+---
+
+### 4. No Expert Evaluation / Human Review Layer
+The problem spec requires **expert panel evaluation** between shortlisting and pilot selection. There is:
+- No `evaluator` role workflow (the role exists in registration but has zero routes/controllers)
+- No scoring rubric model (qualitative criteria, weightings)
+- No expert assignment / queue mechanism
+- No evaluation override or appeal endpoint
+- AI scoring alone cannot substitute for human expert panel sign-off
+
+---
+
+### 5. No Milestone-Based Contracting or Payment Module
+The problem spec mandates **milestone-based contracting** and **timely startup payments**. Currently:
+- `milestoneModel.js` is **empty**
+- Payment milestones are embedded as JSON inside a pilot object (no dedicated table)
+- No API to: create milestones, mark completion, trigger payment release, track payment status
+- No payment gateway integration hook
+- No independent validator role endpoint to confirm milestone evidence before payment
+
+---
+
+### 6. No Independent Validation Layer
+The spec requires **independent validation** of pilot results. Currently:
+- The `validator` role can register but has zero dedicated routes or controllers
+- No `validationReport` model or endpoint
+- KPI evidence upload (`pilotEvidence.model.js` exists) is never consumed by any controller/route
+
+---
+
+### 7. Scale-Up / Procurement Pathway Missing
+After a successful pilot, the spec requires a **formal procurement decision workflow**. Currently:
+- `committeeDecision` is a plain string field set manually
+- No formal committee voting or multi-approver model
+- No procurement pathway API (generate tender doc, link to GeM/e-marketplace)
+- No cross-department replication / scale-up tracking model
+- No GFR/CVC compliance checklist endpoint
+
+---
+
+### 8. No Standard Template System
+The spec explicitly requires **standard templates** for:
+- Problem statements ✅ (partial — AI generates, but no saved/reusable templates)
+- Evaluation criteria ❌
+- Pilot agreements ✅ (document service generates text, but no template store)
+- Data/IP clauses ❌ (fields exist in model but no API to manage clause library)
+- Cybersecurity checklists ❌ (hardcoded in memory, no DB-backed template)
+- Risk frameworks ❌
+
+---
+
+### 9. Audit Log Is In-Memory and Not Persisted
+**File:** [`audit.service.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/services/audit.service.js)
+
+```js
+this.inMemoryLogs = [];  // ← lost on restart
+```
+
+- No DB table for audit trail
+- Cannot be queried across sessions, exported, or reviewed by regulators
+- No audit log API endpoint exposed
+
+---
+
+### 10. No CORS, Rate Limiting, or Security Headers in App
+**File:** [`app.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/app.js)
+
+`helmet` and `cors` packages are installed but **not applied** in `app.js`. This leaves the API open to:
+- Cross-origin abuse
+- Missing security headers (XSS, clickjacking, etc.)
+- No rate limiting on auth or AI endpoints (brute-force / quota exhaustion risk)
+
+---
+
+### 11. Challenge Lifecycle Is Incomplete
+**File:** [`challengeModel.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/models/challengeModel.js)
+
+- No `closed` / `evaluation` / `pilot_selected` / `completed` statuses after `published`
+- No deadline / application closing date field
+- No challenge search by tech tags or geographic region
+- No paginated listing (performance risk at scale)
+
+---
+
+### 12. Startup Discovery / Matching Engine Missing
+**File:** [`matchingServices.js`](file:///c:/Users/tussh/OneDrive/Desktop/govCatalyst/server/src/services/matchingServices.js) — **empty**
+
+The spec requires proactive startup discovery. Currently:
+- No tag-based or sector-based startup search API
+- No external startup database integration (e.g., Startup India / DPIIT API — only a local mock)
+- No department-side "invite startup" or "notify matching startups" feature
+
+---
+
+### 13. No File / Document Upload Capability
+Multiple modules imply documents exist (evidence, agreements, templates) but:
+- No file upload middleware (`multer` not installed)
+- `pilotEvidence.model.js` schema exists but is never called
+- No S3 / local storage integration for storing uploaded KPI evidence, signed agreements, etc.
+
+---
+
+### 14. No Notification / Event System for Startups
+The spec highlights startup pain points around **unclear payment milestones** and **visibility**. Currently:
+- Email only fires at registration and OTP
+- No notification when: application shortlisted/rejected, pilot milestone approved, payment released, scale-up decision made
+- No in-app notification model/endpoint
+
+---
+
+## Priority Summary
+
+| Priority | Gap | Impact |
+|---|---|---|
+| 🔴 P0 | Pilot routes not wired into app | Entire pilot module unreachable |
+| 🔴 P0 | In-memory pilot store (no DB) | Data loss on restart |
+| 🔴 P0 | `auth.middleware` wrong import in pilot routes | Server crash on load |
+| 🔴 P1 | Empty milestone model + no payment API | Core procurement flow broken |
+| 🔴 P1 | No expert evaluation endpoints | Human review layer missing |
+| 🔴 P1 | No independent validator API | Compliance requirement unmet |
+| 🟡 P2 | Audit log in-memory | Regulatory / traceability gap |
+| 🟡 P2 | CORS + Helmet not applied | Security vulnerability |
+| 🟡 P2 | No scale-up / procurement pathway | Post-pilot flow incomplete |
+| 🟡 P2 | No file upload for evidence | KPI validation not possible |
+| 🟠 P3 | No startup matching engine | Discovery feature missing |
+| 🟠 P3 | No template library API | Standard templates not reusable |
+| 🟠 P3 | No notification system | Startup visibility gap |
+| 🟠 P3 | Incomplete challenge lifecycle | No post-application statuses |
