@@ -14,6 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-challenge');
     const filterStatus = document.getElementById('filter-status');
 
+    // Role-based Access Control (RBAC) on UI
+    const currentUser = window.GovApi ? GovApi.getCurrentUser() : null;
+    if (currentUser && btnToggle) {
+        // Only allow dept_admin (and super_admin) to create challenges
+        if (currentUser.role !== 'dept_admin' && currentUser.role !== 'super_admin') {
+            btnToggle.style.display = 'none';
+        }
+    }
+
     // Toggle Form visibility
     function toggleForm(show) {
         cardForm.style.display = show ? 'block' : 'none';
@@ -155,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="btn btn-outline-primary btn-view" data-id="${c.id}" title="View Details">
                             <i class="bi bi-eye"></i> View
                         </button>
-                        ${c.status === 'Draft' ? `
+                        ${c.status === 'Draft' && currentUser && (currentUser.role === 'dept_admin' || currentUser.role === 'super_admin') ? `
                             <button class="btn btn-outline-success btn-publish" data-id="${c.id}" title="Publish to Startups">
                                 <i class="bi bi-send"></i> Publish
                             </button>
@@ -207,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="mt-4 pt-3 border-top text-end">
-                    ${c.status === 'Draft' ? `
+                    ${c.status === 'Draft' && currentUser && (currentUser.role === 'dept_admin' || currentUser.role === 'super_admin') ? `
                         <button class="btn btn-success btn-sm me-2" onclick="document.querySelector('.btn-publish[data-id=\\'${c.id}\\']')?.click(); GovUtils.closeModal();">
                             <i class="bi bi-send me-1"></i> Publish Statement
                         </button>

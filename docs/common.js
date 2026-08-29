@@ -956,16 +956,9 @@ window.GovAuth = {
         }
 
         // 3. New / Unregistered
-        return {
-            status: 'unregistered',
-            promptHtml: `<div class="alert alert-secondary d-flex align-items-center mb-3">
-                <i class="bi bi-info-circle-fill fs-4 me-3 text-secondary"></i>
-                <div>
-                    <strong>Account Not Found</strong>
-                    <div class="small">No account found with this email. Please register as a Startup or submit a Government Official request.</div>
-                </div>
-            </div>`
-        };
+        // When connected to the live backend, we shouldn't assume the account is not found 
+        // just because it's not in the mock array.
+        return null;
     },
 
     openAuthModal(defaultTab = 'login') {
@@ -1138,9 +1131,15 @@ window.GovAuth = {
                                     <input type="text" class="form-control form-control-sm" id="reg-gov-desig" placeholder="e.g. Executive Engineer" required>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold small">Government Department / Institutional Body <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="reg-gov-dept" placeholder="e.g. Public Works Department / Water Supply Dept" required>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Government Department / Institutional Body <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="reg-gov-dept" placeholder="e.g. Public Works Department" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Create Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control form-control-sm" id="reg-gov-pwd" placeholder="Minimum 8 characters" required>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-gov w-100 py-2">
                                 <i class="bi bi-send-check me-1"></i> Submit Official Verification Request
@@ -1222,20 +1221,18 @@ window.GovAuth = {
             }
         } catch (apiErr) {
             console.log('Live login attempt:', apiErr.message);
-            // If backend returned a specific status message (e.g. pending approval or awaiting OTP)
-            if (apiErr.status === 403) {
-                if (promptContainer) {
-                    promptContainer.innerHTML = `<div class="alert alert-warning d-flex align-items-center mb-3">
-                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
-                        <div>
-                            <strong>Verification Required</strong>
-                            <div class="small">${apiErr.message}</div>
-                        </div>
-                    </div>`;
-                }
-                GovUtils.showToast(apiErr.message, 'warning');
-                return;
+            // Show the actual error from the backend (e.g. Invalid credentials, 403, or Network Error)
+            if (promptContainer) {
+                promptContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-danger"></i>
+                    <div>
+                        <strong>Login Failed</strong>
+                        <div class="small">${apiErr.message || 'Network Error: Make sure your local backend server is running on port 5009.'}</div>
+                    </div>
+                </div>`;
             }
+            GovUtils.showToast(apiErr.message || 'Login Failed', 'error');
+            return;
         }
 
         // Fallback to local state
@@ -1312,6 +1309,7 @@ window.GovAuth = {
     async handleGovRegSubmit() {
         const name = document.getElementById('reg-gov-name')?.value;
         const email = document.getElementById('reg-gov-email')?.value;
+        const password = document.getElementById('reg-gov-pwd')?.value;
         const roleKey = document.getElementById('reg-gov-role')?.value;
         const desig = document.getElementById('reg-gov-desig')?.value;
         const dept = document.getElementById('reg-gov-dept')?.value;
@@ -1327,7 +1325,7 @@ window.GovAuth = {
             const data = await GovApi.register({
                 name: name,
                 email: email,
-                password: 'Password@123',
+                password: password,
                 role: roleKey,
                 department_name: dept,
                 designation: desig
@@ -1399,10 +1397,9 @@ window.GovAuth = {
         try {
             const data = await GovApi.verifyOtp(email, code);
             if (data.success) {
-                GovUtils.showToast('Account activated via OTP! Logging in...', 'success');
+                GovUtils.showToast('Account activated successfully! Please log in.', 'success');
                 setTimeout(() => {
-                    GovAuth.closeAuthModal();
-                    window.location.href = 'admin.html';
+                    GovAuth.switchTab('login');
                 }, 1200);
                 return;
             }
@@ -1435,10 +1432,9 @@ window.GovAuth = {
                     detail: `Account for ${reg.name} successfully activated via 6-digit OTP.`
                 });
 
-                GovUtils.showToast('Account activated successfully! Logging in...', 'success');
+                GovUtils.showToast('Account activated successfully! Please log in.', 'success');
                 setTimeout(() => {
-                    GovAuth.closeAuthModal();
-                    window.location.href = 'admin.html';
+                    GovAuth.switchTab('login');
                 }, 1200);
                 return;
             }
@@ -1456,9 +1452,14 @@ window.GovApi = {
         if (window.GOV_API_BASE) return window.GOV_API_BASE;
         const origin = window.location.origin || '';
         
-        // If accessed from GitHub Pages or static external host, route to production Render API
-        if (origin.includes('github.io') || window.location.protocol === 'file:') {
+        // If accessed from GitHub Pages, route to production Render API
+        if (origin.includes('github.io')) {
             return 'https://govcatalyst.onrender.com';
+        }
+
+        // If accessed via file:// protocol during local testing, route to local server
+        if (window.location.protocol === 'file:') {
+            return 'http://localhost:5009';
         }
         
         // If local development on another port (e.g. 5500 Live Server)

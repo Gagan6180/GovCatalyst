@@ -155,12 +155,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             otpCode = res.otp || res.mock_otp || null;
                         } catch (err) {
                             console.log('Live approval fallback:', err.message);
+                            GovUtils.showToast(`Approval failed: ${err.message || 'Make sure your local backend server is running.'}`, 'error');
+                            return;
                         }
                     }
 
-                    // Fallback: generate client-side OTP only if backend didn't return one
                     if (!otpCode) {
-                        otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+                        GovUtils.showToast('Backend did not return an OTP code.', 'error');
+                        return;
                     }
 
                     req.status = 'approved_awaiting_otp';
