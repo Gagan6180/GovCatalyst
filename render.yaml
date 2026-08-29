@@ -26,5 +26,5 @@ services:
 databases:
   - name: govcatalyst-db
     plan: free
-    databaseName: GovBridge
-    user: postgres
+    databaseName: govbridge
+    user: govcatalyst_user
