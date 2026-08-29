@@ -1212,7 +1212,12 @@ window.GovAuth = {
                 setTimeout(() => {
                     GovAuth.closeAuthModal();
                     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-                        window.location.href = 'admin.html';
+                        const userRole = (data.user && data.user.role) ? data.user.role.toLowerCase() : '';
+                        if (userRole.includes('admin') || userRole.includes('validator')) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.reload();
+                        }
                     } else {
                         window.location.reload();
                     }
@@ -1244,7 +1249,14 @@ window.GovAuth = {
                 setTimeout(() => {
                     GovAuth.closeAuthModal();
                     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-                        window.location.href = 'admin.html';
+                        const userRole = (res.user && res.user.role) ? res.user.role.toLowerCase() : '';
+                        if (userRole.includes('admin') || userRole.includes('validator')) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        window.location.reload();
                     }
                 }, 1200);
             } else if (res.status === 'approved_awaiting_otp') {
