@@ -1239,10 +1239,56 @@ window.GovAuth = {
         }
     },
 
-    handleLoginSubmit() {
-        const email = document.getElementById('login-email')?.value;
-        const res = this.checkAccountStatus(email);
+    async handleLoginSubmit() {
+        const email = document.getElementById('login-email')?.value?.trim();
+        const password = document.getElementById('login-password')?.value;
         const promptContainer = document.getElementById('auth-status-prompt');
+
+        try {
+            // Attempt live backend authentication
+            const data = await GovApi.login(email, password);
+            if (data.success && data.token) {
+                GovApi.setToken(data.token, data.user);
+                GovUtils.showToast(`Logged in as ${data.user.name} (${data.user.role})!`, 'success');
+                if (promptContainer) {
+                    promptContainer.innerHTML = `<div class="alert alert-success d-flex align-items-center mb-3">
+                        <i class="bi bi-shield-check fs-4 me-3 text-success"></i>
+                        <div>
+                            <strong>Authentication Successful</strong>
+                            <div class="small">Authenticated via PostgreSQL JWT backend. Redirecting...</div>
+                        </div>
+                    </div>`;
+                }
+                setTimeout(() => {
+                    GovAuth.closeAuthModal();
+                    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.reload();
+                    }
+                }, 1000);
+                return;
+            }
+        } catch (apiErr) {
+            console.log('Live login attempt:', apiErr.message);
+            // If backend returned a specific status message (e.g. pending approval or awaiting OTP)
+            if (apiErr.status === 403) {
+                if (promptContainer) {
+                    promptContainer.innerHTML = `<div class="alert alert-warning d-flex align-items-center mb-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                        <div>
+                            <strong>Verification Required</strong>
+                            <div class="small">${apiErr.message}</div>
+                        </div>
+                    </div>`;
+                }
+                GovUtils.showToast(apiErr.message, 'warning');
+                return;
+            }
+        }
+
+        // Fallback to local state
+        const res = this.checkAccountStatus(email);
         if (promptContainer && res) {
             promptContainer.innerHTML = res.promptHtml;
             if (res.status === 'active') {
@@ -1263,11 +1309,27 @@ window.GovAuth = {
         }
     },
 
-    handleStartupRegSubmit() {
+    async handleStartupRegSubmit() {
         const name = document.getElementById('reg-su-rep')?.value;
         const company = document.getElementById('reg-su-company')?.value;
         const email = document.getElementById('reg-su-email')?.value;
         const dpiit = document.getElementById('reg-su-dpiit')?.value;
+        const password = document.getElementById('reg-su-pwd')?.value || 'Password@123';
+
+        try {
+            const data = await GovApi.register({
+                name: name,
+                email: email,
+                password: password,
+                role: 'startup',
+                company_name: company
+            });
+            if (data.success && data.token) {
+                GovApi.setToken(data.token, data.user);
+            }
+        } catch (e) {
+            console.log('Live startup reg fallback to local:', e.message);
+        }
 
         GovData.users.unshift({
             id: 'USR-' + (GovData.users.length + 1).toString().padStart(3, '0'),
@@ -1296,7 +1358,7 @@ window.GovAuth = {
         }, 1200);
     },
 
-    handleGovRegSubmit() {
+    async handleGovRegSubmit() {
         const name = document.getElementById('reg-gov-name')?.value;
         const email = document.getElementById('reg-gov-email')?.value;
         const roleKey = document.getElementById('reg-gov-role')?.value;
@@ -1308,6 +1370,19 @@ window.GovAuth = {
             'evaluator': 'Evaluator',
             'validator': 'Validator'
         };
+
+        try {
+            await GovApi.register({
+                name: name,
+                email: email,
+                password: 'Password@123',
+                role: roleKey,
+                department_name: dept,
+                designation: desig
+            });
+        } catch (e) {
+            console.log('Live gov reg fallback to local:', e.message);
+        }
 
         const newReq = {
             id: 'REG-' + (GovData.pendingRegistrations.length + 1).toString().padStart(3, '0'),
@@ -1348,9 +1423,23 @@ window.GovAuth = {
         GovUtils.showToast('Verification request submitted to MSInS Super Admin queue.', 'info');
     },
 
-    handleOtpSubmit() {
+    async handleOtpSubmit() {
         const email = document.getElementById('otp-email')?.value.trim().toLowerCase();
         const code = document.getElementById('otp-code')?.value.trim();
+
+        try {
+            const data = await GovApi.verifyOtp(email, code);
+            if (data.success) {
+                GovUtils.showToast('Account activated via OTP! Logging in...', 'success');
+                setTimeout(() => {
+                    GovAuth.closeAuthModal();
+                    window.location.href = 'admin.html';
+                }, 1200);
+                return;
+            }
+        } catch (e) {
+            console.log('Live OTP verification fallback to local:', e.message);
+        }
 
         const reg = GovData.pendingRegistrations.find(r => r.email.toLowerCase() === email);
         if (reg && reg.status === 'approved_awaiting_otp') {
@@ -1389,3 +1478,193 @@ window.GovAuth = {
         GovUtils.showToast('Invalid or expired OTP code. Please check your email.', 'error');
     }
 };
+
+/* =============================================
+   GovApi: Centralized REST API Client & Dispatcher
+   ============================================= */
+window.GovApi = {
+    getBaseUrl() {
+        if (window.GOV_API_BASE) return window.GOV_API_BASE;
+        const origin = window.location.origin;
+        if (origin.includes(':5009')) return '';
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return 'http://localhost:5009';
+        }
+        return '';
+    },
+
+    getToken() {
+        return localStorage.getItem('gov_jwt_token') || localStorage.getItem('token') || '';
+    },
+
+    setToken(token, user) {
+        if (token) {
+            localStorage.setItem('gov_jwt_token', token);
+            localStorage.setItem('token', token);
+        }
+        if (user) {
+            localStorage.setItem('gov_user', JSON.stringify(user));
+        }
+    },
+
+    clearToken() {
+        localStorage.removeItem('gov_jwt_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('gov_user');
+    },
+
+    getCurrentUser() {
+        try {
+            const u = localStorage.getItem('gov_user');
+            return u ? JSON.parse(u) : null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    async request(endpoint, options = {}) {
+        const url = `${this.getBaseUrl()}${endpoint}`;
+        const headers = options.headers || {};
+
+        const token = this.getToken();
+        if (token && !headers['Authorization']) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
+        }
+
+        try {
+            const res = await fetch(url, { ...options, headers });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const err = new Error(data.message || `HTTP ${res.status}`);
+                err.status = res.status;
+                err.data = data;
+                throw err;
+            }
+            return data;
+        } catch (err) {
+            console.warn(`GovApi request to ${endpoint} failed:`, err.message);
+            throw err;
+        }
+    },
+
+    // --- AUTH ENDPOINTS ---
+    async login(email, password) {
+        return this.request('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        });
+    },
+
+    async register(userData) {
+        return this.request('/api/auth/register', {
+            method: 'POST',
+            body: JSON.stringify(userData)
+        });
+    },
+
+    async getMe() {
+        return this.request('/api/auth/me');
+    },
+
+    async getPendingUsers() {
+        return this.request('/api/auth/pending-users');
+    },
+
+    async approveUser(userId) {
+        return this.request(`/api/auth/approve/${userId}`, { method: 'POST' });
+    },
+
+    async rejectUser(userId) {
+        return this.request(`/api/auth/reject/${userId}`, { method: 'POST' });
+    },
+
+    async verifyOtp(email, otp) {
+        return this.request('/api/auth/verify-otp', {
+            method: 'POST',
+            body: JSON.stringify({ email, otp })
+        });
+    },
+
+    // --- CHALLENGES ENDPOINTS ---
+    async getChallenges() {
+        return this.request('/api/challenges');
+    },
+
+    async createChallenge(challengeData) {
+        return this.request('/api/challenges', {
+            method: 'POST',
+            body: JSON.stringify(challengeData)
+        });
+    },
+
+    // --- APPLICATIONS ENDPOINTS ---
+    async getApplications() {
+        return this.request('/api/applications');
+    },
+
+    async submitApplication(appData) {
+        return this.request('/api/applications', {
+            method: 'POST',
+            body: JSON.stringify(appData)
+        });
+    },
+
+    // --- PILOT & M&E ENDPOINTS ---
+    async getPilots() {
+        return this.request('/api/pilots');
+    },
+
+    async getPilotById(pilotId) {
+        return this.request(`/api/pilots/${pilotId}`);
+    },
+
+    async createPilot(pilotData) {
+        return this.request('/api/pilots', {
+            method: 'POST',
+            body: JSON.stringify(pilotData)
+        });
+    },
+
+    async ingestTelemetry(pilotId, kpiId, payload) {
+        return this.request(`/api/pilots/${pilotId}/kpis/${kpiId}/telemetry`, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+    },
+
+    async getPilotAlerts(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/alerts`);
+    },
+
+    async getEvaluationReport(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/evaluation-report`);
+    },
+
+    async getRecommendations(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/recommendations`);
+    },
+
+    // --- FILE UPLOADS ---
+    async uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.request('/api/upload/single', {
+            method: 'POST',
+            body: formData
+        });
+    },
+
+    async uploadCsvTelemetry(csvFile) {
+        const formData = new FormData();
+        formData.append('file', csvFile);
+        return this.request('/api/upload/csv-telemetry', {
+            method: 'POST',
+            body: formData
+        });
+    }
+};
+

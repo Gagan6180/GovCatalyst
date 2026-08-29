@@ -88,6 +88,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         GovData.challenges.unshift(newChallenge);
         
+        // Dispatch live to PostgreSQL backend if available
+        if (window.GovApi) {
+            GovApi.createChallenge({
+                title: newChallenge.title,
+                problem_statement: newChallenge.description,
+                outcome_objective: newChallenge.outcomeStatement,
+                sector: newChallenge.category,
+                department: newChallenge.department
+            }).then(res => {
+                console.log('✅ Challenge saved in PostgreSQL backend:', res);
+            }).catch(err => {
+                console.log('Challenge backend sync fallback:', err.message);
+            });
+        }
+
         // Log in audit trail
         GovData.auditTrail.unshift({
             id: GovData.auditTrail.length + 1,

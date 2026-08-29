@@ -130,10 +130,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         detail: `Approved ${req.name} (${req.role}). 6-digit OTP (${req.otpCode}) dispatched to ${req.email}.`
                     });
 
+                    if (window.GovApi) {
+                        GovApi.approveUser(id).then(res => {
+                            console.log('✅ Super Admin approved user in PostgreSQL backend:', res);
+                        }).catch(err => {
+                            console.log('Live approval fallback:', err.message);
+                        });
+                    }
+
                     GovUtils.showToast(`Official approved! 6-digit activation OTP (${req.otpCode}) dispatched to ${req.email}`, 'success');
                     renderPendingRegistrations();
-                    renderPendingRegistrations();
-    renderAuditTrail();
+                    renderAuditTrail();
                 }
             });
         });
@@ -144,6 +151,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const req = GovData.pendingRegistrations.find(r => r.id === id);
                 if (req) {
                     req.status = 'rejected';
+
+                    if (window.GovApi) {
+                        GovApi.rejectUser(id).then(res => {
+                            console.log('✅ Super Admin rejected user in PostgreSQL backend:', res);
+                        }).catch(err => {
+                            console.log('Live rejection fallback:', err.message);
+                        });
+                    }
 
                     GovData.auditTrail.unshift({
                         id: GovData.auditTrail.length + 1,

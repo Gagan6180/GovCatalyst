@@ -436,6 +436,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // Dispatch live to PostgreSQL API if available
+        if (window.GovApi) {
+            GovApi.ingestTelemetry(pilotId, kpiId, {
+                reading_value: val,
+                source_type: source,
+                source_reference: ref,
+                measured_at: time
+            }).then(apiRes => {
+                console.log('✅ Telemetry persisted to PostgreSQL backend:', apiRes);
+            }).catch(err => {
+                console.log('Telemetry offline fallback:', err.message);
+            });
+        }
+
         modalIngest.hide();
         GovUtils.showToast(`Telemetry reading ingested from ${source}! ${isBreach ? '⚠️ Threshold warning generated.' : '✅ Target trajectory on track.'}`, isBreach ? 'warning' : 'success');
         renderDashboard(pilotId);
