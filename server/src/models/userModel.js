@@ -29,12 +29,15 @@ const User = {
   },
 
   async findPendingUsers() {
-  const { rows } = await pool.query(
-    `SELECT id, name, email, role, department_name, designation, created_at 
-     FROM users WHERE account_status = 'pending' ORDER BY created_at ASC`
-  );
-  return rows;
-},
+    const { rows } = await pool.query(
+      `SELECT u.id, u.name, u.email, u.role, u.department_name, u.designation, u.created_at, u.account_status,
+              (SELECT otp_code FROM otp_verifications o WHERE o.user_id = u.id AND o.is_used = false ORDER BY o.created_at DESC LIMIT 1) as otp_code
+       FROM users u
+       WHERE u.account_status IN ('pending', 'approved') 
+       ORDER BY u.created_at ASC`
+    );
+    return rows;
+  },
 
 async updateStatus(userId, status, approvedBy = null) {
   const { rows } = await pool.query(

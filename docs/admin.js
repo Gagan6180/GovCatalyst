@@ -81,8 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         department: u.department_name || 'Government Department',
                         designation: u.designation || 'Official',
                         appliedAt: u.created_at ? new Date(u.created_at).toISOString().slice(0, 16).replace('T', ' ') : 'Just now',
-                        status: 'pending',
-                        otpCode: null
+                        status: u.account_status === 'approved' ? 'approved_awaiting_otp' : 'pending',
+                        otpCode: u.otp_code || null
                     }));
                     pendingList = dbUsers;
                 }
