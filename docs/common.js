@@ -1485,11 +1485,20 @@ window.GovAuth = {
 window.GovApi = {
     getBaseUrl() {
         if (window.GOV_API_BASE) return window.GOV_API_BASE;
-        const origin = window.location.origin;
-        if (origin.includes(':5009')) return '';
+        const origin = window.location.origin || '';
+        
+        // If accessed from GitHub Pages or static external host, route to production Render API
+        if (origin.includes('github.io') || window.location.protocol === 'file:') {
+            return 'https://govcatalyst.onrender.com';
+        }
+        
+        // If local development on another port (e.g. 5500 Live Server)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            if (window.location.port === '5009') return '';
             return 'http://localhost:5009';
         }
+        
+        // Direct Render domain or same-origin deployment
         return '';
     },
 
