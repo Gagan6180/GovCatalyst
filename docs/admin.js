@@ -54,6 +54,115 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    
+    const pendingUsersTbody = document.getElementById('pending-users-tbody');
+    const badgePendingCount = document.getElementById('badge-pending-count');
+
+    // Render Pending Government Registrations
+    function renderPendingRegistrations() {
+        if (!pendingUsersTbody) return;
+
+        const pendingList = GovData.pendingRegistrations || [];
+        const activePending = pendingList.filter(r => r.status === 'pending');
+        if (badgePendingCount) badgePendingCount.textContent = activePending.length;
+
+        if (pendingList.length === 0) {
+            pendingUsersTbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-muted">No registration requests in queue.</td></tr>';
+            return;
+        }
+
+        pendingUsersTbody.innerHTML = pendingList.map(r => {
+            let statusBadge = '';
+            let actionBtns = '';
+
+            if (r.status === 'pending') {
+                statusBadge = '<span class="badge bg-warning text-dark"><i class="bi bi-clock-history me-1"></i> Pending Verification</span>';
+                actionBtns = `
+                    <button class="btn btn-sm btn-success btn-approve-user me-1" data-id="${r.id}" title="Verify credentials and send 6-digit activation OTP">
+                        <i class="bi bi-check-circle me-1"></i> Approve & Send OTP
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger btn-reject-user" data-id="${r.id}">
+                        <i class="bi bi-x-circle me-1"></i> Reject
+                    </button>
+                `;
+            } else if (r.status === 'approved_awaiting_otp') {
+                statusBadge = `<span class="badge bg-info text-dark" title="OTP Code: ${r.otpCode}"><i class="bi bi-envelope-check me-1"></i> Approved (OTP: ${r.otpCode})</span>`;
+                actionBtns = `<span class="text-info small fw-bold"><i class="bi bi-hourglass-split me-1"></i> Awaiting User OTP</span>`;
+            } else if (r.status === 'rejected') {
+                statusBadge = '<span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i> Rejected</span>';
+                actionBtns = '<span class="text-muted small">Declined</span>';
+            } else if (r.status === 'active') {
+                statusBadge = '<span class="badge bg-success"><i class="bi bi-shield-check me-1"></i> Active</span>';
+                actionBtns = '<span class="text-success small fw-bold">Provisioned</span>';
+            }
+
+            return `
+                <tr>
+                    <td><small class="font-monospace text-navy fw-bold">${r.id}</small></td>
+                    <td><span class="fw-semibold text-dark">${r.name}</span></td>
+                    <td><small class="font-monospace text-primary">${r.email}</small></td>
+                    <td><span class="badge ${getRoleBadgeClass(r.role)} font-monospace">${r.role}</span></td>
+                    <td><small class="text-secondary">${r.department}</small></td>
+                    <td><small class="text-muted">${r.designation}</small></td>
+                    <td><small class="text-muted">${r.appliedAt}</small></td>
+                    <td>${statusBadge}</td>
+                    <td class="text-end">${actionBtns}</td>
+                </tr>
+            `;
+        }).join('');
+
+        // Attach event handlers
+        document.querySelectorAll('.btn-approve-user').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+                const req = GovData.pendingRegistrations.find(r => r.id === id);
+                if (req) {
+                    req.status = 'approved_awaiting_otp';
+                    req.otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+                    GovData.auditTrail.unshift({
+                        id: GovData.auditTrail.length + 1,
+                        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                        user: 'MSInS Super Admin',
+                        role: 'Super Admin',
+                        action: 'REGISTRATION_APPROVED_OTP_DISPATCHED',
+                        module: 'Auth',
+                        detail: `Approved ${req.name} (${req.role}). 6-digit OTP (${req.otpCode}) dispatched to ${req.email}.`
+                    });
+
+                    GovUtils.showToast(`Official approved! 6-digit activation OTP (${req.otpCode}) dispatched to ${req.email}`, 'success');
+                    renderPendingRegistrations();
+                    renderPendingRegistrations();
+    renderAuditTrail();
+                }
+            });
+        });
+
+        document.querySelectorAll('.btn-reject-user').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.id;
+                const req = GovData.pendingRegistrations.find(r => r.id === id);
+                if (req) {
+                    req.status = 'rejected';
+
+                    GovData.auditTrail.unshift({
+                        id: GovData.auditTrail.length + 1,
+                        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                        user: 'MSInS Super Admin',
+                        role: 'Super Admin',
+                        action: 'REGISTRATION_REJECTED',
+                        module: 'Auth',
+                        detail: `Registration request for ${req.name} (${req.email}) was rejected.`
+                    });
+
+                    GovUtils.showToast(`Registration request for ${req.name} declined.`, 'warning');
+                    renderPendingRegistrations();
+                    renderAuditTrail();
+                }
+            });
+        });
+    }
+
     // Render Audit Trail
     function renderAuditTrail() {
         const search = searchAudit.value.toLowerCase();
