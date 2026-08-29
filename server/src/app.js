@@ -44,12 +44,17 @@ app.use('/api/validations', validationRoutes);
 const uploadRoutes = require('./routes/uploadRoutes');
 app.use('/api/upload', uploadRoutes);
 
-
+const runAutoMigration = require('./config/autoMigrate');
 
 // Start the server if started directly
 if (require.main === module) {
-    app.listen(port, () => {
+    app.listen(port, async () => {
         console.log(`Server is running on http://localhost:${port}`);
+        try {
+            await runAutoMigration();
+        } catch (err) {
+            console.error('Auto-migration error:', err.message);
+        }
     });
 }
 
