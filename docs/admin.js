@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.tab-content-pane').forEach(p => p.style.display = 'none');
             const target = document.getElementById(tabId);
             if (target) target.style.display = 'block';
+
+            if (tabId === 'tab-pending-users') {
+                renderPendingRegistrations();
+            }
         });
     });
 
@@ -380,6 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial render
     renderAuditTrail();
+    renderPendingRegistrations();
     renderSignoffs();
     renderUsers();
     renderRbac();
