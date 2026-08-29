@@ -141,12 +141,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Attach event handlers
         document.querySelectorAll('.btn-approve-user').forEach(btn => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 const id = btn.dataset.id;
                 const req = pendingList.find(r => r.id === id);
                 if (req) {
+                    let otpCode = null;
+
+                    // Call backend first to get the real OTP
+                    if (window.GovApi) {
+                        try {
+                            const res = await GovApi.approveUser(id);
+                            console.log('✅ Super Admin approved user in PostgreSQL backend:', res);
+                            otpCode = res.otp || res.mock_otp || null;
+                        } catch (err) {
+                            console.log('Live approval fallback:', err.message);
+                        }
+                    }
+
+                    // Fallback: generate client-side OTP only if backend didn't return one
+                    if (!otpCode) {
+                        otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+                    }
+
                     req.status = 'approved_awaiting_otp';
-                    req.otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+                    req.otpCode = otpCode;
 
                     GovData.auditTrail.unshift({
                         id: GovData.auditTrail.length + 1,
@@ -155,18 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         role: 'Super Admin',
                         action: 'REGISTRATION_APPROVED_OTP_DISPATCHED',
                         module: 'Auth',
-                        detail: `Approved ${req.name} (${req.role}). 6-digit OTP (${req.otpCode}) dispatched to ${req.email}.`
+                        detail: `Approved ${req.name} (${req.role}). 6-digit OTP (${otpCode}) dispatched to ${req.email}.`
                     });
 
-                    if (window.GovApi) {
-                        GovApi.approveUser(id).then(res => {
-                            console.log('✅ Super Admin approved user in PostgreSQL backend:', res);
-                        }).catch(err => {
-                            console.log('Live approval fallback:', err.message);
-                        });
-                    }
-
-                    GovUtils.showToast(`Official approved! 6-digit activation OTP (${req.otpCode}) dispatched to ${req.email}`, 'success');
+                    GovUtils.showToast(`Official approved! 6-digit activation OTP (${otpCode}) dispatched to ${req.email}`, 'success');
                     renderPendingRegistrations();
                     renderAuditTrail();
                 }
