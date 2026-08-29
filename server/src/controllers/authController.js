@@ -129,35 +129,47 @@ async function getPendingUsers(req, res) {
   return res.json({ success: true, users });
 }
 
-// POST /api/auth/approve/:userId  (super_admin only)
+// POST /api/auth/approve/:id  (super_admin only)
 async function approveUser(req, res) {
-  const { userId } = req.params;
-  const user = await User.updateStatus(userId, 'approved', req.user.user_id);
-  if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+  try {
+    const userId = req.params.id || req.params.userId;
+    const approvedBy = req.user?.user_id || 'super_admin';
+    const user = await User.updateStatus(userId, 'approved', approvedBy);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-  const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-  await Otp.create(userId, otpCode);
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    await Otp.create(userId, otpCode);
 
-  // Send the actual OTP email via Nodemailer
-  await sendOtpToUser(user.email, otpCode);
-  console.log(`OTP for ${user.email}: ${otpCode}`); // Keep for debug
+    // Send the actual OTP email via Nodemailer
+    await sendOtpToUser(user.email, otpCode);
+    console.log(`OTP for ${user.email}: ${otpCode}`);
 
-  return res.json({ 
-    success: true, 
-    message: 'User approved, OTP generated', 
-    mock_otp: otpCode // ⚠️ only exposing this for demo purposes — remove in real prod
-  });
+    return res.json({ 
+      success: true, 
+      message: 'User approved, OTP generated', 
+      otp: otpCode
+    });
+  } catch (err) {
+    console.error('approveUser error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
 }
 
 async function rejectUser(req, res) {
-  const { userId } = req.params;
-  const user = await User.updateStatus(userId, 'rejected', req.user.user_id);
-  if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+  try {
+    const userId = req.params.id || req.params.userId;
+    const rejectedBy = req.user?.user_id || 'super_admin';
+    const user = await User.updateStatus(userId, 'rejected', rejectedBy);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-  // Send rejection email via Nodemailer
-  await sendRejectionToUser(user.email);
+    // Send rejection email via Nodemailer
+    await sendRejectionToUser(user.email);
 
-  return res.json({ success: true, message: 'User rejected' });
+    return res.json({ success: true, message: 'User rejected' });
+  } catch (err) {
+    console.error('rejectUser error:', err.message);
+    return res.status(500).json({ success: false, message: err.message });
+  }
 }
 
 // POST /api/auth/verify-otp
