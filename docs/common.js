@@ -1371,8 +1371,9 @@ window.GovAuth = {
             'validator': 'Validator'
         };
 
+        let regSuccess = false;
         try {
-            await GovApi.register({
+            const data = await GovApi.register({
                 name: name,
                 email: email,
                 password: 'Password@123',
@@ -1380,8 +1381,25 @@ window.GovAuth = {
                 department_name: dept,
                 designation: desig
             });
+            if (data && data.success) {
+                regSuccess = true;
+            }
         } catch (e) {
-            console.log('Live gov reg fallback to local:', e.message);
+            console.log('Live gov reg API response:', e.message);
+            if (e.status === 409) {
+                GovUtils.showToast(`Email ${email} is already registered! Please sign in.`, 'warning');
+                const promptContainer = document.getElementById('auth-status-prompt');
+                if (promptContainer) {
+                    promptContainer.innerHTML = `<div class="alert alert-warning d-flex align-items-center mb-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                        <div>
+                            <strong>Email Already Registered</strong>
+                            <div class="small">An account with <strong>${email}</strong> is already registered. Switch to the <strong>Sign In</strong> tab to log in, or click <strong>Check Verification Status</strong>.</div>
+                        </div>
+                    </div>`;
+                }
+                return;
+            }
         }
 
         const newReq = {
@@ -1415,7 +1433,7 @@ window.GovAuth = {
                 <i class="bi bi-clock-history fs-4 me-3 text-warning"></i>
                 <div>
                     <strong>Request Submitted Successfully</strong>
-                    <div class="small">Your registration is currently awaiting verification by the Super Administrator. You will receive an email once approved.</div>
+                    <div class="small">Your registration for <strong>${name}</strong> is now in the MSInS Super Admin approval queue.</div>
                 </div>
             </div>`;
         }
