@@ -1580,6 +1580,13 @@ window.GovApi = {
         });
     },
 
+    async generateChallengeDraft(draftData) {
+        return this.request('/api/challenges/ai-draft', {
+            method: 'POST',
+            body: JSON.stringify(draftData)
+        });
+    },
+
     // --- APPLICATIONS ENDPOINTS ---
     async getApplications() {
         return this.request('/api/applications');

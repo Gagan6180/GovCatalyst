@@ -7,11 +7,13 @@ const {
   getMyChallenges,
   updateChallenge,
   publishChallenge,
+  draftWithAI
 } = require('../controllers/challengeController');
 const { authenticate } = require('../middleware/authMiddleware');
 const { requireRole } = require('../middleware/roleMiddleware');
 
 router.post('/', authenticate, requireRole('dept_admin'), createChallenge);
+router.post('/ai-draft', authenticate, requireRole('dept_admin'), draftWithAI);
 router.get('/', authenticate, listChallenges);                 // all logged-in roles can browse
 router.get('/my', authenticate, requireRole('dept_admin'), getMyChallenges);
 router.get('/:id', authenticate, getChallenge);
