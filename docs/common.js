@@ -1646,3 +1646,221 @@ window.GovApi = {
     }
 };
 
+
+// ============================================================
+// PAGE-LEVEL AUTHENTICATION GUARD (GovPageAuth)
+// ============================================================
+// Role-Based Access Control (RBAC) for frontend pages.
+// Each page specifies which roles can access it.
+// Unauthorized users see a branded access-denied overlay and are redirected.
+// ============================================================
+
+window.GovPageAuth = {
+
+    // Page → Allowed Roles mapping
+    pageRoles: {
+        'index.html':        ['*'],               // Public landing page
+        'forgot-password.html': ['*'],            // Public
+        'startups.html':     ['startup', 'super_admin', 'dept_admin', 'evaluator'],
+        'challenges.html':   ['dept_admin', 'super_admin', 'startup', 'evaluator'],
+        'eligibility.html':  ['startup', 'dept_admin', 'super_admin', 'evaluator'],
+        'evaluation.html':   ['evaluator', 'super_admin', 'dept_admin'],
+        'pilot-design.html': ['dept_admin', 'startup', 'super_admin', 'validator'],
+        'milestones.html':   ['dept_admin', 'startup', 'super_admin'],
+        'performance.html':  ['dept_admin', 'startup', 'super_admin', 'evaluator', 'validator'],
+        'payments.html':     ['dept_admin', 'super_admin'],
+        'scaleup.html':      ['dept_admin', 'startup', 'super_admin'],
+        'admin.html':        ['super_admin']
+    },
+
+    /**
+     * Get currently logged-in user from localStorage
+     */
+    getUser() {
+        try {
+            const u = localStorage.getItem('gov_user');
+            return u ? JSON.parse(u) : null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    /**
+     * Check if user has a valid JWT token
+     */
+    isLoggedIn() {
+        const token = localStorage.getItem('gov_jwt_token') || localStorage.getItem('token');
+        const user = this.getUser();
+        return !!(token && user);
+    },
+
+    /**
+     * Get current page filename
+     */
+    getCurrentPage() {
+        const path = window.location.pathname;
+        const page = path.split('/').pop() || 'index.html';
+        return page;
+    },
+
+    /**
+     * Check if user role is allowed on this page
+     */
+    isAuthorized(allowedRoles) {
+        if (!allowedRoles || allowedRoles.includes('*')) return true;
+        const user = this.getUser();
+        if (!user || !user.role) return false;
+        return allowedRoles.includes(user.role);
+    },
+
+    /**
+     * Show branded access-denied overlay
+     */
+    showAccessDenied(reason) {
+        const overlay = document.createElement('div');
+        overlay.id = 'gov-auth-overlay';
+        overlay.style.cssText = `
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c1220 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        `;
+        overlay.innerHTML = `
+            <div style="text-align: center; color: #e2e8f0; max-width: 480px; padding: 40px;">
+                <div style="font-size: 64px; margin-bottom: 16px;">🔒</div>
+                <h2 style="font-size: 24px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">
+                    Authentication Required
+                </h2>
+                <p style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
+                    ${reason}
+                </p>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="window.location.href='index.html'" style="
+                        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white;
+                        border: none; padding: 12px 28px; border-radius: 8px; font-size: 14px;
+                        font-weight: 600; cursor: pointer; transition: all 0.2s;
+                    ">
+                        <span style="margin-right: 6px;">🏠</span> Go to Home & Sign In
+                    </button>
+                    <button onclick="history.back()" style="
+                        background: transparent; color: #94a3b8; border: 1px solid #334155;
+                        padding: 12px 28px; border-radius: 8px; font-size: 14px;
+                        font-weight: 500; cursor: pointer;
+                    ">
+                        ← Go Back
+                    </button>
+                </div>
+                <p style="color: #475569; font-size: 12px; margin-top: 32px;">
+                    GovCatalyst • MSInS State Innovation Society • Section 65B Compliant
+                </p>
+            </div>
+        `;
+        document.body.innerHTML = '';
+        document.body.appendChild(overlay);
+    },
+
+    /**
+     * Show role badge in navbar for logged-in users
+     */
+    renderUserBadge() {
+        const user = this.getUser();
+        if (!user) return;
+
+        const roleColors = {
+            'super_admin': '#dc2626',
+            'dept_admin': '#2563eb',
+            'evaluator': '#7c3aed',
+            'validator': '#059669',
+            'startup': '#d97706'
+        };
+
+        const roleLabels = {
+            'super_admin': '👑 Super Admin',
+            'dept_admin': '🏛️ Dept Admin',
+            'evaluator': '📋 Evaluator',
+            'validator': '✅ Validator',
+            'startup': '🚀 Startup'
+        };
+
+        const badge = document.createElement('div');
+        badge.id = 'gov-user-badge';
+        badge.style.cssText = `
+            position: fixed; top: 12px; right: 16px; z-index: 9999;
+            background: ${roleColors[user.role] || '#475569'}; color: white;
+            padding: 8px 16px; border-radius: 20px; font-size: 13px;
+            font-weight: 600; font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3); cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+        `;
+        badge.innerHTML = `
+            <span>${roleLabels[user.role] || user.role}</span>
+            <span style="font-weight: 400; opacity: 0.8; font-size: 11px;">${user.name || user.email}</span>
+            <button onclick="GovPageAuth.logout()" title="Sign Out" style="
+                background: rgba(255,255,255,0.2); border: none; color: white;
+                width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+                font-size: 12px; display: flex; align-items: center; justify-content: center;
+            ">✕</button>
+        `;
+        document.body.appendChild(badge);
+    },
+
+    /**
+     * Logout: clear tokens and redirect
+     */
+    logout() {
+        localStorage.removeItem('gov_jwt_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('gov_user');
+        window.location.href = 'index.html';
+    },
+
+    /**
+     * Main entry point: call this on every protected page.
+     * Usage: GovPageAuth.require() or GovPageAuth.require(['super_admin', 'dept_admin'])
+     */
+    require(allowedRoles) {
+        const page = this.getCurrentPage();
+
+        // Auto-detect roles from pageRoles map if not specified
+        if (!allowedRoles) {
+            allowedRoles = this.pageRoles[page] || null;
+        }
+
+        // Public pages — no auth needed
+        if (!allowedRoles || allowedRoles.includes('*')) {
+            if (this.isLoggedIn()) this.renderUserBadge();
+            return true;
+        }
+
+        // Not logged in
+        if (!this.isLoggedIn()) {
+            this.showAccessDenied(
+                'You must be signed in with an authorized government account to access this module. Please return to the home page and sign in.'
+            );
+            return false;
+        }
+
+        // Logged in but wrong role
+        if (!this.isAuthorized(allowedRoles)) {
+            const user = this.getUser();
+            this.showAccessDenied(
+                `Your role <strong>${user.role}</strong> does not have permission to access this module. Required: <strong>${allowedRoles.join(', ')}</strong>.`
+            );
+            return false;
+        }
+
+        // Authorized — show user badge
+        this.renderUserBadge();
+        return true;
+    }
+};
+
+// Auto-guard on DOMContentLoaded for all pages except index.html
+document.addEventListener('DOMContentLoaded', () => {
+    const page = GovPageAuth.getCurrentPage();
+    if (page !== 'index.html' && page !== 'forgot-password.html' && page !== '') {
+        GovPageAuth.require();
+    } else if (GovPageAuth.isLoggedIn()) {
+        GovPageAuth.renderUserBadge();
+    }
+});
