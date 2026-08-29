@@ -1256,6 +1256,9 @@ window.GovAuth = {
         if (promptContainer && res) {
             promptContainer.innerHTML = res.promptHtml;
             if (res.status === 'active') {
+                if (res.user) {
+                    GovApi.setToken('mock-jwt-token-' + (res.user.id || 'usr'), res.user);
+                }
                 GovUtils.showToast('Login successful! Redirecting to dashboard...', 'success');
                 setTimeout(() => {
                     GovAuth.closeAuthModal();
@@ -1527,20 +1530,27 @@ window.GovApi = {
     },
 
     getToken() {
-        return localStorage.getItem('gov_jwt_token') || localStorage.getItem('token') || '';
+        return sessionStorage.getItem('gov_jwt_token') || sessionStorage.getItem('token') || localStorage.getItem('gov_jwt_token') || localStorage.getItem('token') || '';
     },
 
     setToken(token, user) {
         if (token) {
-            localStorage.setItem('gov_jwt_token', token);
-            localStorage.setItem('token', token);
+            sessionStorage.setItem('gov_jwt_token', token);
+            sessionStorage.setItem('token', token);
+            // Clean up any stale localStorage tokens
+            localStorage.removeItem('gov_jwt_token');
+            localStorage.removeItem('token');
         }
         if (user) {
-            localStorage.setItem('gov_user', JSON.stringify(user));
+            sessionStorage.setItem('gov_user', JSON.stringify(user));
+            localStorage.removeItem('gov_user');
         }
     },
 
     clearToken() {
+        sessionStorage.removeItem('gov_jwt_token');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('gov_user');
         localStorage.removeItem('gov_jwt_token');
         localStorage.removeItem('token');
         localStorage.removeItem('gov_user');
@@ -1548,7 +1558,7 @@ window.GovApi = {
 
     getCurrentUser() {
         try {
-            const u = localStorage.getItem('gov_user');
+            const u = sessionStorage.getItem('gov_user') || localStorage.getItem('gov_user');
             return u ? JSON.parse(u) : null;
         } catch (e) {
             return null;
@@ -1736,11 +1746,11 @@ window.GovPageAuth = {
     },
 
     /**
-     * Get currently logged-in user from localStorage
+     * Get currently logged-in user from sessionStorage (or legacy localStorage)
      */
     getUser() {
         try {
-            const u = localStorage.getItem('gov_user');
+            const u = sessionStorage.getItem('gov_user') || localStorage.getItem('gov_user');
             return u ? JSON.parse(u) : null;
         } catch (e) {
             return null;
@@ -1751,7 +1761,7 @@ window.GovPageAuth = {
      * Check if user has a valid JWT token
      */
     isLoggedIn() {
-        const token = localStorage.getItem('gov_jwt_token') || localStorage.getItem('token');
+        const token = sessionStorage.getItem('gov_jwt_token') || sessionStorage.getItem('token') || localStorage.getItem('gov_jwt_token') || localStorage.getItem('token');
         const user = this.getUser();
         return !!(token && user);
     },
@@ -1894,6 +1904,9 @@ window.GovPageAuth = {
      * Logout: clear tokens and redirect
      */
     logout() {
+        sessionStorage.removeItem('gov_jwt_token');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('gov_user');
         localStorage.removeItem('gov_jwt_token');
         localStorage.removeItem('token');
         localStorage.removeItem('gov_user');
