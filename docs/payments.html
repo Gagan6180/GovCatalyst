@@ -155,6 +155,73 @@
                 </div>
             </div>
 
+            <!-- Payment Escrow Filter & Escrow Summary -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-bank me-2"></i>Smart Escrow Account Overview</span>
+                    <button class="btn btn-sm btn-gold" id="btn-initiate-disbursement">
+                        <i class="bi bi-cash-stack me-1"></i> Initiate Next Tranche Release
+                    </button>
+                </div>
+                <div class="gov-card-body">
+                    <div class="row g-3 align-items-center mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Select Pilot Milestone Pool:</label>
+                            <select class="form-select" id="sel-payment-pilot">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row g-2 text-center">
+                                <div class="col-4">
+                                    <small class="text-muted d-block">Committed</small>
+                                    <strong class="text-primary" id="stat-total-budget">₹0</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted d-block">Released</small>
+                                    <strong class="text-success" id="stat-released-amount">₹0</strong>
+                                </div>
+                                <div class="col-4">
+                                    <small class="text-muted d-block">In Escrow</small>
+                                    <strong class="text-warning" id="stat-escrow-amount">₹0</strong>
+                                </div>
+                                <div class="col-3">
+                                    <small class="text-muted d-block">Pending</small>
+                                    <strong class="text-danger" id="stat-pending-amount">₹0</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Tranches Ledger Table -->
+            <div class="gov-card">
+                <div class="gov-card-header">
+                    <i class="bi bi-journal-text me-2"></i>Milestone Tranche Disbursement Ledger
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-gov mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Tranche ID</th>
+                                    <th>Milestone Linked</th>
+                                    <th>Amount</th>
+                                    <th>Escrow Held</th>
+                                    <th>Validator Sign-Off</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payments-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 

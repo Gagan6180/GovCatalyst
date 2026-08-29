@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance M&E Dashboard — GovCatalyst | महाराष्ट्र शासन</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="performance.css">
+</head>
+<body>
+
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <!-- Clean Minimal Top Bar -->
+    <div class="top-bar-clean">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <span class="badge bg-warning text-dark font-monospace" style="font-size: 11px;">MSInS</span>
+                <strong style="color: #ffffff; font-size: 17px; letter-spacing: -0.3px;">GovCatalyst</strong>
+            </a>
+            <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu" title="All Modules Menu (10)">
+                <span class="tri-bar bar-saffron"></span>
+                <span class="tri-bar bar-white"></span>
+                <span class="tri-bar bar-green"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-gov">
+        <div class="container">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> Home</a> › <span class="text-dark fw-semibold">Performance M&E & Telemetry</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="py-4">
+        <div class="container">
+
+            <!-- Page Header -->
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <h2><i class="bi bi-speedometer2 text-primary me-2"></i>Performance M&E Telemetry & Real-Time Dashboard</h2>
+                    <p class="mb-0">Multi-source telemetry ingestion, KPI baselines, SLA tracking, automated threshold alerts & evaluation</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-gold" id="btn-open-ingest-modal">
+                        <i class="bi bi-plus-circle me-1"></i> Ingest KPI Telemetry
+                    </button>
+                    <button class="btn btn-primary" id="btn-generate-report">
+                        <i class="bi bi-file-earmark-medical me-1"></i> Final Evaluation Report
+                    </button>
+                    <button class="btn btn-gov-outline" id="btn-audit-seal">
+                        <i class="bi bi-shield-check me-1"></i> Audit Seal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pilot Selector & Expected Outcome Definition Banner -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-bullseye me-2"></i>1. Defined Pilot Target Outcome & Core Parameters</span>
+                    <span class="badge bg-primary" id="badge-pilot-status">PILOT_ACTIVE</span>
+                </div>
+                <div class="gov-card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-7">
+                            <label class="form-label fw-semibold">Select Monitored Sandbox Pilot:</label>
+                            <select class="form-select font-monospace" id="sel-perf-pilot">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-5 text-center">
+                            <div class="p-2 rounded bg-light border d-flex justify-content-around align-items-center">
+                                <div>
+                                    <small class="text-muted d-block">Overall Pilot Health</small>
+                                    <span class="fs-4 fw-extrabold text-success" id="val-health-score">94.2%</span>
+                                </div>
+                                <div>
+                                    <span class="badge bg-success p-2" id="val-health-label">EXCELLENT / ON TRACK</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target Outcome Statement Banner -->
+                    <div class="alert alert-primary mt-3 mb-2 d-flex align-items-center gap-3">
+                        <i class="bi bi-flag-fill fs-3 text-primary"></i>
+                        <div>
+                            <strong class="d-block text-navy">Defined Target Outcome Statement (GFR Rule 194):</strong>
+                            <span id="txt-pilot-outcome" class="text-dark">Reduce municipal garbage collection cost by 15% while improving route adherence and citizen grievance resolution time.</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 mt-2 pt-2 border-top" id="pilot-meta-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Threshold Alerts Feed (Step 6) -->
+            <div class="gov-card border-warning mb-4" id="card-alerts-feed">
+                <div class="gov-card-header bg-warning-subtle text-dark d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-bell-fill text-warning me-2"></i>Real-Time Threshold Alerts & Performance Notifications (Step 6)</span>
+                    <span class="badge bg-danger" id="badge-alerts-count">0 Active Alerts</span>
+                </div>
+                <div class="gov-card-body p-3">
+                    <div id="alerts-container" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Milestone Progress & Budget Utilization Row (Step 5) -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="gov-card h-100 mb-0">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-calendar-check me-2"></i>Milestone Delivery Progress</span>
+                            <span class="badge bg-info" id="badge-milestone-ratio">3/4 Completed</span>
+                        </div>
+                        <div class="gov-card-body">
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Execution Phase: <strong>Phase 3 (Operational Field Testing)</strong></span>
+                                <span id="txt-milestone-pct">75% Complete</span>
+                            </div>
+                            <div class="progress mb-3" style="height: 10px;">
+                                <div class="progress-bar bg-success" id="bar-milestones" role="progressbar" style="width: 75%;"></div>
+                            </div>
+                            <ul class="list-group list-group-flush small" id="milestones-preview-list">
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
+                                    <span><i class="bi bi-check-circle-fill text-success me-1"></i> MS-1: Baseline Sensor Deployment</span>
+                                    <span class="badge bg-success">Verified</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
+                                    <span><i class="bi bi-check-circle-fill text-success me-1"></i> MS-2: Algorithm Model Calibration</span>
+                                    <span class="badge bg-success">Verified</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
+                                    <span><i class="bi bi-arrow-repeat text-primary me-1"></i> MS-3: Full Division Telemetry Live Run</span>
+                                    <span class="badge bg-primary">In Progress</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="gov-card h-100 mb-0">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-cash-stack me-2"></i>Budget Utilization & Escrow Status</span>
+                            <span class="badge bg-success" id="badge-budget-spent">₹18,50,000 / ₹25,00,000</span>
+                        </div>
+                        <div class="gov-card-body">
+                            <div class="d-flex justify-content-between small text-muted mb-1">
+                                <span>Disbursed via Milestone Verification:</span>
+                                <span id="txt-budget-pct">74% Utilized</span>
+                            </div>
+                            <div class="progress mb-3" style="height: 10px;">
+                                <div class="progress-bar bg-primary" id="bar-budget" role="progressbar" style="width: 74%;"></div>
+                            </div>
+                            <div class="row g-2 text-center">
+                                <div class="col-4">
+                                    <div class="p-2 border rounded bg-light">
+                                        <small class="text-muted d-block">Allocated</small>
+                                        <strong id="val-budget-total">₹25.0 L</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 border rounded bg-light">
+                                        <small class="text-muted d-block">Released</small>
+                                        <strong class="text-success" id="val-budget-released">₹18.5 L</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 border rounded bg-light">
+                                        <small class="text-muted d-block">Escrow Retained</small>
+                                        <strong class="text-warning" id="val-budget-escrow">₹6.5 L</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid (Baseline vs Target vs Actual with RAG Indicators) (Steps 2, 3, 5) -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold text-navy mb-0"><i class="bi bi-bar-chart-steps me-2"></i>2 & 3. Key Performance Indicators (Baseline, Target, Actual & RAG Health)</h5>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-success"><i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> Green: On Track</span>
+                    <span class="badge bg-warning text-dark"><i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> Yellow: At Risk</span>
+                    <span class="badge bg-danger"><i class="bi bi-circle-fill me-1" style="font-size: 8px;"></i> Red: Lagging Behind</span>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4" id="kpi-cards-grid">
+                <!-- Populated dynamically -->
+            </div>
+
+            <!-- Telemetry Logs & Ingestion Provenance Feed (Step 4) -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-hdd-network me-2"></i>4. Telemetry Ingestion History with Data Source Provenance & Timestamps</span>
+                    <button class="btn btn-sm btn-outline-light" id="btn-stream-iot">
+                        <i class="bi bi-broadcast me-1"></i> Simulate IoT Stream
+                    </button>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table-gov mb-0" id="table-kpi-readings">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>KPI Metric</th>
+                                    <th>Recorded Value</th>
+                                    <th>Source Type</th>
+                                    <th>Source Reference / Device ID</th>
+                                    <th>Improvement vs Baseline</th>
+                                    <th class="text-center">RAG Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="readings-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supporting Evidence & Independent Validation Sign-off (Steps 7 & 9) -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-7">
+                    <div class="gov-card h-100 mb-0">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-folder-check me-2"></i>7. Supporting Evidence Management</span>
+                            <button class="btn btn-sm btn-gold" id="btn-upload-evidence"><i class="bi bi-upload me-1"></i> Add Evidence</button>
+                        </div>
+                        <div class="gov-card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table-gov mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Doc Name</th>
+                                            <th>Type</th>
+                                            <th>Mapped KPI / MS</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="evidence-tbody">
+                                        <!-- Populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5">
+                    <div class="gov-card h-100 mb-0">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-patch-check me-2"></i>9. Independent Validator Review</span>
+                            <span class="badge bg-success" id="val-badge-evaluator">Authorized Validator</span>
+                        </div>
+                        <div class="gov-card-body">
+                            <p class="small text-muted mb-2">Evaluator attests evidence veracity before scale-up clearance:</p>
+                            <div class="p-3 bg-light rounded border mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong class="text-navy" id="val-validator-name">Smt. Kavita Deshmukh</strong>
+                                    <span class="badge bg-success" id="val-validation-verdict">VERIFIED</span>
+                                </div>
+                                <div class="small text-muted" id="val-validator-notes">
+                                    "Field GPS logs and invoice reconciliation confirm 16.2% operational cost reduction without service interruption. GFR 194 compliance met."
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-success flex-fill" id="btn-val-verify"><i class="bi bi-check-circle me-1"></i> Verified</button>
+                                <button class="btn btn-sm btn-warning flex-fill" id="btn-val-partial"><i class="bi bi-exclamation-circle me-1"></i> Partial</button>
+                                <button class="btn btn-sm btn-danger flex-fill" id="btn-val-reject"><i class="bi bi-x-circle me-1"></i> Not Verified</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Final Recommendation Banner (Step 10) -->
+            <div class="gov-card gold-top mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-signpost-split me-2"></i>10. Automated Procurement Transition Recommendation</span>
+                    <span class="badge bg-success fs-6" id="badge-recommendation">SCALE → Direct Procurement</span>
+                </div>
+                <div class="gov-card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="fw-bold text-navy mb-1" id="txt-recommendation-title">Recommendation: Proceed to Commercial Scale-up & GFR 194 Direct Procurement</h6>
+                            <p class="text-muted small mb-0" id="txt-recommendation-reason">
+                                All 3 primary KPIs reached target thresholds with 94.2% overall health index, zero unresolved critical risks, and verified evidence clearance.
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="scaleup.html" class="btn btn-gov fw-bold">
+                                <i class="bi bi-box-arrow-up-right me-1"></i> Launch Scale-up Pathway
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Modal 1: Telemetry Data Ingestion Modal (Step 4) -->
+    <div class="modal fade" id="modalIngestTelemetry" tabindex="-1" aria-labelledby="modalIngestTelemetryLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-navy text-white">
+                    <h5 class="modal-title" id="modalIngestTelemetryLabel"><i class="bi bi-broadcast me-2"></i>Connect & Ingest Telemetry Data (Step 4)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-ingest-telemetry">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Target KPI Metric <span class="text-danger">*</span></label>
+                            <select class="form-select" id="inp-ingest-kpi" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Data Source Provider <span class="text-danger">*</span></label>
+                            <select class="form-select" id="inp-ingest-source" required>
+                                <option value="MANUAL">Manual Field Officer Entry</option>
+                                <option value="CSV_UPLOAD">CSV / Excel Batch Telemetry Upload</option>
+                                <option value="REST_API">Direct REST API Telemetry Push</option>
+                                <option value="IOT_SENSOR" selected>IoT Sensor Stream / GPS Log</option>
+                                <option value="GOVT_ERP">Existing Govt ERP / Billing Database</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Recorded Value <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" class="form-control" id="inp-ingest-val" placeholder="e.g., 42.5" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Measurement Unit</label>
+                                <input type="text" class="form-control" id="inp-ingest-unit" readonly value="lakh/month">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Source Reference / Device ID</label>
+                            <input type="text" class="form-control" id="inp-ingest-ref" placeholder="e.g. SENSOR-MCGM-NODE-402 or Municipal Fuel Meter #14">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Timestamp</label>
+                            <input type="datetime-local" class="form-control" id="inp-ingest-time">
+                        </div>
+
+                        <div class="modal-footer px-0 pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-gold fw-bold"><i class="bi bi-cloud-arrow-up me-1"></i> Submit Telemetry Ingestion</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Pilot Final Evaluation Report (Step 8) -->
+    <div class="modal fade" id="modalEvaluationReport" tabindex="-1" aria-labelledby="modalEvaluationReportLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-navy text-white">
+                    <h5 class="modal-title" id="modalEvaluationReportLabel"><i class="bi bi-file-earmark-medical me-2"></i>Official Pilot Evaluation Report (Step 8)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4" id="report-modal-body">
+                    <!-- Injected dynamically -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="window.print()"><i class="bi bi-printer me-1"></i> Print / Save as PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Upload Evidence Modal (Step 7) -->
+    <div class="modal fade" id="modalUploadEvidence" tabindex="-1" aria-labelledby="modalUploadEvidenceLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-navy text-white">
+                    <h5 class="modal-title" id="modalUploadEvidenceLabel"><i class="bi bi-folder-plus me-2"></i>Attach Supporting KPI Evidence (Step 7)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-upload-evidence">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Evidence Name / Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="inp-ev-name" placeholder="e.g. Monthly Fuel Invoices & Fuel Dispenser Logs" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Document Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="inp-ev-type" required>
+                                <option value="Invoices / Billing Receipts">Invoices / Financial Invoices</option>
+                                <option value="GPS Telematics Trace">GPS Telematics / Route Log</option>
+                                <option value="Laboratory Test Report">Laboratory / Performance Test Report</option>
+                                <option value="Citizen Grievance Resolution Audit">Citizen Grievance Resolution Audit</option>
+                                <option value="System Audit Logs">System / Sensor Audit Logs (Section 65B)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Related KPI / Milestone</label>
+                            <input type="text" class="form-control" id="inp-ev-kpi" placeholder="e.g. KPI-001 / Fuel Consumption">
+                        </div>
+                        <div class="modal-footer px-0 pb-0">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-gov"><i class="bi bi-save me-1"></i> Attach to Evidence Ledger</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>GovCatalyst</h5>
+                    <p style="font-size:13px;">Startup-Friendly Innovation Procurement Portal</p>
+                    <p style="font-size:13px;">Government of Maharashtra</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="performance.html">Performance M&E</a></li>
+                        <li><a href="payments.html">Payment Release</a></li>
+                        <li><a href="scaleup.html">Scale-up Transition</a></li>
+                        <li><a href="admin.html">Governance Audit</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>M&E Standards</h5>
+                    <p style="font-size:13px;">Automated Telemetry Audit Logs</p>
+                    <p style="font-size:13px;">Objective Outcome Threshold Verification (GFR Rule 194)</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <div class="toast-container-gov"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="common.js"></script>
+    <script src="performance.js"></script>
+</body>
+</html>

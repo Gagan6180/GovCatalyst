@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expert Evaluation Workflow — GovCatalyst | महाराष्ट्र शासन</title>
+    <title>Multi-Expert Evaluation — GovCatalyst | महाराष्ट्र शासन</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="common.css">
@@ -18,7 +18,7 @@
         <span class="green-s"></span>
     </div>
 
-            <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
+    <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
     <div class="top-bar-clean">
         <div class="container d-flex justify-content-between align-items-center">
             <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
@@ -51,15 +51,12 @@
                     <p>Independent scoring across Innovation, Feasibility, Cost, and Impact with automated Conflict-of-Interest (COI) detector</p>
                 </div>
                 <div class="d-flex gap-2">
-                    
-            <button class="btn btn-gold" id="btn-coi-audit"><i class="bi bi-shield-check me-1"></i> Run COI Audit</button>
-            <button class="btn btn-gov-outline" onclick="GovUtils.showToast('Evaluation Consensus Finalized', 'success')"><i class="bi bi-check2-circle me-1"></i> Finalize Consensus</button>
-        
+                    <button class="btn btn-gold" id="btn-toggle-scoring"><i class="bi bi-pencil-square me-1"></i> Score Submission</button>
+                    <button class="btn btn-gov-outline" id="btn-coi-audit"><i class="bi bi-shield-check me-1"></i> Run COI Audit</button>
                 </div>
             </div>
 
             <!-- Summary Stats Row -->
-            
             <div class="row g-3 mb-4">
                 <div class="col-6 col-md-3">
                     <div class="stat-card">
@@ -86,8 +83,20 @@
                     </div>
                 </div>
             </div>
-        
-            
+
+            <!-- Evaluator Scoring Panels / COI -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="gov-card h-100">
+                        <div class="gov-card-header d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-person-badge me-2"></i>Expert Panel Registry</span>
+                            <span class="badge bg-success">COI Screened</span>
+                        </div>
+                        <div class="gov-card-body p-2" id="evaluators-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col-md-8">
                     <div class="gov-card gold-top h-100">
@@ -124,110 +133,114 @@
                 </div>
                 <div class="gov-card-body">
                     <form id="form-scorecard">
+                        <!-- COI Warning Alert -->
+                        <div class="alert alert-warning d-flex align-items-center mb-3" id="coi-warning-box" style="display: none !important;">
+                            <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+                            <div id="coi-warning-text">COI flag detected for this evaluator.</div>
+                        </div>
+
                         <div class="row g-3 mb-3">
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Challenge Statement <span class="text-danger">*</span></label>
-                                <select class="form-select" id="score-challenge" required>
-                                    <!-- Populated by JS -->
-                                </select>
+                                <select class="form-select" id="score-challenge" required></select>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Candidate Startup <span class="text-danger">*</span></label>
-                                <select class="form-select" id="score-startup" required>
-                                    <!-- Populated by JS -->
-                                </select>
+                                <select class="form-select" id="score-startup" required></select>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label fw-semibold">Evaluating Officer <span class="text-danger">*</span></label>
-                                <select class="form-select" id="score-evaluator" required>
-                                    <!-- Populated by JS -->
-                                </select>
+                                <select class="form-select" id="score-evaluator" required></select>
                             </div>
                         </div>
 
-                        <!-- COI Warning Banner (dynamic) -->
-                        <div id="coi-warning-box" class="alert alert-warning py-2 mb-3" style="display: none;">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <strong>Conflict of Interest (COI) Alert:</strong> <span id="coi-warning-text"></span>
+                                                <!-- 5-Criterion Score Range Sliders matching backend /api/evaluations/criteria -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Technical Feasibility (25%)</span>
+                                    <span class="badge bg-primary" id="val-feas">8.5 / 10</span>
+                                </label>
+                                <input type="range" class="form-range" id="rng-feas" min="0" max="10" step="0.5" value="8.5">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Innovation & Novelty (20%)</span>
+                                    <span class="badge bg-primary" id="val-inno">9.0 / 10</span>
+                                </label>
+                                <input type="range" class="form-range" id="rng-inno" min="0" max="10" step="0.5" value="9.0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Alignment with Outcomes (25%)</span>
+                                    <span class="badge bg-primary" id="val-align">8.0 / 10</span>
+                                </label>
+                                <input type="range" class="form-range" id="rng-align" min="0" max="10" step="0.5" value="8.0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Cost Effectiveness (15%)</span>
+                                    <span class="badge bg-primary" id="val-cost">7.5 / 10</span>
+                                </label>
+                                <input type="range" class="form-range" id="rng-cost" min="0" max="10" step="0.5" value="7.5">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold d-flex justify-content-between">
+                                    <span>Scalability & Replication (15%)</span>
+                                    <span class="badge bg-primary" id="val-scal">8.5 / 10</span>
+                                </label>
+                                <input type="range" class="form-range" id="rng-scal" min="0" max="10" step="0.5" value="8.5">
+                            </div>
                         </div>
 
-                        <!-- Rubric Sliders -->
-                        <div class="row g-3 p-3 bg-light rounded border mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold d-flex justify-content-between">
-                                    <span>Innovation & Novelty (Weight 30%)</span>
-                                    <span class="fw-bold text-primary" id="val-inno">8 / 10</span>
-                                </label>
-                                <input type="range" class="form-range" min="1" max="10" value="8" id="rng-inno">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold d-flex justify-content-between">
-                                    <span>Technical & Operational Feasibility (Weight 25%)</span>
-                                    <span class="fw-bold text-primary" id="val-feas">8 / 10</span>
-                                </label>
-                                <input type="range" class="form-range" min="1" max="10" value="8" id="rng-feas">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold d-flex justify-content-between">
-                                    <span>Scalability & Replicability (Weight 25%)</span>
-                                    <span class="fw-bold text-primary" id="val-scal">7 / 10</span>
-                                </label>
-                                <input type="range" class="form-range" min="1" max="10" value="7" id="rng-scal">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold d-flex justify-content-between">
-                                    <span>Cost Effectiveness & ROI (Weight 20%)</span>
-                                    <span class="fw-bold text-primary" id="val-cost">8 / 10</span>
-                                </label>
-                                <input type="range" class="form-range" min="1" max="10" value="8" id="rng-cost">
-                            </div>
-                        </div>
-
-                        <!-- Live Total Score Display -->
-                        <div class="d-flex justify-content-between align-items-center p-3 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded mb-3">
-                            <span class="fw-bold text-navy">Computed Weighted Total Score:</span>
-                            <span class="display-6 fw-bold text-primary" id="live-total-score">78.5 / 100</span>
+                        <div class="p-3 bg-light border rounded mb-3 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-navy">Weighted Consensus Total Score:</span>
+                            <span class="fs-4 fw-extrabold text-primary" id="live-total-score">82.25 / 100</span>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Qualitative Technical Evaluation Comments:</label>
-                            <textarea class="form-control" id="inp-score-comments" rows="2" placeholder="Record qualitative justification for scores..."></textarea>
+                            <label class="form-label fw-semibold">Evaluator Notes & Qualitative Assessment</label>
+                            <textarea class="form-control" id="inp-score-comments" rows="2" placeholder="Record qualitative justification, potential risks, and recommendations for sandbox pilot..."></textarea>
                         </div>
 
-                        <div class="text-end">
-                            <button type="button" class="btn btn-secondary me-2" id="btn-cancel-scoring">Cancel</button>
-                            <button type="submit" class="btn btn-gov"><i class="bi bi-check2-circle me-1"></i> Submit Score to Board</button>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="chk-coi-affirm" required>
+                                <label class="form-check-label small fw-semibold text-muted" for="chk-coi-affirm">
+                                    I solemnly affirm zero Conflict-of-Interest with this candidate.
+                                </label>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-secondary me-2" id="btn-cancel-scoring">Cancel</button>
+                                <button type="submit" class="btn btn-gov"><i class="bi bi-check2-circle me-1"></i> Submit Scorecard</button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Auto-Ranking Leaderboard Table -->
+            <!-- Challenge Submissions Evaluation Grid -->
             <div class="gov-card">
                 <div class="gov-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <span class="fw-bold text-navy"><i class="bi bi-trophy me-2"></i>Official Proposal Leaderboard & Automated Ranking</span>
+                    <span><i class="bi bi-trophy me-2"></i>Evaluated Submissions & Consensus Rankings</span>
                     <div class="d-flex gap-2">
-                        <select class="form-select form-select-sm" id="filter-ranking-challenge" style="width: auto;">
-                            <option value="">All Challenges</option>
-                            <!-- Populated by JS -->
+                        <select class="form-select form-select-sm" id="filter-ranking-challenge" style="width: 280px;">
+                            <option value="">All Challenge Submissions</option>
                         </select>
                     </div>
                 </div>
                 <div class="gov-card-body p-0">
                     <div class="table-responsive">
-                        <table class="table-gov mb-0" id="table-ranking">
+                        <table class="table table-hover table-gov mb-0">
                             <thead>
                                 <tr>
-                                    <th class="text-center" style="width: 70px;">Rank</th>
-                                    <th>Startup Innovator</th>
-                                    <th>Linked Challenge</th>
-                                    <th class="text-center">Inno (30%)</th>
-                                    <th class="text-center">Feas (25%)</th>
-                                    <th class="text-center">Scal (25%)</th>
-                                    <th class="text-center">Cost (20%)</th>
-                                    <th class="text-center">Weighted Score</th>
-                                    <th>Evaluator</th>
-                                    <th class="text-end">Action</th>
+                                    <th>Candidate Startup</th>
+                                    <th>Target Challenge</th>
+                                    <th>Evaluator Panels</th>
+                                    <th>Consensus Score</th>
+                                    <th>COI Status</th>
+                                    <th>Verdict / Stage</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="ranking-tbody">
@@ -253,16 +266,16 @@
                 <div class="col-md-4 mb-3">
                     <h5>Quick Links</h5>
                     <ul>
-                        <li><a href="challenges.html">Challenge Builder</a></li>
-                        <li><a href="startups.html">Startup Discovery</a></li>
-                        <li><a href="evaluation.html">Expert Evaluation</a></li>
+                        <li><a href="evaluation.html">Multi-Expert Evaluation</a></li>
                         <li><a href="pilot-design.html">Sandbox Pilot Design</a></li>
+                        <li><a href="milestones.html">Milestone Contracting</a></li>
+                        <li><a href="admin.html">Governance & Audit</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <h5>Governance & Transparency</h5>
-                    <p style="font-size:13px;">Weighted Matrix Formula: GFR Rule 194</p>
-                    <p style="font-size:13px;">Conflict of Interest Declarations Enforced</p>
+                    <h5>Integrity Framework</h5>
+                    <p style="font-size:13px;">Automated COI Discovery</p>
+                    <p style="font-size:13px;">Weighted 100-Point Standard Rubric</p>
                 </div>
             </div>
             <div class="footer-bottom text-center">
@@ -277,11 +290,11 @@
         <span class="green-s"></span>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal for Detailed Scorecard Breakdown -->
     <div class="gov-modal-overlay" id="gov-modal-overlay">
         <div class="gov-modal">
             <div class="gov-modal-header">
-                <h5 id="gov-modal-title">Evaluation Breakdown</h5>
+                <h5 id="gov-modal-title">Evaluation Scorecard</h5>
                 <button class="gov-modal-close" id="gov-modal-close">&times;</button>
             </div>
             <div class="gov-modal-body" id="gov-modal-body"></div>

@@ -1,260 +1,787 @@
 /**
- * SIH26136 Pilot Module - Pilot Controller (Canonical)
- * GovCatalyst Government Innovation Procurement
+ * GovCatalyst — Pilot Controller (DB-backed)
+ * All data persisted via pilot.db.js (raw pg pool — no in-memory store)
  */
 
-const pilotService = require('../services/pilot.service');
+const {
+  Pilot, PilotKpi, PilotRisk, PilotIssue,
+  PilotFeedback, PilotEvidence, PilotAuditLog,
+  PilotTelemetry, PilotAlert
+} = require('../models/pilot.db');
+const pilotService   = require('../services/pilot.service');
 const documentService = require('../services/document.service');
-const auditService = require('../services/audit.service');
 const { formatSuccess, formatError } = require('../utils/responseFormatter');
 
-// Preloaded in-memory store
-let memoryPilots = [
-  {
-    id: "PILOT-2026-INFR-001",
-    name: "AI-Powered Highway & Bridge Infrastructure Inspection Pilot",
-    problemStatement: "PS-2026-NHAI-042: Manual visual inspection takes 10 hours per bridge deck with subjective error rates.",
-    department: "National Highways Authority & Ministry of Road Transport",
-    startup: "InspectAI Technologies Pvt Ltd (Startup A)",
-    startupLead: "Dr. Vikram Sen (Chief Technology Officer)",
-    solution: "Autonomous Drone Computer-Vision Defect Detection System",
-    objective: "Test whether the startup's AI-based inspection solution reduces inspection time while maintaining high accuracy.",
-    baselineObjective: "10 hours per bridge inspection.",
-    targetObjective: "At least 40% reduction in inspection time (6 hours or less).",
-    minAcceptableResult: "30% reduction (7 hours or less).",
-    successCondition: "Target KPIs achieved without critical safety or security failures.",
-    location: "NH-48 Corridor (Sector 12, 18, and 24 Bridge Overpasses)",
-    startDate: "2026-06-01",
-    endDate: "2026-07-27",
-    durationWeeks: 8,
-    usersCount: 10,
-    scopeIncluded: ["3 bridge locations", "100 inspection cases", "10 government engineers", "GIS integration"],
-    scopeExcluded: ["State-wide rollout", "Permanent procurement commitment"],
-    budgetAllocated: 500000.00,
-    budgetSpent: 460000.00,
-    pilotOwner: "Shri Rajesh Verma (Chief Engineer)",
-    status: "COMPLETED",
-    outcome: "SUCCESSFUL",
-    committeeDecision: "SCALE",
-    committeeReason: "Achieved 42% inspection time reduction with 91% accuracy and 0 incidents.",
-    securityStatus: "LOW RISK",
-    kpis: [
-      { id: "KPI-1", name: "Inspection Time", baseline: 10.0, target: 6.0, current: 5.8, unit: "hours", direction: "LOWER_IS_BETTER", improvementPercent: 42.0, status: "ACHIEVED" },
-      { id: "KPI-2", name: "Defect Detection Accuracy", baseline: 82.0, target: 90.0, current: 91.0, unit: "%", direction: "HIGHER_IS_BETTER", improvementPercent: 10.97, status: "ACHIEVED" },
-      { id: "KPI-3", name: "Cost per Inspection", baseline: 5000, target: 3500, current: 3200, unit: "₹", direction: "LOWER_IS_BETTER", improvementPercent: 36.0, status: "ACHIEVED" }
-    ],
-    cyberChecklist: [
-      { id: "SEC-01", title: "Authentication (MFA/PKI)", status: true, severity: "CRITICAL" },
-      { id: "SEC-02", title: "Role-based access control", status: true, severity: "CRITICAL" },
-      { id: "SEC-03", title: "Encryption in transit (TLS 1.3)", status: true, severity: "CRITICAL" },
-      { id: "SEC-04", title: "Encryption at rest (AES-256)", status: true, severity: "HIGH" },
-      { id: "SEC-09", title: "CERT-In Vulnerability Assessment", status: true, severity: "CRITICAL" }
-    ],
-    risks: [
-      { id: "RSK-01", description: "Drone sensor fails during live highway flight", level: "Medium", status: "Mitigated", owner: "InspectAI Lead" }
-    ],
-    issues: [
-      { id: "ISS-101", description: "Optical glare on northern girder", severity: "Medium", status: "Resolved", resolution: "Added polarized CPL filter" }
-    ],
-    feedbackList: [
-      { user: "Eng. Suresh Patil", overallSatisfaction: 4.5, comments: "Huge safety improvement over scaffolding." }
-    ],
-    averageSatisfaction: 4.5,
-    paymentMilestones: [
-      { id: "M1", title: "Milestone 1: Setup & Agreement", percentage: 20, amount: 100000, status: "PAID" },
-      { id: "M2", title: "Milestone 2: Deployment & Validation", percentage: 20, amount: 100000, status: "PAID" },
-      { id: "M3", title: "Milestone 3: 100 Inspections Completed", percentage: 30, amount: 150000, status: "PAID" },
-      { id: "M4", title: "Milestone 4: Final Evaluation & Scale-Up", percentage: 30, amount: 110000, status: "PAID" }
-    ],
-    milestones: [
-      { id: 1, title: "Agreement Approved", status: "COMPLETED" },
-      { id: 2, title: "Security Checks Completed", status: "COMPLETED" },
-      { id: 3, title: "System Deployment Completed", status: "COMPLETED" },
-      { id: 4, title: "User Training Completed", status: "COMPLETED" },
-      { id: 5, title: "Pilot Started", status: "COMPLETED" },
-      { id: 6, title: "50% Pilot Completed", status: "COMPLETED" },
-      { id: 7, title: "Pilot Completed", status: "COMPLETED" },
-      { id: 8, title: "Final Evaluation Completed", status: "COMPLETED" }
-    ]
+/** Generate a human-readable pilot code (stored separately from UUID PK) */
+function generatePilotCode() {
+  const year = new Date().getFullYear();
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `PILOT-${year}-${rand}`;
+}
+
+/** Resolve a pilot by UUID or by pilot_code */
+async function resolvePilot(idOrCode) {
+  // UUID pattern
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidPattern.test(idOrCode)) {
+    return Pilot.findById(idOrCode);
   }
-];
+  return Pilot.findByCode(idOrCode);
+}
 
-class PilotController {
-  /**
-   * List all Pilots
-   */
-  async getAllPilots(req, res) {
-    try {
-      return formatSuccess(res, memoryPilots, 'Pilots retrieved successfully');
-    } catch (error) {
-      return formatError(res, error.message);
-    }
-  }
-
-  /**
-   * Create New Pilot (Section 1)
-   */
-  async createPilot(req, res) {
-    try {
-      const data = req.body;
-      const pilotId = `PILOT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-      
-      const newPilot = {
-        id: pilotId,
-        name: data.name,
-        problemStatement: data.problemStatement,
-        department: data.department,
-        startup: data.startup,
-        startupLead: data.startupLead,
-        solution: data.solution,
-        objective: data.objective,
-        baselineObjective: data.baselineObjective,
-        targetObjective: data.targetObjective,
-        minAcceptableResult: data.minAcceptableResult,
-        successCondition: data.successCondition,
-        location: data.location,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        durationWeeks: data.durationWeeks || 8,
-        usersCount: data.usersCount || 10,
-        scopeIncluded: data.scopeIncluded || [],
-        scopeExcluded: data.scopeExcluded || [],
-        budgetAllocated: data.budgetAllocated || 0,
-        budgetSpent: 0,
-        pilotOwner: data.pilotOwner || req.user?.name || 'Govt Officer',
-        status: 'DRAFT',
-        outcome: 'PENDING',
-        committeeDecision: 'PENDING',
-        securityStatus: 'LOW RISK',
-        kpis: data.kpis || [],
-        cyberChecklist: data.cyberChecklist || [],
-        risks: data.risks || [],
-        issues: [],
-        feedbackList: [],
-        averageSatisfaction: 0,
-        paymentMilestones: data.paymentMilestones || [],
-        milestones: data.milestones || []
-      };
-
-      memoryPilots.push(newPilot);
-
-      await auditService.logAction({
-        pilotId: newPilot.id,
-        user: newPilot.pilotOwner,
-        action: 'Pilot Created',
-        detail: `Created pilot for ${newPilot.startup}`,
-        oldValue: 'None',
-        newValue: 'DRAFT'
-      });
-
-      return formatSuccess(res, newPilot, 'Pilot created successfully', 201);
-    } catch (error) {
-      return formatError(res, error.message);
-    }
-  }
-
-  /**
-   * Get Pilot by ID
-   */
-  async getPilotById(req, res) {
-    try {
-      const { id } = req.params;
-      const pilot = memoryPilots.find(p => p.id === id);
-      if (!pilot) {
-        return formatError(res, 'Pilot not found', 404);
-      }
-      return formatSuccess(res, pilot, 'Pilot retrieved successfully');
-    } catch (error) {
-      return formatError(res, error.message);
-    }
-  }
-
-  /**
-   * Update Status / State Transition
-   */
-  async updateStatus(req, res) {
-    try {
-      const { id } = req.params;
-      const { targetStatus, reason } = req.body;
-      const user = req.user?.name || req.body.user || 'Authorized Officer';
-      const pilot = memoryPilots.find(p => p.id === id);
-
-      if (!pilot) {
-        return formatError(res, 'Pilot not found', 404);
-      }
-
-      // State transition check
-      if (!pilotService.canTransition(pilot.status, targetStatus)) {
-        return formatError(res, `Invalid state transition from ${pilot.status} to ${targetStatus}`, 400);
-      }
-
-      // Security gating check before deployment/activation
-      if (targetStatus === 'READY_FOR_DEPLOYMENT' || targetStatus === 'DEPLOYMENT' || targetStatus === 'ACTIVE_PILOT') {
-        const securityGate = pilotService.evaluateSecurityGate(pilot.cyberChecklist);
-        if (!securityGate.canActivate) {
-          return formatError(res, 'Pilot activation blocked by cybersecurity gate: critical vulnerabilities unresolved', 403, securityGate.failedCriticalChecks);
-        }
-      }
-
-      const oldStatus = pilot.status;
-      pilot.status = targetStatus;
-
-      await auditService.logAction({
-        pilotId: pilot.id,
-        user,
-        action: `Status Transition to ${targetStatus}`,
-        detail: reason || `Updated pilot status to ${targetStatus}`,
-        oldValue: oldStatus,
-        newValue: targetStatus
-      });
-
-      return formatSuccess(res, pilot, `Status successfully updated to ${targetStatus}`);
-    } catch (error) {
-      return formatError(res, error.message);
-    }
-  }
-
-  /**
-   * Evaluate Automated Outcome & Final Recommendation (Section 19, 20)
-   */
-  async evaluatePilot(req, res) {
-    try {
-      const { id } = req.params;
-      const pilot = memoryPilots.find(p => p.id === id);
-      if (!pilot) {
-        return formatError(res, 'Pilot not found', 404);
-      }
-
-      const evaluation = pilotService.calculateAutomatedOutcome(pilot.kpis, pilot.risks, pilot.securityStatus);
-      pilot.outcome = evaluation.outcome;
-
-      return formatSuccess(res, {
-        pilotId: pilot.id,
-        outcome: evaluation.outcome,
-        rationale: evaluation.rationale
-      }, 'Pilot evaluated successfully');
-    } catch (error) {
-      return formatError(res, error.message);
-    }
-  }
-
-  /**
-   * Get 22-Section Pilot Completion Report (Section 22)
-   */
-  async getCompletionReport(req, res) {
-    try {
-      const { id } = req.params;
-      const pilot = memoryPilots.find(p => p.id === id);
-      if (!pilot) {
-        return formatError(res, 'Pilot not found', 404);
-      }
-
-      const report = documentService.generate22SectionReport(pilot);
-      return formatSuccess(res, report, '22-Section Pilot Completion Report generated successfully');
-    } catch (error) {
-      return formatError(res, error.message);
-    }
+// ─────────────────────────────────────────────────────────────────
+// LIST ALL PILOTS
+// GET /api/pilots
+// ─────────────────────────────────────────────────────────────────
+async function getAllPilots(req, res) {
+  try {
+    const pilots = await Pilot.findAll();
+    return formatSuccess(res, pilots, 'Pilots retrieved successfully');
+  } catch (err) {
+    return formatError(res, err.message);
   }
 }
 
-module.exports = new PilotController();
+// ─────────────────────────────────────────────────────────────────
+// GET ONE PILOT (with all sub-resources)
+// GET /api/pilots/:id
+// ─────────────────────────────────────────────────────────────────
+async function getPilotById(req, res) {
+  try {
+    const { id } = req.params;
+    const pilot = await resolvePilot(id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    // Eager-load sub-resources in parallel using UUID PK
+    const [kpis, risks, issues, feedbackList, evidences] = await Promise.all([
+      PilotKpi.findByPilot(pilot.id),
+      PilotRisk.findByPilot(pilot.id),
+      PilotIssue.findByPilot(pilot.id),
+      PilotFeedback.findByPilot(pilot.id),
+      PilotEvidence.findByPilot(pilot.id),
+    ]);
+
+    const { avgSatisfaction } = await PilotFeedback.averageByPilot(pilot.id);
+
+    return formatSuccess(res, {
+      ...pilot,
+      kpis,
+      risks,
+      issues,
+      feedbackList,
+      evidences,
+      averageSatisfaction: avgSatisfaction,
+    }, 'Pilot retrieved successfully');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// CREATE PILOT
+// POST /api/pilots
+// ─────────────────────────────────────────────────────────────────
+async function createPilot(req, res) {
+  try {
+    const data    = req.body;
+    const pilotCode = generatePilotCode();
+    const user      = req.user?.name || req.user?.email || 'Authorized Officer';
+    const userId    = req.user?.user_id || req.user?.id || null;
+
+    const pilot = await Pilot.create({
+      pilotCode,
+      name:                  data.name,
+      problemStatementText:  data.problemStatement || data.problemStatementText,
+      department:            data.department,
+      startup:               data.startup,
+      startupLead:           data.startupLead,
+      solution:              data.solution,
+      objective:             data.objective,
+      baselineObjective:     data.baselineObjective,
+      targetObjective:       data.targetObjective,
+      minAcceptableResult:   data.minAcceptableResult,
+      successCondition:      data.successCondition,
+      location:              data.location,
+      startDate:             data.startDate,
+      endDate:               data.endDate,
+      durationWeeks:         data.durationWeeks,
+      usersCount:            data.usersCount,
+      scopeIncluded:         data.scopeIncluded,
+      scopeExcluded:         data.scopeExcluded,
+      budgetAllocated:       data.budgetAllocated,
+      pilotOwner:            data.pilotOwner || user,
+      cyberChecklist:        data.cyberChecklist,
+      dataRules:             data.dataRules,
+      ipRules:               data.ipRules,
+    });
+
+    // Bulk-insert KPIs if provided
+    const pilotId = pilot.id; // UUID primary key from DB
+    if (Array.isArray(data.kpis) && data.kpis.length > 0) {
+      await Promise.all(data.kpis.map((k, i) =>
+        PilotKpi.create({ ...k, pilotId, kpiCode: k.kpiCode || `KPI-${i + 1}` })
+      ));
+    }
+
+    // Bulk-insert risks if provided
+    if (Array.isArray(data.risks) && data.risks.length > 0) {
+      await Promise.all(data.risks.map((r, i) =>
+        PilotRisk.create({ ...r, pilotId, riskCode: r.riskCode || `RSK-${String(i + 1).padStart(2, '0')}` })
+      ));
+    }
+
+    await PilotAuditLog.log({
+      pilotId:  pilot.id,
+      userId,
+      action:   'Pilot Created',
+      detail:   `Pilot "${pilot.name}" (${pilot.pilot_code}) created for ${pilot.startup}`,
+      oldValue: 'None',
+      newValue: 'DRAFT',
+    });
+
+    return formatSuccess(res, pilot, 'Pilot created successfully', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// UPDATE STATUS / STATE TRANSITION
+// PATCH /api/pilots/:id/status
+// ─────────────────────────────────────────────────────────────────
+async function updateStatus(req, res) {
+  try {
+    const { id }                    = req.params;
+    const { targetStatus, reason }  = req.body;
+    const user   = req.user?.name  || req.user?.email || 'Authorized Officer';
+    const userId = req.user?.user_id || req.user?.id  || null;
+
+    const pilot = await resolvePilot(id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    if (!pilotService.canTransition(pilot.status, targetStatus)) {
+      return formatError(res,
+        `Invalid state transition from "${pilot.status}" to "${targetStatus}"`, 400
+      );
+    }
+
+    // Security gate: block activation until critical checklist passes
+    const activationStates = ['READY_FOR_DEPLOYMENT', 'DEPLOYMENT', 'ACTIVE_PILOT'];
+    if (activationStates.includes(targetStatus)) {
+      const gate = pilotService.evaluateSecurityGate(pilot.cyber_checklist || []);
+      if (!gate.canActivate) {
+        return formatError(res,
+          'Pilot activation blocked: unresolved critical cybersecurity checks',
+          403, gate.failedCriticalChecks
+        );
+      }
+    }
+
+    const updated = await Pilot.updateStatus(pilot.id, targetStatus);
+
+    await PilotAuditLog.log({
+      pilotId: pilot.id, userId,
+      action: `Status → ${targetStatus}`,
+      detail: reason || `Pilot status updated to ${targetStatus}`,
+      oldValue: pilot.status,
+      newValue: targetStatus,
+    });
+
+    return formatSuccess(res, updated, `Status updated to ${targetStatus}`);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// EVALUATE PILOT OUTCOME (automated engine)
+// POST /api/pilots/:id/evaluate
+// ─────────────────────────────────────────────────────────────────
+async function evaluatePilot(req, res) {
+  try {
+    const { id }   = req.params;
+    const pilot    = await resolvePilot(id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const kpis   = await PilotKpi.findByPilot(pilot.id);
+    const risks  = await PilotRisk.findByPilot(pilot.id);
+
+    const evaluation = pilotService.calculateAutomatedOutcome(kpis, risks, pilot.security_status);
+
+    const updated = await Pilot.updateOutcome(
+      pilot.id,
+      evaluation.outcome,
+      req.body.committeeDecision || 'PENDING',
+      evaluation.rationale
+    );
+
+    await PilotAuditLog.log({
+      pilotId: pilot.id,
+      userId:  req.user?.user_id || null,
+      action:  'Pilot Evaluated',
+      detail:  evaluation.rationale,
+      oldValue: pilot.outcome,
+      newValue: evaluation.outcome,
+    });
+
+    return formatSuccess(res, {
+      pilotId:   id,
+      outcome:   evaluation.outcome,
+      rationale: evaluation.rationale,
+      pilot:     updated,
+    }, 'Pilot evaluated successfully');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// 22-SECTION COMPLETION REPORT
+// GET /api/pilots/:id/report
+// ─────────────────────────────────────────────────────────────────
+async function getCompletionReport(req, res) {
+  try {
+    const { id } = req.params;
+    const pilot  = await resolvePilot(id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const [kpis, risks, issues, feedbackList, evidences] = await Promise.all([
+      PilotKpi.findByPilot(pilot.id),
+      PilotRisk.findByPilot(pilot.id),
+      PilotIssue.findByPilot(pilot.id),
+      PilotFeedback.findByPilot(pilot.id),
+      PilotEvidence.findByPilot(pilot.id),
+    ]);
+    const { avgSatisfaction } = await PilotFeedback.averageByPilot(pilot.id);
+
+    // Map DB snake_case columns to the shape document.service expects
+    const pilotDoc = {
+      id:                   pilot.id,
+      name:                 pilot.name,
+      problemStatement:     pilot.problem_statement_text,
+      problemStatementText: pilot.problem_statement_text,
+      department:           pilot.department,
+      startup:              pilot.startup,
+      startupLead:          pilot.startup_lead,
+      solution:             pilot.solution,
+      objective:            pilot.objective,
+      baselineObjective:    pilot.baseline_objective,
+      targetObjective:      pilot.target_objective,
+      location:             pilot.location,
+      startDate:            pilot.start_date,
+      endDate:              pilot.end_date,
+      durationWeeks:        pilot.duration_weeks,
+      usersCount:           pilot.users_count,
+      scopeIncluded:        pilot.scope_included,
+      scopeExcluded:        pilot.scope_excluded,
+      budgetAllocated:      pilot.budget_allocated,
+      budgetSpent:          pilot.budget_spent,
+      pilotOwner:           pilot.pilot_owner,
+      outcome:              pilot.outcome,
+      committeeDecision:    pilot.committee_decision,
+      committeeReason:      pilot.committee_reason,
+      securityStatus:       pilot.security_status,
+      cyberChecklist:       pilot.cyber_checklist,
+      dataRules:            pilot.data_rules,
+      ipRules:              pilot.ip_rules,
+      kpis,
+      risks,
+      issues,
+      feedbackList,
+      evidences,
+      averageSatisfaction:  avgSatisfaction,
+    };
+
+    const report = documentService.generate22SectionReport(pilotDoc);
+    return formatSuccess(res, report, '22-Section Completion Report generated');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// KPI ROUTES
+// ─────────────────────────────────────────────────────────────────
+async function addKpi(req, res) {
+  try {
+    const { id: pilotId } = req.params;
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const kpi = await PilotKpi.create({ ...req.body, pilotId: pilot.id });
+    return formatSuccess(res, kpi, 'KPI added', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function updateKpi(req, res) {
+  try {
+    const { kpiId } = req.params;
+    const { current } = req.body;
+
+    // Recalculate improvement & status server-side using the service
+    const pilotUUID = (await resolvePilot(req.params.id))?.id;
+    const existing  = pilotUUID ? await PilotKpi.findByPilot(pilotUUID) : [];
+    const kpi = existing.find(k => k.id === kpiId);
+    if (!kpi) return formatError(res, 'KPI not found', 404);
+
+    const { improvementPercent, status } = pilotService.calculateKPIImprovement(
+      kpi.baseline, current, kpi.target, kpi.min_acceptable, kpi.direction
+    );
+
+    const updated = await PilotKpi.update(kpiId, { current, improvementPercent, status });
+    return formatSuccess(res, updated, 'KPI updated');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function getKpis(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const kpis = await PilotKpi.findByPilot(pilot.id);
+    return formatSuccess(res, kpis, 'KPIs retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RISK ROUTES
+// ─────────────────────────────────────────────────────────────────
+async function addRisk(req, res) {
+  try {
+    const { id: pilotId } = req.params;
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const risk = await PilotRisk.create({ ...req.body, pilotId: pilot.id });
+    return formatSuccess(res, risk, 'Risk added', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function updateRiskStatus(req, res) {
+  try {
+    const { riskId }  = req.params;
+    const { status }  = req.body;
+    const updated     = await PilotRisk.updateStatus(riskId, status);
+    if (!updated) return formatError(res, 'Risk not found', 404);
+    return formatSuccess(res, updated, 'Risk status updated');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function getRisks(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const risks = await PilotRisk.findByPilot(pilot.id);
+    return formatSuccess(res, risks, 'Risks retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ISSUE ROUTES
+// ─────────────────────────────────────────────────────────────────
+async function addIssue(req, res) {
+  try {
+    const { id: pilotId } = req.params;
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const reportedBy = req.body.reportedBy || req.user?.name || 'Officer';
+    const issue = await PilotIssue.create({ ...req.body, pilotId: pilot.id, reportedBy });
+    return formatSuccess(res, issue, 'Issue logged', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function resolveIssue(req, res) {
+  try {
+    const { issueId }            = req.params;
+    const { resolution, status } = req.body;
+    const updated = await PilotIssue.resolve(issueId, { resolution, status });
+    if (!updated) return formatError(res, 'Issue not found', 404);
+    return formatSuccess(res, updated, 'Issue resolved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function getIssues(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const issues = await PilotIssue.findByPilot(pilot.id);
+    return formatSuccess(res, issues, 'Issues retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FEEDBACK ROUTES
+// ─────────────────────────────────────────────────────────────────
+async function addFeedback(req, res) {
+  try {
+    const { id: pilotId } = req.params;
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const userName = req.body.userName || req.user?.name || 'Anonymous';
+    const feedback = await PilotFeedback.create({ ...req.body, pilotId: pilot.id, userName });
+    const stats    = await PilotFeedback.averageByPilot(pilot.id);
+    return formatSuccess(res, { feedback, stats }, 'Feedback recorded', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function getFeedback(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const [feedbackList, stats] = await Promise.all([
+      PilotFeedback.findByPilot(pilot.id),
+      PilotFeedback.averageByPilot(pilot.id),
+    ]);
+    return formatSuccess(res, { feedbackList, stats }, 'Feedback retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// EVIDENCE ROUTES
+// ─────────────────────────────────────────────────────────────────
+async function addEvidence(req, res) {
+  try {
+    const { id: pilotId } = req.params;
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const uploadedBy = req.body.uploadedBy || req.user?.name || 'Officer';
+    const evidence   = await PilotEvidence.create({ ...req.body, pilotId: pilot.id, uploadedBy });
+    return formatSuccess(res, evidence, 'Evidence submitted', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function verifyEvidence(req, res) {
+  try {
+    const { evidenceId } = req.params;
+    const { status }     = req.body; // 'Verified' | 'Rejected'
+    const updated        = await PilotEvidence.verify(evidenceId, status);
+    if (!updated) return formatError(res, 'Evidence not found', 404);
+    return formatSuccess(res, updated, `Evidence marked as ${status}`);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function getEvidences(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const evidences = await PilotEvidence.findByPilot(pilot.id);
+    return formatSuccess(res, evidences, 'Evidences retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// AUDIT LOG
+// GET /api/pilots/:id/audit
+// ─────────────────────────────────────────────────────────────────
+async function getAuditLog(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const logs = await PilotAuditLog.findByPilot(pilot.id);
+    return formatSuccess(res, logs, 'Audit log retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TELEMETRY INGESTION (Manual, CSV, IoT, API, Govt Systems)
+// POST /api/pilots/:id/kpis/:kpiId/telemetry
+// ─────────────────────────────────────────────────────────────────
+async function recordKpiTelemetry(req, res) {
+  try {
+    const { id: pilotId, kpiId } = req.params;
+    const { value, sourceType, sourceReference, provenanceMetadata, recordedAt } = req.body;
+
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const kpi = await PilotKpi.findById(kpiId);
+    if (!kpi || kpi.pilot_id !== pilot.id) return formatError(res, 'KPI not found for this pilot', 404);
+
+    if (value === undefined || value === null) {
+      return formatError(res, 'Telemetry reading value is required', 400);
+    }
+
+    // Record telemetry reading
+    const reading = await PilotTelemetry.record({
+      pilotId: pilot.id,
+      kpiId: kpi.id,
+      value: parseFloat(value),
+      sourceType: sourceType || 'MANUAL',
+      sourceReference: sourceReference || `Entered by ${req.user?.name || 'User'}`,
+      provenanceMetadata: provenanceMetadata || {},
+      recordedAt: recordedAt || new Date().toISOString()
+    });
+
+    // Recalculate KPI progress and RAG status
+    const kpiImp = pilotService.calculateKPIImprovement(
+      kpi.baseline,
+      value,
+      kpi.target,
+      kpi.min_acceptable,
+      kpi.direction
+    );
+
+    const updatedKpi = await PilotKpi.update(kpi.id, {
+      current: parseFloat(value),
+      improvementPercent: kpiImp.improvementPercent,
+      status: kpiImp.status
+    });
+
+    // Check for threshold breach alert
+    const alertEval = pilotService.evaluateTelemetryAlert(kpi, value);
+    let triggeredAlert = null;
+    if (alertEval.hasAlert) {
+      triggeredAlert = await PilotAlert.create({
+        pilotId: pilot.id,
+        kpiId: kpi.id,
+        severity: alertEval.severity,
+        title: alertEval.title,
+        message: alertEval.message,
+        expectedValue: alertEval.expectedValue,
+        actualValue: alertEval.actualValue,
+        variancePct: alertEval.variancePct,
+        recipientRole: 'ALL'
+      });
+    }
+
+    // Log audit trail
+    await PilotAuditLog.log({
+      pilotId: pilot.id,
+      userId: req.user?.id || null,
+      action: 'INGEST_KPI_TELEMETRY',
+      detail: `Recorded ${value} ${kpi.unit} from ${sourceType || 'MANUAL'} for ${kpi.name}`,
+      oldValue: kpi.current,
+      newValue: value
+    });
+
+    return formatSuccess(res, {
+      reading,
+      kpi: { ...updatedKpi, rag: kpiImp.rag, progressPercent: kpiImp.progressPercent },
+      alert: triggeredAlert
+    }, 'Telemetry reading recorded successfully', 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// BATCH TELEMETRY INGESTION (CSV upload / IoT Stream)
+// POST /api/pilots/:id/telemetry/batch
+// ─────────────────────────────────────────────────────────────────
+async function recordBatchTelemetry(req, res) {
+  try {
+    const { id: pilotId } = req.params;
+    const { readings, sourceType, batchReference } = req.body;
+
+    const pilot = await resolvePilot(pilotId);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    if (!Array.isArray(readings) || readings.length === 0) {
+      return formatError(res, 'Readings array is required', 400);
+    }
+
+    const recorded = [];
+    const alertsGenerated = [];
+
+    for (const item of readings) {
+      const kpi = await PilotKpi.findById(item.kpiId);
+      if (kpi && kpi.pilot_id === pilot.id) {
+        const val = parseFloat(item.value);
+        const r = await PilotTelemetry.record({
+          pilotId: pilot.id,
+          kpiId: kpi.id,
+          value: val,
+          sourceType: item.sourceType || sourceType || 'CSV_UPLOAD',
+          sourceReference: item.sourceReference || batchReference || 'Batch Stream',
+          provenanceMetadata: item.provenanceMetadata || {},
+          recordedAt: item.recordedAt || new Date().toISOString()
+        });
+        recorded.push(r);
+
+        const kpiImp = pilotService.calculateKPIImprovement(kpi.baseline, val, kpi.target, kpi.min_acceptable, kpi.direction);
+        await PilotKpi.update(kpi.id, {
+          current: val,
+          improvementPercent: kpiImp.improvementPercent,
+          status: kpiImp.status
+        });
+
+        const alertEval = pilotService.evaluateTelemetryAlert(kpi, val);
+        if (alertEval.hasAlert) {
+          const a = await PilotAlert.create({
+            pilotId: pilot.id,
+            kpiId: kpi.id,
+            severity: alertEval.severity,
+            title: alertEval.title,
+            message: alertEval.message,
+            expectedValue: alertEval.expectedValue,
+            actualValue: alertEval.actualValue,
+            variancePct: alertEval.variancePct,
+            recipientRole: 'ALL'
+          });
+          alertsGenerated.push(a);
+        }
+      }
+    }
+
+    return formatSuccess(res, {
+      totalReadings: recorded.length,
+      alertsGeneratedCount: alertsGenerated.length,
+      readings: recorded,
+      alerts: alertsGenerated
+    }, `${recorded.length} telemetry readings batch-ingested successfully`, 201);
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// GET PILOT TELEMETRY READINGS
+// GET /api/pilots/:id/telemetry
+// ─────────────────────────────────────────────────────────────────
+async function getPilotTelemetry(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const limit = parseInt(req.query.limit) || 100;
+    const readings = await PilotTelemetry.findByPilot(pilot.id, limit);
+    return formatSuccess(res, readings, 'Telemetry readings retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ALERTS
+// GET /api/pilots/:id/alerts
+// PATCH /api/pilots/:id/alerts/:alertId/ack
+// ─────────────────────────────────────────────────────────────────
+async function getPilotAlerts(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+    const status = req.query.status || null;
+    const alerts = await PilotAlert.findByPilot(pilot.id, status);
+    return formatSuccess(res, alerts, 'Alerts retrieved');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+async function acknowledgeAlert(req, res) {
+  try {
+    const { alertId } = req.params;
+    const userName = req.user?.name || req.body?.acknowledgedBy || 'Authorized Officer';
+    const alert = await PilotAlert.acknowledge(alertId, userName);
+    if (!alert) return formatError(res, 'Alert not found', 404);
+    return formatSuccess(res, alert, 'Alert acknowledged successfully');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FINAL PILOT EVALUATION REPORT
+// GET /api/pilots/:id/evaluation-report
+// ─────────────────────────────────────────────────────────────────
+async function getPilotEvaluationReport(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const [kpis, risks, evidences, feedbacks] = await Promise.all([
+      PilotKpi.findByPilot(pilot.id),
+      PilotRisk.findByPilot(pilot.id),
+      PilotEvidence.findByPilot(pilot.id),
+      PilotFeedback.findByPilot(pilot.id)
+    ]);
+
+    const report = pilotService.generateEvaluationReport(pilot, kpis, risks, evidences, feedbacks);
+    return formatSuccess(res, report, 'Pilot Evaluation Report generated successfully');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// FINAL PROCUREMENT RECOMMENDATION (SCALE / MODIFY & RETEST / STOP)
+// GET /api/pilots/:id/recommendations
+// ─────────────────────────────────────────────────────────────────
+async function getPilotRecommendations(req, res) {
+  try {
+    const pilot = await resolvePilot(req.params.id);
+    if (!pilot) return formatError(res, 'Pilot not found', 404);
+
+    const [kpis, risks] = await Promise.all([
+      PilotKpi.findByPilot(pilot.id),
+      PilotRisk.findByPilot(pilot.id)
+    ]);
+
+    const outcomeAnalysis = pilotService.calculateAutomatedOutcome(kpis, risks, pilot.security_status);
+    return formatSuccess(res, {
+      pilotId: pilot.id,
+      pilotCode: pilot.pilot_code,
+      recommendation: outcomeAnalysis.recommendation,
+      outcome: outcomeAnalysis.outcome,
+      targetAchievementScore: outcomeAnalysis.targetAchievementScore,
+      rationale: outcomeAnalysis.rationale,
+      procurementAction: outcomeAnalysis.procurementAction
+    }, 'Procurement recommendation calculated');
+  } catch (err) {
+    return formatError(res, err.message);
+  }
+}
+
+module.exports = {
+  getAllPilots, getPilotById, createPilot,
+  updateStatus, evaluatePilot, getCompletionReport,
+  // KPI
+  addKpi, updateKpi, getKpis,
+  // Risk
+  addRisk, updateRiskStatus, getRisks,
+  // Issue
+  addIssue, resolveIssue, getIssues,
+  // Feedback
+  addFeedback, getFeedback,
+  // Evidence
+  addEvidence, verifyEvidence, getEvidences,
+  // Audit
+  getAuditLog,
+  // Telemetry & Alerts
+  recordKpiTelemetry, recordBatchTelemetry, getPilotTelemetry,
+  getPilotAlerts, acknowledgeAlert,
+  // Evaluation & Recommendations
+  getPilotEvaluationReport, getPilotRecommendations
+};
+

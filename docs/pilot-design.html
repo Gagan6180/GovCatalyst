@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandbox / Pilot Design — GovCatalyst | महाराष्ट्र शासन</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="pilot-design.css">
+</head>
+<body>
+
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+            <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
+    <div class="top-bar-clean">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <span class="badge bg-warning text-dark font-monospace" style="font-size: 11px;">MSInS</span>
+                <strong style="color: #ffffff; font-size: 17px; letter-spacing: -0.3px;">GovCatalyst</strong>
+            </a>
+            <!-- 🇮🇳 ONLY Tricolor Hamburger Menu on Right -->
+            <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu" title="All Modules Menu (10)">
+                <span class="tri-bar bar-saffron"></span>
+                <span class="tri-bar bar-white"></span>
+                <span class="tri-bar bar-green"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-gov">
+        <div class="container">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> Home</a> › <span class="text-dark fw-semibold">Pilot Charter Builder</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="py-4">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2><i class="bi bi-shield-shaded text-primary me-2"></i>Sandbox Pilot Charter & Risk Safeguards</h2>
+                    <p>Define controlled testing environments, testbeds, exit protocols, data privacy safeguards, and IP ownership under GFR 194</p>
+                </div>
+                <div class="d-flex gap-2">
+                    
+            <button class="btn btn-gold" id="btn-toggle-pilot-form"><i class="bi bi-plus-circle me-1"></i> Build Sandbox Charter</button>
+            <button class="btn btn-gov-outline" onclick="GovUtils.showToast('Printing Standard Bilateral Charter Draft...', 'info')"><i class="bi bi-printer me-1"></i> Print Draft</button>
+        
+                </div>
+            </div>
+
+            <!-- Summary Stats Row -->
+            
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary">6</div>
+                        <div class="stat-label">Active Sandbox Pilots</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-success">5</div>
+                        <div class="stat-label">Dept Sandbox Sites</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-info">90 Days</div>
+                        <div class="stat-label">Standard Sandbox Window</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-warning">0 Risk Breaches</div>
+                        <div class="stat-label">Safe-Fail Protocols</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsible Pilot Charter Builder Form -->
+            <div class="gov-card mb-4" id="card-pilot-form" style="display: none;">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-shield-plus me-2"></i>Create Sandbox Pilot Charter & Safeguards</span>
+                    <button type="button" class="btn-close" id="btn-close-pilot-form"></button>
+                </div>
+                <div class="gov-card-body">
+                    <form id="form-pilot-design">
+                                                                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Pilot Initiative Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="inp-pilot-name" placeholder="e.g., Pune AI Smart Traffic Flow Pilot" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Target Challenge <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-pilot-challenge" required></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Selected Startup <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-pilot-startup" required></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Testing Location / Testbed</label>
+                                <input type="text" class="form-control" id="inp-pilot-location" placeholder="e.g. Ward 4 PWD Corridor, Pune" value="Ward 4 PWD Corridor, Pune" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Pilot Duration (Days)</label>
+                                <input type="number" class="form-control" id="inp-pilot-duration" value="90" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Data Access Level</label>
+                                <select class="form-select" id="inp-pilot-data-level">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-semibold">13-State Lifecycle Status</label>
+                                <select class="form-select font-monospace" id="inp-pilot-state">
+                                    <option value="DRAFT">1. DRAFT (Initial Sandbox Scoping)</option>
+                                    <option value="AGREEMENT_PENDING">2. AGREEMENT_PENDING (Legal Drafting)</option>
+                                    <option value="AGREEMENT_APPROVED">3. AGREEMENT_APPROVED (Bilateral Signed)</option>
+                                    <option value="SECURITY_CHECK">4. SECURITY_CHECK (Cybersecurity Gate)</option>
+                                    <option value="DATA_IP_CHECK">5. DATA_IP_CHECK (Anonymization Cleared)</option>
+                                    <option value="READY_FOR_DEPLOYMENT">6. READY_FOR_DEPLOYMENT (Sandbox Open)</option>
+                                    <option value="DEPLOYMENT">7. DEPLOYMENT (Sensor / Model Install)</option>
+                                    <option value="ACTIVE_PILOT" selected>8. ACTIVE_PILOT (Live Field Testing)</option>
+                                    <option value="MONITORING">9. MONITORING (Telemetry & KPI Run)</option>
+                                    <option value="PILOT_COMPLETED">10. PILOT_COMPLETED (Testing Finished)</option>
+                                    <option value="EVALUATION">11. EVALUATION (Independent Validator)</option>
+                                    <option value="COMPLETED">12. COMPLETED (Outcome Certified)</option>
+                                    <option value="SCALE">13. SCALE (GeM / Public Procurement)</option>
+                                </select>
+                                    <option value="anonymized">Anonymized Metadata</option>
+                                    <option value="restricted" selected>Restricted Testbed Sandbox</option>
+                                    <option value="full">Full Operational Jurisdiction</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Risk Level Assessment</label>
+                                <select class="form-select" id="inp-pilot-risk">
+                                    <option value="low">Low (Safe-Fail Simulation)</option>
+                                    <option value="medium" selected>Medium (Restricted Field Site)</option>
+                                    <option value="high">High (Live Department Workflows)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Sandbox Scope & Boundaries</label>
+                                <input type="text" class="form-control" id="inp-pilot-datascope" placeholder="e.g. Synthetic citizen metadata, isolated municipal VLAN" value="Isolated testbed corridor Ward 4">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Success Threshold Criteria</label>
+                                <input type="text" class="form-control" id="inp-pilot-threshold" placeholder="e.g. >= 20% latency reduction, 0 data breach" value="≥ 30% reduction in turnaround time, 0 security incidents">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Mandatory Risk Safeguards</label>
+                                <div class="row g-2" id="safeguards-container">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-secondary me-2" id="btn-cancel-pilot-form">Cancel</button>
+                                <button type="submit" class="btn btn-gov"><i class="bi bi-check2-circle me-1"></i> Deploy Sandbox Pilot Charter</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Active Pilots Registry -->
+            <div class="gov-card">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-card-checklist me-2"></i>Active Sandbox Pilots Registry (<span id="pilots-count">0</span>)</span>
+                    <span class="badge bg-warning text-dark font-monospace">GFR 194 Safe-Fail</span>
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-gov mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Pilot ID</th>
+                                    <th>Pilot Initiative</th>
+                                    <th>Dept Challenge</th>
+                                    <th>Startup Entity</th>
+                                    <th>Duration</th>
+                                    <th>Risk Level</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pilots-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>GovCatalyst</h5>
+                    <p style="font-size:13px;">Startup-Friendly Innovation Procurement Portal</p>
+                    <p style="font-size:13px;">Government of Maharashtra</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="pilot-design.html">Sandbox Pilot Design</a></li>
+                        <li><a href="milestones.html">Milestone Contracting</a></li>
+                        <li><a href="performance.html">KPI Performance M&E</a></li>
+                        <li><a href="payments.html">Milestone Payments</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Sandbox Protocol</h5>
+                    <p style="font-size:13px;">Controlled Environment Isolation</p>
+                    <p style="font-size:13px;">NIST 800-88 Data Disposal Mandated</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <!-- Modal for Full Pilot Blueprint -->
+    <div class="gov-modal-overlay" id="gov-modal-overlay">
+        <div class="gov-modal">
+            <div class="gov-modal-header">
+                <h5 id="gov-modal-title">Pilot Charter Document</h5>
+                <button class="gov-modal-close" id="gov-modal-close">&times;</button>
+            </div>
+            <div class="gov-modal-body" id="gov-modal-body"></div>
+        </div>
+    </div>
+
+    <div class="toast-container-gov"></div>
+
+    <script src="common.js"></script>
+    <script src="pilot-design.js"></script>
+</body>
+</html>

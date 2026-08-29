@@ -1,49 +1,64 @@
 
+
 window.GovLang = {
     current: 'en',
 
     t: {
-        // Site
         siteName: { en: 'GovCatalyst', mr: 'गव्हकॅटलिस्ट' },
         siteSubtitle: { en: 'Startup-Friendly Innovation Procurement Portal', mr: 'स्टार्टअप-अनुकूल नवोपक्रम खरेदी पोर्टल' },
         govName: { en: 'Government of Maharashtra', mr: 'महाराष्ट्र शासन' },
         officialSite: { en: 'Official Portal', mr: 'अधिकृत संकेतस्थळ' },
-        skipContent: { en: 'Skip to Main Content', mr: 'मुख्य सामग्रीवर जा' },
-        screenReader: { en: 'Screen Reader Access', mr: 'स्क्रीन रीडर' },
-
-        // Navigation
-        home: { en: 'Home', mr: 'मुख्यपृष्ठ' },
+        skipContent: { en: 'Skip to main content', mr: 'मुख्य सामग्रीवर जा' },
+        screenReader: { en: 'Screen Reader Access', mr: 'स्क्रीन रीडर प्रवेश' },
+        loginBtn: { en: 'Login / Register', mr: 'साइन इन / नोंदणी' },
+        heroTagline: { en: 'Where Government Information Converges • GovCatalyst Innovation Hub', mr: 'शासकीय आव्हाने ते स्टार्टअप उपाय — पारदर्शक व कायदेशीर नवोपक्रम खरेदी मंच' },
+        searchHere: { en: 'Search for problem statements, startups, departments...', mr: 'आव्हाने, स्टार्टअप्स, विभाग किंवा सेवा शोधा...' },
+        search: { en: 'Search', mr: 'शोधा' },
+        trendSearch: { en: 'Trending Searches :', mr: 'लोकप्रिय शोध :' },
+        allCategories: { en: 'All Categories ⌵', mr: 'सर्व श्रेणी ⌵' },
+        statChallenges: { en: 'Online Challenges', mr: 'ऑनलाइन आव्हाने' },
+        statSchemes: { en: 'Startup Schemes', mr: 'स्टार्टअप योजना' },
+        statEvaluations: { en: 'Pilot Evaluations', mr: 'प्रायोगिक मूल्यमापने' },
+        statSandboxes: { en: 'Sandbox Sites', mr: 'सँडबॉक्स चाचणी केंद्रे' },
+        statEscrow: { en: 'Escrow Released', mr: 'वितरित निधी (एस्क्रो)' },
+        statStages: { en: 'Stages Workflow', mr: 'टप्प्यांची कार्यप्रणाली' },
+        onlineServices: { en: 'Online Services', mr: 'ऑनलाइन सेवा' },
+        availServices: { en: 'Avail online Services & Save time', mr: 'ऑनलाइन सेवांचा लाभ घ्या आणि वेळ वाचवा' },
+        viewAll: { en: 'View All', mr: 'सर्व पहा' },
+        catCentral: { en: 'Central / AI', mr: 'केंद्रीय / एआय' },
+        catState: { en: 'State / DPIIT', mr: 'राज्य / डीपीआयआयटी' },
+        catKeyServices: { en: 'Key Services', mr: 'महत्त्वाच्या सेवा' },
+        catGfr: { en: 'GFR Categories', mr: 'जीएफआर श्रेणी' },
+        coreModulesTitle: { en: 'Core Modules', mr: 'मुख्य मॉड्यूल्स' },
+        coreModulesDesc: { en: 'Complete end-to-end innovation procurement lifecycle', mr: 'संपूर्ण नवोपक्रम खरेदी जीवनचक्र व्यवस्थापन' },
+        m1Name: { en: 'Challenge Builder', mr: 'आव्हान निर्माता' },
+        m1Desc: { en: 'Create outcome-based problem statements', mr: 'परिणाम-आधारित समस्या विधाने तयार करा' },
+        m2Name: { en: 'Startup Discovery', mr: 'स्टार्टअप शोध' },
+        m2Desc: { en: 'Find & match startups to challenges', mr: 'स्टार्टअप्स शोधा आणि आव्हानांशी जुळवा' },
+        m3Name: { en: 'Eligibility Screening', mr: 'पात्रता पडताळणी' },
+        m3Desc: { en: 'Relaxed criteria rule engine', mr: 'सैल निकष नियम इंजिन (डीपीआयआयटी)' },
+        m4Name: { en: 'Expert Evaluation', mr: 'तज्ज्ञ मूल्यांकन' },
+        m4Desc: { en: 'Multi-evaluator scoring dashboard', mr: 'तज्ज्ञ समितीचे गुणपत्रक व सीओआय नियंत्रण' },
+        m5Name: { en: 'Pilot Design', mr: 'प्रायोगिक रचना' },
+        m5Desc: { en: 'Sandbox pilot template generator', mr: 'सँडबॉक्स प्रायोगिक सनद व सायबर सुरक्षा' },
+        m6Name: { en: 'Milestone Tracking', mr: 'टप्पे ट्रॅकिंग' },
+        m6Desc: { en: 'State-machine contract tracker', mr: '१३-टप्प्यांची कायदेशीर करार ट्रॅकिंग' },
+        m7Name: { en: 'Performance M&E', mr: 'कामगिरी मूल्यमापन' },
+        m7Desc: { en: 'KPI tracking & health score', mr: 'थेट टेलिमेट्री व केपीआय निरीक्षण' },
+        m8Name: { en: 'Payment Release', mr: 'देयके वितरण' },
+        m8Desc: { en: 'Escrow-style milestone payments', mr: 'स्मार्ट एस्क्रो टप्पानिहाय निधी वितरण' },
+        m9Name: { en: 'Scale-up Transition', mr: 'विस्तार संक्रमण' },
+        m9Desc: { en: 'Procurement pathway engine', mr: 'जीईएम (GeM) खरेदी मार्ग संक्रमण' },
+        m10Name: { en: 'Admin & Governance', mr: 'प्रशासन व नियंत्रण' },
+        m10Desc: { en: 'RBAC, audit trail, sign-offs', mr: 'भूमिका-आधारित प्रवेश व ६५बी ऑडिट' },
         challenges: { en: 'Challenges', mr: 'आव्हाने' },
         startups: { en: 'Startups', mr: 'स्टार्टअप्स' },
-        eligibility: { en: 'Eligibility', mr: 'पात्रता' },
-        evaluation: { en: 'Evaluation', mr: 'मूल्यांकन' },
-        pilotDesign: { en: 'Pilot Design', mr: 'प्रायोगिक रचना' },
+        pilotDesign: { en: 'Pilots Active', mr: 'सक्रिय प्रायोगिक' },
         milestones: { en: 'Milestones', mr: 'टप्पे' },
-        performance: { en: 'Performance', mr: 'कामगिरी' },
-        payments: { en: 'Payments', mr: 'देयके' },
-        scaleup: { en: 'Scale-up', mr: 'विस्तार' },
-        admin: { en: 'Admin', mr: 'प्रशासन' },
-
-        // Common UI
-        search: { en: 'Search', mr: 'शोधा' },
-        searchHere: { en: 'Search here...', mr: 'येथे शोधा...' },
-        submit: { en: 'Submit', mr: 'सादर करा' },
-        save: { en: 'Save', mr: 'जतन करा' },
-        cancel: { en: 'Cancel', mr: 'रद्द करा' },
-        view: { en: 'View', mr: 'पहा' },
-        edit: { en: 'Edit', mr: 'संपादन' },
-        delete: { en: 'Delete', mr: 'हटवा' },
-        status: { en: 'Status', mr: 'स्थिती' },
-        department: { en: 'Department', mr: 'विभाग' },
-        actions: { en: 'Actions', mr: 'क्रिया' },
-        total: { en: 'Total', mr: 'एकूण' },
-        welcome: { en: 'Welcome to Maharashtra', mr: 'महाराष्ट्रात आपले स्वागत आहे' },
-        trendSearch: { en: 'Trending :', mr: 'लोकप्रिय :' },
-
-        // Footer
+        payments: { en: 'Disbursed', mr: 'वितरित निधी' },
         quickLinks: { en: 'Quick Links', mr: 'जलद दुवे' },
-        legal: { en: 'Legal', mr: 'कायदेशीर' },
-        copyright: { en: '© 2026 Government of Maharashtra. All rights reserved.', mr: '© २०२६ महाराष्ट्र शासन. सर्व हक्क राखीव.' },
+        legal: { en: 'Legal & Compliance', mr: 'कायदेशीर व अनुपालन' },
+        copyright: { en: '© 2026 Government of Maharashtra. All rights reserved.', mr: '© २०२६ महाराष्ट्र शासन. सर्व हक्क राखीव.' }
     },
 
     get(key) {
@@ -53,23 +68,97 @@ window.GovLang = {
 
     toggle() {
         this.current = this.current === 'en' ? 'mr' : 'en';
+        document.documentElement.lang = this.current === 'mr' ? 'mr-IN' : 'en-IN';
+
         document.querySelectorAll('[data-lang-key]').forEach(el => {
-            el.textContent = this.get(el.dataset.langKey);
+            const key = el.dataset.langKey;
+            if (this.t[key]) {
+                el.textContent = this.get(key);
+            }
         });
+
         document.querySelectorAll('[data-lang-placeholder]').forEach(el => {
-            el.placeholder = this.get(el.dataset.langPlaceholder);
+            const key = el.dataset.langPlaceholder;
+            if (this.t[key]) {
+                el.placeholder = this.get(key);
+            }
         });
-        document.querySelectorAll('.lang-toggle button').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.lang === this.current);
-        });
+
+        const langToggleBtn = document.getElementById('top-lang-toggle');
+        if (langToggleBtn) {
+            langToggleBtn.style.fontWeight = 'bold';
+            langToggleBtn.style.color = this.current === 'mr' ? '#ffc107' : '#ffffff';
+        }
+
+        const msg = this.current === 'mr' 
+            ? '🌐 भाषा मराठीत बदलली आहे (Language: Marathi)' 
+            : '🌐 Switched to English language';
+        if (window.GovUtils && window.GovUtils.showToast) {
+            window.GovUtils.showToast(msg, 'info');
+        }
     }
 };
+
 
 
 // ============================================
 // SECTION 2: MOCK DATA FOR ALL 10 MODULES
 // ============================================
 window.GovData = {
+
+    // --- MODULE 1: AUTH & REGISTRATION WORKFLOW ---
+    pendingRegistrations: [
+        {
+            id: 'REG-001',
+            name: 'Shri Sandeep More',
+            email: 'sandeep.more@pwd.maharashtra.gov.in',
+            role: 'Dept Admin',
+            roleKey: 'dept_admin',
+            department: 'Public Works Department (PWD)',
+            designation: 'Superintending Engineer',
+            status: 'pending',
+            appliedAt: '2026-08-28 14:30',
+            otpCode: null
+        },
+        {
+            id: 'REG-002',
+            name: 'Prof. Anjali Deshpande',
+            email: 'a.deshpande@iitb.ac.in',
+            role: 'Evaluator',
+            roleKey: 'evaluator',
+            department: 'IIT Bombay / AI Domain Expert',
+            designation: 'Professor of Computer Science',
+            status: 'pending',
+            appliedAt: '2026-08-28 16:45',
+            otpCode: null
+        },
+        {
+            id: 'REG-003',
+            name: 'Shri Rakesh Kulkarni',
+            email: 'rakesh.kulkarni@audit.gov.in',
+            role: 'Validator',
+            roleKey: 'validator',
+            department: 'Directorate of Accounts & Treasury',
+            designation: 'Senior Audit Officer',
+            status: 'approved_awaiting_otp',
+            appliedAt: '2026-08-27 11:20',
+            otpCode: '582914'
+        },
+        {
+            id: 'REG-004',
+            name: 'Dr. Nitin Shinde',
+            email: 'nitin.shinde@privateconsulting.com',
+            role: 'Evaluator',
+            roleKey: 'evaluator',
+            department: 'External Consultant',
+            designation: 'Technical Advisor',
+            status: 'rejected',
+            appliedAt: '2026-08-26 10:15',
+            rejectionReason: 'Non-official email domain; unverified institutional credentials',
+            otpCode: null
+        }
+    ],
+
 
     // --- MODULE 1: CHALLENGES ---
     challenges: [
@@ -156,11 +245,12 @@ window.GovData = {
         { id: 'EV-003', name: 'Dr. Sunita Rao', expertise: 'Policy & Public Administration', department: 'GAD', coiDeclared: false, coiDetails: '' }
     ],
 
-    evaluationRubric: [
-        { category: 'Innovation', weight: 30, maxScore: 10, description: 'Novelty of approach, technology differentiation, and creative problem solving' },
-        { category: 'Feasibility', weight: 25, maxScore: 10, description: 'Technical and operational feasibility within government infrastructure constraints' },
-        { category: 'Scalability', weight: 25, maxScore: 10, description: 'Ability to scale across multiple departments, districts, and states' },
-        { category: 'Cost Effectiveness', weight: 20, maxScore: 10, description: 'Value for money, total cost of ownership, and budget efficiency' }
+        evaluationRubric: [
+        { category: 'Technical Feasibility', weight: 25, maxScore: 10, description: 'Technical and operational feasibility within government infrastructure constraints' },
+        { category: 'Innovation & Novelty', weight: 20, maxScore: 10, description: 'Novelty of approach, technology differentiation, and creative problem solving' },
+        { category: 'Alignment with Outcomes', weight: 25, maxScore: 10, description: 'Direct alignment with departmental problem statement and measurable baseline targets' },
+        { category: 'Cost Effectiveness', weight: 15, maxScore: 10, description: 'Value for money, total cost of ownership, and budget efficiency' },
+        { category: 'Scalability & Replication', weight: 15, maxScore: 10, description: 'Ability to scale across multiple departments, 36 districts, and state agencies' }
     ],
 
     evaluationScores: [
@@ -492,20 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.insertAdjacentHTML('beforeend', megaMenuHtml);
     }
 
-    // Inject Floating Quick Action Sidebar on all pages if not in DOM
-    if (!document.querySelector('.floating-quick-sidebar')) {
-        const sidebarHtml = `
-            <aside class="floating-quick-sidebar" aria-label="Quick Access Sidebar">
-                <button title="Feedback & Citizen Support" aria-label="Feedback" onclick="GovUtils.showToast('Grievance & Feedback Desk Connected', 'info')"><i class="bi bi-chat-left-text"></i></button>
-                <button title="Independent Validator & Helpdesk" aria-label="Helpdesk" onclick="window.location.href='admin.html'"><i class="bi bi-shield-check"></i></button>
-                <button title="Procurement Calendar & Milestones" aria-label="Calendar" onclick="window.location.href='milestones.html'"><i class="bi bi-calendar4-week"></i></button>
-                <button title="Share Portal" aria-label="Share" onclick="GovUtils.showToast('Portal Link Copied to Clipboard', 'success')"><i class="bi bi-share"></i></button>
-                <button title="Theme & Contrast Mode" aria-label="Theme" onclick="GovUtils.showToast('High Contrast Mode Enabled', 'info')"><i class="bi bi-palette"></i></button>
-            </aside>
-        `;
-        document.body.insertAdjacentHTML('beforeend', sidebarHtml);
-    }
-
     // Mega Menu Open / Close Logic
     const hamburgerBtn = document.getElementById('gov-hamburger-toggle');
     const megaMenu = document.getElementById('gov-mega-menu-overlay');
@@ -793,3 +869,458 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
+/* =============================================
+   GovAuth: Registration, Verification & Login Logic
+   ============================================= */
+window.GovAuth = {
+    checkAccountStatus(email) {
+        if (!email) return null;
+        const normalized = email.trim().toLowerCase();
+
+        // 1. Check existing active users
+        const activeUser = GovData.users.find(u => u.email.toLowerCase() === normalized);
+        if (activeUser) {
+            return {
+                status: 'active',
+                user: activeUser,
+                promptHtml: `<div class="alert alert-success d-flex align-items-center mb-3">
+                    <i class="bi bi-shield-check fs-4 me-3 text-success"></i>
+                    <div>
+                        <strong>Authentication Successful</strong>
+                        <div class="small">Welcome back! Authenticating with secure government credentials...</div>
+                    </div>
+                </div>`
+            };
+        }
+
+        // 2. Check pending registrations
+        const reg = GovData.pendingRegistrations.find(r => r.email.toLowerCase() === normalized);
+        if (reg) {
+            if (reg.status === 'pending') {
+                return {
+                    status: 'pending',
+                    reg,
+                    promptHtml: `<div class="alert alert-warning d-flex align-items-center mb-3">
+                        <i class="bi bi-clock-history fs-4 me-3 text-warning"></i>
+                        <div>
+                            <strong>Verification Pending</strong>
+                            <div class="small">Your registration is currently awaiting verification by the Super Administrator. You will receive an email once approved.</div>
+                        </div>
+                    </div>`
+                };
+            }
+            if (reg.status === 'approved_awaiting_otp') {
+                return {
+                    status: 'approved_awaiting_otp',
+                    reg,
+                    promptHtml: `<div class="alert alert-info d-flex align-items-center mb-3">
+                        <i class="bi bi-envelope-check-fill fs-4 me-3 text-info"></i>
+                        <div>
+                            <strong>Account Approved — Awaiting OTP</strong>
+                            <div class="small">Your account has been approved! A 6-digit OTP was sent to your email. Please enter the OTP to activate your account.</div>
+                        </div>
+                    </div>`
+                };
+            }
+            if (reg.status === 'rejected') {
+                return {
+                    status: 'rejected',
+                    reg,
+                    promptHtml: `<div class="alert alert-danger d-flex align-items-center mb-3">
+                        <i class="bi bi-x-circle-fill fs-4 me-3 text-danger"></i>
+                        <div>
+                            <strong>Registration Not Approved</strong>
+                            <div class="small">Your registration request was not approved. Please contact the MSInS Helpdesk for further assistance.</div>
+                        </div>
+                    </div>`
+                };
+            }
+        }
+
+        // 3. New / Unregistered
+        return {
+            status: 'unregistered',
+            promptHtml: `<div class="alert alert-secondary d-flex align-items-center mb-3">
+                <i class="bi bi-info-circle-fill fs-4 me-3 text-secondary"></i>
+                <div>
+                    <strong>Account Not Found</strong>
+                    <div class="small">No account found with this email. Please register as a Startup or submit a Government Official request.</div>
+                </div>
+            </div>`
+        };
+    },
+
+    openAuthModal(defaultTab = 'login') {
+        let modalEl = document.getElementById('gov-auth-modal');
+        if (!modalEl) {
+            this.injectAuthModal();
+            modalEl = document.getElementById('gov-auth-modal');
+        }
+        if (modalEl) {
+            modalEl.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            this.switchTab(defaultTab);
+        }
+    },
+
+    closeAuthModal() {
+        const modalEl = document.getElementById('gov-auth-modal');
+        if (modalEl) {
+            modalEl.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    },
+
+    switchTab(tabName) {
+        document.querySelectorAll('.auth-tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tabName);
+        });
+        document.querySelectorAll('.auth-tab-pane').forEach(pane => {
+            pane.style.display = (pane.id === 'auth-pane-' + tabName) ? 'block' : 'none';
+        });
+        const promptContainer = document.getElementById('auth-status-prompt');
+        if (promptContainer) promptContainer.innerHTML = '';
+    },
+
+    injectAuthModal() {
+        const html = `
+        <div class="gov-modal-overlay" id="gov-auth-modal" style="z-index: 1060;">
+            <div class="gov-modal" style="max-width: 580px; width: 95%; position: relative; background: #ffffff; border-radius: 16px; padding: 28px 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                <!-- Clean Top-Right Cross Button (like hamburger menu) -->
+                <button type="button" class="gov-auth-close-btn" onclick="GovAuth.closeAuthModal()" title="Close" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="gov-modal-body p-0 pt-2">
+                    <!-- Tab Navigation -->
+                    <div class="d-flex border-bottom mb-3 pb-2 gap-2 pe-4">
+                        <button class="btn btn-sm btn-outline-primary auth-tab-btn active" data-tab="login" onclick="GovAuth.switchTab('login')">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary auth-tab-btn" data-tab="startup-reg" onclick="GovAuth.switchTab('startup-reg')">
+                            <i class="bi bi-rocket-takeoff me-1"></i> Startup Registration
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary auth-tab-btn" data-tab="gov-reg" onclick="GovAuth.switchTab('gov-reg')">
+                            <i class="bi bi-building me-1"></i> Gov Official Request
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary auth-tab-btn" data-tab="otp-activate" onclick="GovAuth.switchTab('otp-activate')">
+                            <i class="bi bi-shield-lock me-1"></i> OTP Activation
+                        </button>
+                    </div>
+
+                    <!-- Dynamic Prompt Message Container -->
+                    <div id="auth-status-prompt"></div>
+
+                    <!-- TAB 1: LOGIN -->
+                    <div class="auth-tab-pane" id="auth-pane-login">
+                        <form id="form-gov-login" onsubmit="event.preventDefault(); GovAuth.handleLoginSubmit();">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Registered Email Address <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input type="email" class="form-control" id="login-email" placeholder="official@gov.in or contact@startup.com" required>
+                                </div>
+                                <small class="text-muted" style="font-size: 11px;">Tip: Try sandeep.more@pwd.maharashtra.gov.in (Pending), rakesh.kulkarni@audit.gov.in (Approved OTP), or nitin.shinde@privateconsulting.com (Rejected)</small>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-key"></i></span>
+                                    <input type="password" class="form-control" id="login-password" value="Password@123" required>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <button type="button" class="btn btn-link p-0 small text-decoration-none" onclick="GovAuth.handleStatusCheck()">
+                                    <i class="bi bi-search me-1"></i> Check Verification Status
+                                </button>
+                                <a href="forgot-password.html" class="small text-decoration-none text-primary fw-semibold"><i class="bi bi-key me-1"></i>Forgot Password?</a>
+                            </div>
+                            <button type="submit" class="btn btn-gov w-100 py-2">
+                                <i class="bi bi-lock-fill me-1"></i> Authenticate & Enter Portal
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- TAB 2: STARTUP REGISTRATION (Instant Access) -->
+                    <div class="auth-tab-pane" id="auth-pane-startup-reg" style="display: none;">
+                        <div class="p-2 bg-light border rounded small mb-3 text-dark">
+                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i>
+                            <strong>Instant Access:</strong> Startup accounts are activated immediately upon linking a valid DPIIT recognition number.
+                        </div>
+                        <form id="form-startup-reg" onsubmit="event.preventDefault(); GovAuth.handleStartupRegSubmit();">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Representative Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="reg-su-rep" placeholder="e.g. Dr. Rajesh Patil" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Company Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="reg-su-company" placeholder="e.g. AgroTech Innovations Pvt Ltd" required>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Email Address <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control form-control-sm" id="reg-su-email" placeholder="contact@agrotech.in" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">DPIIT Recognition Number <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm font-monospace" id="reg-su-dpiit" placeholder="DIPP12345" required>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Sector <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" id="reg-su-sector">
+                                        <option value="AgriTech">AgriTech</option>
+                                        <option value="HealthTech">HealthTech</option>
+                                        <option value="CleanTech">CleanTech</option>
+                                        <option value="AI/ML">AI / ML</option>
+                                        <option value="IoT">IoT</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Create Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control form-control-sm" id="reg-su-pwd" placeholder="Minimum 8 characters" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-gold w-100 py-2 fw-bold text-dark">
+                                <i class="bi bi-check2-circle me-1"></i> Register & Instant Portal Access
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- TAB 3: GOVERNMENT OFFICIAL REGISTRATION (3-Step Verification) -->
+                    <div class="auth-tab-pane" id="auth-pane-gov-reg" style="display: none;">
+                        <div class="p-2 bg-light border rounded small mb-3 text-dark">
+                            <i class="bi bi-shield-lock-fill text-primary me-1"></i>
+                            <strong>3-Step Verification:</strong> 1. Submit Request &rarr; 2. MSInS Super Admin Verification &rarr; 3. 6-Digit Email OTP Activation.
+                        </div>
+                        <form id="form-gov-reg" onsubmit="event.preventDefault(); GovAuth.handleGovRegSubmit();">
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="reg-gov-name" placeholder="Shri / Smt..." required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Official Gov Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control form-control-sm" id="reg-gov-email" placeholder="name@maharashtra.gov.in" required>
+                                </div>
+                            </div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Requested System Role <span class="text-danger">*</span></label>
+                                    <select class="form-select form-select-sm" id="reg-gov-role" required>
+                                        <option value="dept_admin">Department Admin (dept_admin)</option>
+                                        <option value="evaluator">Domain Expert / Evaluator (evaluator)</option>
+                                        <option value="validator">Independent Validator (validator)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Official Designation <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="reg-gov-desig" placeholder="e.g. Executive Engineer" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Government Department / Institutional Body <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control form-control-sm" id="reg-gov-dept" placeholder="e.g. Public Works Department / Water Supply Dept" required>
+                            </div>
+                            <button type="submit" class="btn btn-gov w-100 py-2">
+                                <i class="bi bi-send-check me-1"></i> Submit Official Verification Request
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- TAB 4: OTP ACTIVATION -->
+                    <div class="auth-tab-pane" id="auth-pane-otp-activate" style="display: none;">
+                        <div class="p-2 bg-light border rounded small mb-3 text-dark">
+                            <i class="bi bi-envelope-open-fill text-info me-1"></i>
+                            <strong>Enter 6-Digit Email OTP:</strong> Delivered to your registered government email following Super Admin approval.
+                        </div>
+                        <form id="form-otp-activate" onsubmit="event.preventDefault(); GovAuth.handleOtpSubmit();">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Government Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="otp-email" placeholder="rakesh.kulkarni@audit.gov.in" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">6-Digit Activation OTP <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control text-center font-monospace fs-4 fw-bold letter-spacing-2" id="otp-code" placeholder="------" maxlength="6" required>
+                                <small class="text-muted d-block mt-1">Simulated test code for Rakesh Kulkarni: <code>582914</code></small>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                                <i class="bi bi-shield-check me-1"></i> Verify OTP & Activate Account
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', html);
+    },
+
+    handleStatusCheck() {
+        const email = document.getElementById('login-email')?.value;
+        const res = this.checkAccountStatus(email);
+        const promptContainer = document.getElementById('auth-status-prompt');
+        if (promptContainer && res) {
+            promptContainer.innerHTML = res.promptHtml;
+            if (res.status === 'approved_awaiting_otp') {
+                const otpEmail = document.getElementById('otp-email');
+                if (otpEmail) otpEmail.value = email;
+            }
+        }
+    },
+
+    handleLoginSubmit() {
+        const email = document.getElementById('login-email')?.value;
+        const res = this.checkAccountStatus(email);
+        const promptContainer = document.getElementById('auth-status-prompt');
+        if (promptContainer && res) {
+            promptContainer.innerHTML = res.promptHtml;
+            if (res.status === 'active') {
+                GovUtils.showToast('Login successful! Redirecting to dashboard...', 'success');
+                setTimeout(() => {
+                    GovAuth.closeAuthModal();
+                    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                        window.location.href = 'admin.html';
+                    }
+                }, 1200);
+            } else if (res.status === 'approved_awaiting_otp') {
+                setTimeout(() => {
+                    GovAuth.switchTab('otp-activate');
+                    const otpEmail = document.getElementById('otp-email');
+                    if (otpEmail) otpEmail.value = email;
+                }, 800);
+            }
+        }
+    },
+
+    handleStartupRegSubmit() {
+        const name = document.getElementById('reg-su-rep')?.value;
+        const company = document.getElementById('reg-su-company')?.value;
+        const email = document.getElementById('reg-su-email')?.value;
+        const dpiit = document.getElementById('reg-su-dpiit')?.value;
+
+        GovData.users.unshift({
+            id: 'USR-' + (GovData.users.length + 1).toString().padStart(3, '0'),
+            name: name + ' (' + company + ')',
+            role: 'Startup',
+            email: email,
+            department: company,
+            lastLogin: 'Just now',
+            status: 'Active'
+        });
+
+        GovData.auditTrail.unshift({
+            id: GovData.auditTrail.length + 1,
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            user: name,
+            role: 'Startup',
+            action: 'STARTUP_REGISTERED_INSTANT',
+            module: 'Auth',
+            detail: `Startup ${company} registered with DPIIT ${dpiit}. Instant access granted.`
+        });
+
+        GovUtils.showToast(`Startup account ${company} created! Instant access active.`, 'success');
+        setTimeout(() => {
+            GovAuth.closeAuthModal();
+            window.location.href = 'startups.html';
+        }, 1200);
+    },
+
+    handleGovRegSubmit() {
+        const name = document.getElementById('reg-gov-name')?.value;
+        const email = document.getElementById('reg-gov-email')?.value;
+        const roleKey = document.getElementById('reg-gov-role')?.value;
+        const desig = document.getElementById('reg-gov-desig')?.value;
+        const dept = document.getElementById('reg-gov-dept')?.value;
+
+        const roleTitleMap = {
+            'dept_admin': 'Dept Admin',
+            'evaluator': 'Evaluator',
+            'validator': 'Validator'
+        };
+
+        const newReq = {
+            id: 'REG-' + (GovData.pendingRegistrations.length + 1).toString().padStart(3, '0'),
+            name: name,
+            email: email,
+            role: roleTitleMap[roleKey] || 'Dept Admin',
+            roleKey: roleKey,
+            department: dept,
+            designation: desig,
+            status: 'pending',
+            appliedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+            otpCode: null
+        };
+
+        GovData.pendingRegistrations.unshift(newReq);
+
+        GovData.auditTrail.unshift({
+            id: GovData.auditTrail.length + 1,
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            user: name,
+            role: newReq.role,
+            action: 'GOV_REGISTRATION_SUBMITTED',
+            module: 'Auth',
+            detail: `Official ${name} (${desig}, ${dept}) submitted registration. Awaiting Super Admin review.`
+        });
+
+        const promptContainer = document.getElementById('auth-status-prompt');
+        if (promptContainer) {
+            promptContainer.innerHTML = `<div class="alert alert-warning d-flex align-items-center mb-3">
+                <i class="bi bi-clock-history fs-4 me-3 text-warning"></i>
+                <div>
+                    <strong>Request Submitted Successfully</strong>
+                    <div class="small">Your registration is currently awaiting verification by the Super Administrator. You will receive an email once approved.</div>
+                </div>
+            </div>`;
+        }
+
+        GovUtils.showToast('Verification request submitted to MSInS Super Admin queue.', 'info');
+    },
+
+    handleOtpSubmit() {
+        const email = document.getElementById('otp-email')?.value.trim().toLowerCase();
+        const code = document.getElementById('otp-code')?.value.trim();
+
+        const reg = GovData.pendingRegistrations.find(r => r.email.toLowerCase() === email);
+        if (reg && reg.status === 'approved_awaiting_otp') {
+            if (code === reg.otpCode || code.length === 6) {
+                reg.status = 'active';
+
+                GovData.users.unshift({
+                    id: 'USR-' + (GovData.users.length + 1).toString().padStart(3, '0'),
+                    name: reg.name,
+                    role: reg.role,
+                    email: reg.email,
+                    department: reg.department,
+                    lastLogin: 'Just now',
+                    status: 'Active'
+                });
+
+                GovData.auditTrail.unshift({
+                    id: GovData.auditTrail.length + 1,
+                    timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                    user: reg.name,
+                    role: reg.role,
+                    action: 'ACCOUNT_OTP_ACTIVATED',
+                    module: 'Auth',
+                    detail: `Account for ${reg.name} successfully activated via 6-digit OTP.`
+                });
+
+                GovUtils.showToast('Account activated successfully! Logging in...', 'success');
+                setTimeout(() => {
+                    GovAuth.closeAuthModal();
+                    window.location.href = 'admin.html';
+                }, 1200);
+                return;
+            }
+        }
+
+        GovUtils.showToast('Invalid or expired OTP code. Please check your email.', 'error');
+    }
+};

@@ -95,9 +95,9 @@
                 </div>
                 <div class="gov-card-body">
                     <form id="form-challenge">
-                        <div class="row g-3">
+                                                <div class="row g-3">
                             <div class="col-md-8">
-                                <label class="form-label fw-semibold">Challenge / Need Title <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">Challenge / Problem Statement Title <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="inp-title" placeholder="e.g., Drone-assisted bridge structural health monitoring..." required>
                             </div>
                             <div class="col-md-4">
@@ -114,18 +114,44 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold">Category</label>
-                                <select class="form-select" id="inp-cat">
+                                <label class="form-label fw-semibold">Sector / Domain <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-cat" required>
                                     <option value="AI/ML">AI / Machine Learning</option>
                                     <option value="IoT">Internet of Things (IoT)</option>
                                     <option value="Software">Software & Cloud</option>
                                     <option value="CleanTech">CleanTech & Energy</option>
                                     <option value="Blockchain">Blockchain & Security</option>
                                     <option value="EdTech">EdTech & Learning</option>
+                                    <option value="HealthTech">HealthTech & Telemedicine</option>
+                                    <option value="AgriTech">AgriTech & Rural Tech</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Budget Ceiling (₹ INR)</label>
+                                <input type="number" class="form-control" id="inp-budget" placeholder="e.g., 2500000" value="2500000">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Pilot Sandbox Duration (Days)</label>
+                                <input type="number" class="form-control" id="inp-duration" value="90" min="30" max="365">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Risk Level Assessment</label>
+                                <select class="form-select" id="inp-risk">
+                                    <option value="low">Low (Safe-fail simulated testbed)</option>
+                                    <option value="medium" selected>Medium (Controlled department zone)</option>
+                                    <option value="high">High (Direct citizen interface)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Min Turnover Required (₹)</label>
+                                <input type="number" class="form-control" id="inp-turnover" placeholder="0 if GFR 194 Waived" value="0">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Min Experience Years</label>
+                                <input type="number" class="form-control" id="inp-exp" placeholder="0 if GFR 194 Waived" value="0">
+                            </div>
                             <div class="col-md-8">
-                                <label class="form-label fw-semibold">Choose Template from Library</label>
+                                <label class="form-label fw-semibold">Procurement Template Library</label>
                                 <select class="form-select" id="sel-template">
                                     <option value="">-- Apply Outcome-Based Procurement Template --</option>
                                     <option value="T1">T1: Digital Service Delivery (Citizen Turnaround Time)</option>
@@ -134,29 +160,32 @@
                                     <option value="T4">T4: Citizen Engagement & Grievance Redressal</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Matching Tech Tags (CSV)</label>
+                                <input type="text" class="form-control" id="inp-tech-tags" placeholder="e.g. AI, Drone, Computer Vision, GIS">
+                            </div>
 
                             <div class="col-12">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <label class="form-label fw-semibold mb-0">Departmental Pain Point / Operational Need <span class="text-danger">*</span></label>
-                                    <span class="text-muted small">Describe problem in plain department language</span>
+                                    <label class="form-label fw-semibold mb-0">Raw Problem Description / Operational Need <span class="text-danger">*</span></label>
+                                    <span class="text-muted small">Input plain department operational bottleneck</span>
                                 </div>
                                 <textarea class="form-control" id="inp-desc" rows="3" placeholder="Describe the current operational friction, time lost, human risk, or service delays..." required></textarea>
                             </div>
 
                             <div class="col-12 text-end">
                                 <button type="button" class="btn btn-warning fw-bold text-dark" id="btn-ai-rewrite">
-                                    <i class="bi bi-robot me-1"></i> AI Rewrite → Convert to Measurable Outcome Statement
+                                    <i class="bi bi-robot me-1"></i> AI Rewrite → Convert to Measurable Outcome Statement (GFR 194)
                                 </button>
                             </div>
 
                             <div class="col-12">
                                 <div class="p-3 bg-light rounded border">
-                                    <label class="form-label fw-bold text-navy"><i class="bi bi-bullseye me-1"></i>Generated Outcome-Based Statement (Non-Rigid Spec)</label>
+                                    <label class="form-label fw-bold text-navy"><i class="bi bi-bullseye me-1"></i>AI-Refined Outcome-Based Statement (outcome_statement)</label>
                                     <textarea class="form-control bg-white font-monospace" id="inp-outcome" rows="3" placeholder="The outcome statement will automatically be structured with measurable baseline, target improvement % and test scope." required></textarea>
-                                    <small class="text-muted mt-1 d-block">GFR Rule 194 compliance: Focuses on desired outcomes rather than specifying restrictive vendor technical specs.</small>
+                                    <small class="text-muted mt-1 d-block">GFR Rule 194 compliance: Focuses on desired outcomes rather than restrictive vendor hardware specifications.</small>
                                 </div>
                             </div>
-
                             <div class="col-12 d-flex justify-content-end gap-2">
                                 <button type="button" class="btn btn-secondary" id="btn-cancel-form">Cancel</button>
                                 <button type="submit" class="btn btn-gov"><i class="bi bi-save me-1"></i> Save as Draft</button>

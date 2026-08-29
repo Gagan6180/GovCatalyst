@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration & Governance — GovCatalyst | महाराष्ट्र शासन</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <!-- Tricolor Strip -->
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <!-- Clean Minimal Top Bar: MSInS GovCatalyst on Left & ONLY Tricolor Hamburger on Right -->
+    <div class="top-bar-clean">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <span class="badge bg-warning text-dark font-monospace" style="font-size: 11px;">MSInS</span>
+                <strong style="color: #ffffff; font-size: 17px; letter-spacing: -0.3px;">GovCatalyst</strong>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-light d-none d-md-flex align-items-center gap-1" onclick="GovAuth.openAuthModal('login')">
+                    <i class="bi bi-person-circle"></i> <span>SSO Login / Register</span>
+                </button>
+                <!-- 🇮🇳 ONLY Tricolor Hamburger Menu on Right -->
+                <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu" title="All Modules Menu (10)">
+                    <span class="tri-bar bar-saffron"></span>
+                    <span class="tri-bar bar-white"></span>
+                    <span class="tri-bar bar-green"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-gov">
+        <div class="container">
+            <a href="index.html"><i class="bi bi-house-door-fill me-1"></i> Home</a> › <span class="text-dark fw-semibold">Governance & Audit Trail</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="main-content" class="py-4">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h2><i class="bi bi-shield-lock-fill text-primary me-2"></i>Governance, Role-Based Access & Audit Trail</h2>
+                    <p>Section 65B compliant audit logging, independent validator sign-offs, and multi-tier user role permissions</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-gold" id="btn-toggle-add-user"><i class="bi bi-person-plus me-1"></i> Manual User Provision</button>
+                    <button class="btn btn-gov" onclick="GovAuth.openAuthModal('login')"><i class="bi bi-box-arrow-in-right me-1"></i> SSO Login & Status</button>
+                </div>
+            </div>
+
+            <!-- Summary Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-primary" id="cnt-audit-events"><span id="audit-count">28</span></div>
+                        <div class="stat-label">Audit Log Events</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-success">100%</div>
+                        <div class="stat-label">Cryptographic Hash Valid</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-info"><span id="users-count">4</span> Roles</div>
+                        <div class="stat-label">RBAC Security Active</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number text-warning"><span id="signoffs-count">6</span> Signed Off</div>
+                        <div class="stat-label">Validator Approvals</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Nav Tabs -->
+            <ul class="nav nav-tabs mb-4 border-bottom" id="admin-tabs">
+                <li class="nav-item">
+                    <button class="nav-link active" data-tab="tab-audit"><i class="bi bi-shield-lock me-1"></i> Forensic Audit Trail</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-tab="tab-pending-users"><i class="bi bi-person-check me-1"></i> Pending Verification Queue <span class="badge bg-danger ms-1" id="badge-pending-count">2</span></button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-tab="tab-signoffs"><i class="bi bi-shield-check me-1"></i> Validator Sign-Offs</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-tab="tab-users"><i class="bi bi-people me-1"></i> Active Users Directory</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-tab="tab-rbac"><i class="bi bi-grid-3x3-gap me-1"></i> Role Matrix (RBAC)</button>
+                </li>
+            </ul>
+
+            <!-- Collapsible Add User Form -->
+            <div class="gov-card mb-4" id="card-add-user" style="display: none;">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-person-plus me-2"></i>Create New System User & Assign RBAC Role</span>
+                    <button type="button" class="btn-close" id="btn-close-add-user"></button>
+                </div>
+                <div class="gov-card-body">
+                    <form id="form-add-user">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="inp-u-name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Official Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="inp-u-email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">System Role <span class="text-danger">*</span></label>
+                                <select class="form-select" id="inp-u-role" required>
+                                    <option value="dept_admin">Department Admin (dept_admin)</option>
+                                    <option value="evaluator">Domain Expert / Evaluator (evaluator)</option>
+                                    <option value="validator">Independent Validator (validator)</option>
+                                    <option value="startup">Startup Representative (startup)</option>
+                                    <option value="super_admin">State Super Admin (super_admin)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Department / Entity</label>
+                                <input type="text" class="form-control" id="inp-u-dept" placeholder="e.g. PWD / MSInS / IIT Bombay">
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-secondary me-2" id="btn-cancel-add-user">Cancel</button>
+                                <button type="submit" class="btn btn-gov"><i class="bi bi-check2-circle me-1"></i> Save User Profile</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB 1: Forensic Audit Trail -->
+            <div class="tab-content-pane" id="tab-audit">
+                <div class="gov-card">
+                    <div class="gov-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <span><i class="bi bi-shield-lock me-2"></i>Section 65B Certified Forensic Audit Trail</span>
+                        <div class="d-flex gap-2">
+                            <input type="text" class="form-control form-control-sm" id="search-audit" placeholder="Search audit logs..." style="width: 200px;">
+                            <select class="form-select form-select-sm" id="filter-audit-module" style="width: 150px;">
+                                <option value="">All Modules</option>
+                                <option value="Challenges">Challenges</option>
+                                <option value="Startups">Startups</option>
+                                <option value="Eligibility">Eligibility</option>
+                                <option value="Evaluation">Evaluation</option>
+                                <option value="Pilots">Pilots</option>
+                                <option value="Milestones">Milestones</option>
+                                <option value="Payments">Payments</option>
+                                <option value="Scaleup">Scaleup</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Auth">Auth</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="gov-card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-gov mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Ref ID</th>
+                                        <th>Timestamp (IST)</th>
+                                        <th>User</th>
+                                        <th>System Role</th>
+                                        <th>Action Log</th>
+                                        <th>Module</th>
+                                        <th>Audit Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="audit-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Pending Government Registrations & Super Admin Verification Queue -->
+            <div class="tab-content-pane" id="tab-pending-users" style="display: none;">
+                <div class="gov-card mb-4">
+                    <div class="gov-card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-navy"><i class="bi bi-person-badge-fill me-2"></i>MSInS Super Admin — Government Official Verification Queue</span>
+                        <span class="badge bg-warning text-dark"><i class="bi bi-shield-lock me-1"></i>3-Step Auth Verification Active</span>
+                    </div>
+                    <div class="gov-card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table-gov mb-0" id="table-pending-users">
+                                <thead>
+                                    <tr>
+                                        <th>Ref ID</th>
+                                        <th>Official Name</th>
+                                        <th>Government Email</th>
+                                        <th>Requested Role</th>
+                                        <th>Department / Entity</th>
+                                        <th>Designation</th>
+                                        <th>Submitted</th>
+                                        <th>Status</th>
+                                        <th class="text-end">Verification Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pending-users-tbody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Validator Sign-Offs -->
+            <div class="tab-content-pane" id="tab-signoffs" style="display: none;">
+                <div class="gov-card">
+                    <div class="gov-card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-navy"><i class="bi bi-shield-check me-2"></i>Independent Third-Party & Validator Verification Sign-Offs</span>
+                        <span class="badge bg-primary">Statutory Compliance</span>
+                    </div>
+                    <div class="gov-card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table-gov mb-0" id="table-signoffs">
+                                <thead>
+                                    <tr>
+                                        <th>Sign-Off Ref</th>
+                                        <th>Pilot Reference</th>
+                                        <th>Independent Validator</th>
+                                        <th>Audit Domain</th>
+                                        <th>Compliance Status</th>
+                                        <th>Signed Date</th>
+                                        <th>Audit Finding Comments</th>
+                                        <th class="text-end">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="signoffs-tbody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Users Registry -->
+            <div class="tab-content-pane" id="tab-users" style="display: none;">
+                <div class="gov-card">
+                    <div class="gov-card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-navy"><i class="bi bi-person-lines-fill me-2"></i>Provisioned Platform Users Directory</span>
+                        <span class="badge bg-success">Active RBAC Session</span>
+                    </div>
+                    <div class="gov-card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table-gov mb-0" id="table-users">
+                                <thead>
+                                    <tr>
+                                        <th>User ID</th>
+                                        <th>Official Name</th>
+                                        <th>Assigned Role</th>
+                                        <th>Email Address</th>
+                                        <th>Department</th>
+                                        <th>Last Active</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-tbody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: Role Matrix (RBAC) -->
+            <div class="tab-content-pane" id="tab-rbac" style="display: none;">
+                <div class="row g-3" id="rbac-cards-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="gov-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5>GovCatalyst</h5>
+                    <p style="font-size:13px;">Startup-Friendly Innovation Procurement Portal</p>
+                    <p style="font-size:13px;">Government of Maharashtra</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Governance Architecture</h5>
+                    <p style="font-size:13px;">Super Admin Single Pre-Configured Account</p>
+                    <p style="font-size:13px;">Audit Trail Non-Repudiation Guaranteed</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5>Legal</h5>
+                    <p style="font-size:13px;">SIH 26136 · GFR Rule 194</p>
+                    <p style="font-size:13px;">IT Act 2000 Section 65B Audit Trail Compliance</p>
+                </div>
+            </div>
+            <div class="footer-bottom text-center">
+                © 2026 Government of Maharashtra. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <div class="tricolor-strip">
+        <span class="saffron"></span>
+        <span class="white-s"></span>
+        <span class="green-s"></span>
+    </div>
+
+    <div class="toast-container-gov"></div>
+
+    <script src="common.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

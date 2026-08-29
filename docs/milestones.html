@@ -126,6 +126,75 @@
                 </div>
             </div>
 
+            <!-- Active Contract Selection & Partner Info -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-file-earmark-text me-2"></i>Active Pilot Contract Selector</span>
+                    <button class="btn btn-sm btn-outline-light" id="btn-view-agreement">
+                        <i class="bi bi-eye me-1"></i> View Bilateral Agreement Clauses
+                    </button>
+                </div>
+                <div class="gov-card-body">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Select Pilot Milestone Agreement:</label>
+                            <select class="form-select" id="sel-pilot">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Contracting Partner Entity:</label>
+                            <div class="p-2 bg-light border rounded fw-bold text-navy" id="contract-partner-name">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State Machine Lifecycle Visualization -->
+            <div class="gov-card mb-4">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-arrow-repeat me-2"></i>Milestone Contract State Machine</span>
+                    <span class="badge bg-warning text-dark font-monospace" id="state-badge">Drafting</span>
+                </div>
+                <div class="gov-card-body">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4" id="pipeline-container">
+                        <!-- Pipeline rendered by JS -->
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-gold" id="btn-transition-state">
+                            <i class="bi bi-arrow-right-circle me-1"></i> Advance Contract State
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Milestone Deliverables Table -->
+            <div class="gov-card">
+                <div class="gov-card-header">
+                    <i class="bi bi-list-check me-2"></i>Milestone Deliverables & Tranche Conditions
+                </div>
+                <div class="gov-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-gov mb-0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Milestone Deliverable</th>
+                                    <th>Due Date</th>
+                                    <th>Tranche Payout</th>
+                                    <th>Verification</th>
+                                    <th>Status</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="milestones-container">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 

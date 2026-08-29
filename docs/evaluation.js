@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const rngFeas = document.getElementById('rng-feas');
     const rngScal = document.getElementById('rng-scal');
     const rngCost = document.getElementById('rng-cost');
+    const rngAlign = document.getElementById('rng-align');
+    const valAlign = document.getElementById('val-align');
 
     const valInno = document.getElementById('val-inno');
     const valFeas = document.getElementById('val-feas');
