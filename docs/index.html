@@ -7,12 +7,6 @@
     <title>GovCatalyst — Startup-Friendly Innovation Procurement | महाराष्ट्र शासन</title>
     <meta name="description"
         content="GovCatalyst — Startup-friendly public procurement mechanism for Government of Maharashtra. Identify, pilot, procure, and scale innovative startup solutions. SIH 26136.">
-    <meta property="og:title" content="GovCatalyst — महाराष्ट्र शासनाचे नवोपक्रम खरेदी पोर्टल">
-    <meta property="og:description"
-        content="स्टार्टअप-अनुकूल नवोपक्रम खरेदी पोर्टल. विभागीय आव्हाने, स्टार्टअप शोध, पात्रता, मूल्यांकन आणि प्रायोगिक व्यवस्थापन.">
-    <meta name="author" content="Government of Maharashtra">
-    <meta name="keywords"
-        content="GovCatalyst, Maharashtra Government, Startup Procurement, SIH 26136, Innovation, MSInS, DPIIT">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="common.css">
@@ -59,12 +53,17 @@
                 onclick="window.location.href='milestones.html'"><i class="bi bi-calendar3"></i></button>
             <span class="sep">|</span>
             <button id="top-access-btn" title="Accessibility Tools" class="top-icon-btn"
-                onclick="GovUtils.showToast('Accessibility: Normal & High Contrast Supported', 'info')"><i
+                onclick="GovUtils.showToast('Accessibility: High Contrast & Screen Reader Supported', 'info')"><i
                     class="bi bi-universal-access-circle"></i></button>
             <span class="sep">|</span>
-            <button id="top-lang-toggle" title="Switch Language (English / मराठी)" class="lang-glyph-btn">अ/A</button>
+            <button id="top-lang-toggle" title="Switch Language (English / मराठी)" class="lang-glyph-btn"
+                onclick="GovLang.toggle()">अ/A</button>
             <span class="sep">|</span>
-            <!-- 🇮🇳 National Flag 3-Line Hamburger Menu -->
+            <button class="top-auth-btn" id="btn-top-auth" onclick="GovAuth.openAuthModal('login')"
+                title="Sign In & Verification">
+                <i class="bi bi-person-circle"></i> <span data-lang-key="loginBtn">Login / Register</span>
+            </button>
+            <span class="sep">|</span>
             <button class="top-tricolor-hamburger" id="gov-hamburger-toggle" aria-label="Toggle Modules Menu"
                 title="All Modules Menu (10)">
                 <span class="tri-bar bar-saffron"></span>
@@ -88,15 +87,16 @@
                 <span class="beta-badge-pill">BETA</span>
             </h1>
             <h2 class="hero-subtitle-text" data-lang-key="govName">Government of Maharashtra</h2>
-            <p class="hero-tagline-text" data-lang-key="welcome">Where Government Information Converges &bull;
+            <p class="hero-tagline-text" data-lang-key="heroTagline">Where Government Information Converges •
                 GovCatalyst Innovation Hub</p>
 
             <!-- Search Box (Exact india.gov.in layout with Crimson Red Search Button) -->
             <div class="hero-search-container">
                 <span class="search-icon-left"><i class="bi bi-search"></i></span>
-                <input type="text" data-lang-placeholder="searchHere" placeholder="Search for" id="hero-search">
+                <input type="text" data-lang-placeholder="searchHere"
+                    placeholder="Search for problem statements, startups, departments..." id="hero-search">
                 <select class="category-dropdown" id="hero-search-cat" aria-label="Select Category">
-                    <option value="all">All Categories ⌵</option>
+                    <option value="all" data-lang-key="allCategories">All Categories ⌵</option>
                     <option value="challenges.html">Problem Statements</option>
                     <option value="startups.html">Startup Directory</option>
                     <option value="eligibility.html">Eligibility Matrix</option>
@@ -139,42 +139,42 @@
                     <div class="stats-ribbon-icon"><i class="bi bi-gear-wide-connected"></i></div>
                     <div>
                         <div class="num">1,450+</div>
-                        <div class="label">Online Challenges</div>
+                        <div class="label" data-lang-key="statChallenges">Online Challenges</div>
                     </div>
                 </div>
                 <div class="stats-ribbon-item">
                     <div class="stats-ribbon-icon"><i class="bi bi-diagram-3"></i></div>
                     <div>
                         <div class="num">3,680+</div>
-                        <div class="label">Startup Schemes</div>
+                        <div class="label" data-lang-key="statSchemes">Startup Schemes</div>
                     </div>
                 </div>
                 <div class="stats-ribbon-item">
                     <div class="stats-ribbon-icon"><i class="bi bi-people"></i></div>
                     <div>
                         <div class="num">2,306+</div>
-                        <div class="label">Pilot Evaluations</div>
+                        <div class="label" data-lang-key="statEvaluations">Pilot Evaluations</div>
                     </div>
                 </div>
                 <div class="stats-ribbon-item">
                     <div class="stats-ribbon-icon"><i class="bi bi-geo-alt"></i></div>
                     <div>
                         <div class="num">3,975+</div>
-                        <div class="label">Sandbox Sites</div>
+                        <div class="label" data-lang-key="statSandboxes">Sandbox Sites</div>
                     </div>
                 </div>
                 <div class="stats-ribbon-item">
                     <div class="stats-ribbon-icon"><i class="bi bi-award"></i></div>
                     <div>
                         <div class="num">₹1,207 Cr</div>
-                        <div class="label">Escrow Released</div>
+                        <div class="label" data-lang-key="statEscrow">Escrow Released</div>
                     </div>
                 </div>
                 <div class="stats-ribbon-item">
                     <div class="stats-ribbon-icon"><i class="bi bi-bullseye"></i></div>
                     <div>
                         <div class="num">10</div>
-                        <div class="label">Stages Workflow</div>
+                        <div class="label" data-lang-key="statStages">Stages Workflow</div>
                     </div>
                 </div>
             </div>
@@ -184,33 +184,33 @@
                 <!-- Left Red Box -->
                 <div class="showcase-red-block">
                     <div>
-                        <h3 class="showcase-red-title">Online Services</h3>
+                        <h3 class="showcase-red-title" data-lang-key="onlineServices">Online Services</h3>
                         <div class="showcase-tiles-grid">
                             <a href="challenges.html" class="showcase-tile">
                                 <i class="bi bi-bank2"></i>
                                 <div class="tile-count">1092+</div>
-                                <div class="tile-name">Central / AI</div>
+                                <div class="tile-name" data-lang-key="catCentral">Central / AI</div>
                             </a>
                             <a href="startups.html" class="showcase-tile">
                                 <i class="bi bi-building"></i>
                                 <div class="tile-count">12,314+</div>
-                                <div class="tile-name">State / DPIIT</div>
+                                <div class="tile-name" data-lang-key="catState">State / DPIIT</div>
                             </a>
                             <a href="pilot-design.html" class="showcase-tile">
                                 <i class="bi bi-shield-check"></i>
                                 <div class="tile-count">33</div>
-                                <div class="tile-name">Key Services</div>
+                                <div class="tile-name" data-lang-key="catKeyServices">Key Services</div>
                             </a>
                             <a href="eligibility.html" class="showcase-tile">
                                 <i class="bi bi-journal-text"></i>
                                 <div class="tile-count">18</div>
-                                <div class="tile-name">GFR Categories</div>
+                                <div class="tile-name" data-lang-key="catGfr">GFR Categories</div>
                             </a>
                         </div>
                     </div>
                     <div class="showcase-red-footer">
-                        <span>Avail online Services & Save time</span>
-                        <a href="challenges.html" class="btn-white-pill">View All</a>
+                        <span data-lang-key="availServices">Avail online Services & Save time</span>
+                        <a href="challenges.html" class="btn-white-pill" data-lang-key="viewAll">View All</a>
                     </div>
                 </div>
 
@@ -247,7 +247,7 @@
                             <span class="dot-gray"></span>
                         </div>
                         <button class="carousel-square-btn" title="Next Services" aria-label="Next"
-                            onclick="GovUtils.showToast('Browsing Next Procurement Showcase', 'info')"><i
+                            onclick="GovUtils.showToast('Sliding to next showcase services', 'info')"><i
                                 class="bi bi-chevron-right"></i></button>
                     </div>
                 </div>
@@ -255,79 +255,80 @@
 
             <!-- Section: 10 Core Modules -->
             <div class="text-center mb-4">
-                <h3 class="fw-bold" style="color: var(--gov-navy);">Core Modules</h3>
-                <p class="text-muted">Complete end-to-end innovation procurement lifecycle</p>
+                <h3 class="fw-bold" style="color: var(--gov-navy);" data-lang-key="coreModulesTitle">Core Modules</h3>
+                <p class="text-muted" data-lang-key="coreModulesDesc">Complete end-to-end innovation procurement
+                    lifecycle</p>
             </div>
 
             <div class="row g-3 mb-5">
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="challenges.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-file-earmark-diff"></i></div>
-                        <div class="m-name">Challenge Builder</div>
-                        <div class="m-desc">Create outcome-based problem statements</div>
+                        <div class="m-name" data-lang-key="m1Name">Challenge Builder</div>
+                        <div class="m-desc" data-lang-key="m1Desc">Create outcome-based problem statements</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="startups.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-rocket-takeoff"></i></div>
-                        <div class="m-name">Startup Discovery</div>
-                        <div class="m-desc">Find & match startups to challenges</div>
+                        <div class="m-name" data-lang-key="m2Name">Startup Discovery</div>
+                        <div class="m-desc" data-lang-key="m2Desc">Find & match startups to challenges</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="eligibility.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-patch-check"></i></div>
-                        <div class="m-name">Eligibility Screening</div>
-                        <div class="m-desc">Relaxed criteria rule engine</div>
+                        <div class="m-name" data-lang-key="m3Name">Eligibility Screening</div>
+                        <div class="m-desc" data-lang-key="m3Desc">Relaxed criteria rule engine</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="evaluation.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-star"></i></div>
-                        <div class="m-name">Expert Evaluation</div>
-                        <div class="m-desc">Multi-evaluator scoring dashboard</div>
+                        <div class="m-name" data-lang-key="m4Name">Expert Evaluation</div>
+                        <div class="m-desc" data-lang-key="m4Desc">Multi-evaluator scoring dashboard</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="pilot-design.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-shield-shaded"></i></div>
-                        <div class="m-name">Pilot Design</div>
-                        <div class="m-desc">Sandbox pilot template generator</div>
+                        <div class="m-name" data-lang-key="m5Name">Pilot Design</div>
+                        <div class="m-desc" data-lang-key="m5Desc">Sandbox pilot template generator</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="milestones.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-diagram-3"></i></div>
-                        <div class="m-name">Milestone Tracking</div>
-                        <div class="m-desc">State-machine contract tracker</div>
+                        <div class="m-name" data-lang-key="m6Name">Milestone Tracking</div>
+                        <div class="m-desc" data-lang-key="m6Desc">State-machine contract tracker</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="performance.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-speedometer2"></i></div>
-                        <div class="m-name">Performance M&E</div>
-                        <div class="m-desc">KPI tracking & health score</div>
+                        <div class="m-name" data-lang-key="m7Name">Performance M&E</div>
+                        <div class="m-desc" data-lang-key="m7Desc">KPI tracking & health score</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="payments.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-wallet2"></i></div>
-                        <div class="m-name">Payment Release</div>
-                        <div class="m-desc">Escrow-style milestone payments</div>
+                        <div class="m-name" data-lang-key="m8Name">Payment Release</div>
+                        <div class="m-desc" data-lang-key="m8Desc">Escrow-style milestone payments</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="scaleup.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-graph-up-arrow"></i></div>
-                        <div class="m-name">Scale-up Transition</div>
-                        <div class="m-desc">Procurement pathway engine</div>
+                        <div class="m-name" data-lang-key="m9Name">Scale-up Transition</div>
+                        <div class="m-desc" data-lang-key="m9Desc">Procurement pathway engine</div>
                     </a>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2-4">
                     <a href="admin.html" class="module-card">
                         <div class="m-icon"><i class="bi bi-gear-wide-connected"></i></div>
-                        <div class="m-name">Admin & Governance</div>
-                        <div class="m-desc">RBAC, audit trail, sign-offs</div>
+                        <div class="m-name" data-lang-key="m10Name">Admin & Governance</div>
+                        <div class="m-desc" data-lang-key="m10Desc">RBAC, audit trail, sign-offs</div>
                     </a>
                 </div>
             </div>
@@ -337,80 +338,37 @@
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="stat-card">
                         <div class="stat-number" id="stat-challenges">4</div>
-                        <div class="stat-label">Challenges</div>
+                        <div class="stat-label" data-lang-key="challenges">Challenges</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="stat-card">
                         <div class="stat-number" id="stat-startups">6</div>
-                        <div class="stat-label">Startups</div>
+                        <div class="stat-label" data-lang-key="startups">Startups</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="stat-card">
                         <div class="stat-number" id="stat-pilots">2</div>
-                        <div class="stat-label">Active Pilots</div>
+                        <div class="stat-label" data-lang-key="pilotDesign">Pilots Active</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="stat-card">
-                        <div class="stat-number" id="stat-kpis">5</div>
-                        <div class="stat-label">KPIs Tracked</div>
+                        <div class="stat-number" id="stat-milestones">8</div>
+                        <div class="stat-label" data-lang-key="milestones">Milestones</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="stat-card">
-                        <div class="stat-number" id="stat-payments">₹10L</div>
-                        <div class="stat-label">Released</div>
+                        <div class="stat-number" id="stat-disbursed">₹7.5L</div>
+                        <div class="stat-label" data-lang-key="payments">Disbursed</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-lg-2">
                     <div class="stat-card">
-                        <div class="stat-number" id="stat-audit">12</div>
-                        <div class="stat-label">Audit Entries</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- About Section -->
-            <div class="gov-card gold-top">
-                <div class="gov-card-header">
-                    <i class="bi bi-info-circle me-2"></i> About GovCatalyst — SIH Problem Statement 26136
-                </div>
-                <div class="gov-card-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <p><strong>Problem:</strong> Government departments face operational problems that could
-                                benefit from innovative startup solutions, but conventional procurement processes are
-                                designed for standardised goods and established vendors.</p>
-                            <p><strong>Solution:</strong> GovCatalyst provides a structured end-to-end mechanism for
-                                challenge identification, startup discovery, eligibility screening, expert evaluation,
-                                sandbox/pilot design, milestone-based contracting, performance measurement, payment
-                                release, independent validation, and scale-up decisions.</p>
-                            <p class="mb-0"><strong>Organization:</strong> Government of Maharashtra — Maharashtra State
-                                Innovation Society (MSInS), Department of Skills, Employment, Entrepreneurship and
-                                Innovation</p>
-                        </div>
-                        <div class="col-md-4">
-                            <table class="table table-sm" style="font-size: 13px;">
-                                <tr>
-                                    <td class="fw-bold">Problem ID</td>
-                                    <td>26136</td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold">Category</td>
-                                    <td>Software</td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold">Theme</td>
-                                    <td>Miscellaneous</td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold">Framework</td>
-                                    <td>GFR Rule 194</td>
-                                </tr>
-                            </table>
-                        </div>
+                        <div class="stat-number text-success">92%</div>
+                        <div class="stat-label">Success Rate</div>
                     </div>
                 </div>
             </div>
@@ -427,24 +385,21 @@
                     <p style="font-size:13px;" data-lang-key="siteSubtitle">Startup-Friendly Innovation Procurement
                         Portal</p>
                     <p style="font-size:13px;" data-lang-key="govName">Government of Maharashtra</p>
-                    <p style="font-size:12px; opacity:0.6;">Maharashtra State Innovation Society (MSInS)<br>Dept. of
-                        Skills, Employment, Entrepreneurship & Innovation</p>
                 </div>
                 <div class="col-md-4 mb-3">
                     <h5 data-lang-key="quickLinks">Quick Links</h5>
                     <ul>
-                        <li><a href="challenges.html">Challenge Builder</a></li>
-                        <li><a href="startups.html">Startup Discovery</a></li>
-                        <li><a href="eligibility.html">Eligibility Screening</a></li>
-                        <li><a href="evaluation.html">Expert Evaluation</a></li>
-                        <li><a href="admin.html">Administration</a></li>
+                        <li><a href="challenges.html" data-lang-key="m1Name">Challenge Builder</a></li>
+                        <li><a href="startups.html" data-lang-key="m2Name">Startup Discovery</a></li>
+                        <li><a href="eligibility.html" data-lang-key="m3Name">Eligibility Matrix</a></li>
+                        <li><a href="pilot-design.html" data-lang-key="m5Name">Pilot Design</a></li>
+                        <li><a href="admin.html" data-lang-key="m10Name">Admin & Governance</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <h5 data-lang-key="legal">Legal</h5>
-                    <p style="font-size:13px;">Problem Statement: SIH 26136</p>
-                    <p style="font-size:13px;">GFR Rule 194 · Innovation Procurement</p>
-                    <p style="font-size:13px;">Startup India · DPIIT Recognition</p>
+                    <h5 data-lang-key="legal">Legal & Compliance</h5>
+                    <p style="font-size:13px;">GFR Rule 194 Innovation Framework</p>
+                    <p style="font-size:13px;">DPIIT Startup Exemption Norms</p>
                 </div>
             </div>
             <div class="footer-bottom text-center" data-lang-key="copyright">
@@ -453,37 +408,15 @@
         </div>
     </footer>
 
-    <!-- Bottom Tricolor -->
     <div class="tricolor-strip">
         <span class="saffron"></span>
         <span class="white-s"></span>
         <span class="green-s"></span>
     </div>
 
-    <!-- Modal -->
-    <div class="gov-modal-overlay" id="gov-modal-overlay">
-        <div class="gov-modal">
-            <div class="gov-modal-header">
-                <h5 id="gov-modal-title">Document Preview</h5>
-                <button class="gov-modal-close" id="gov-modal-close">&times;</button>
-            </div>
-            <div class="gov-modal-body" id="gov-modal-body"></div>
-        </div>
-    </div>
-
-    <!-- Toast Container -->
     <div class="toast-container-gov"></div>
 
     <script src="common.js"></script>
-    <style>
-        /* Landing page specific: 5-column grid for modules */
-        @media (min-width: 992px) {
-            .col-lg-2-4 {
-                flex: 0 0 20%;
-                max-width: 20%;
-            }
-        }
-    </style>
 </body>
 
 </html>
