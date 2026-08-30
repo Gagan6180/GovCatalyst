@@ -62,19 +62,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const gemDraftContainer = document.getElementById('gem-draft-container');
     const transitionStepsContainer = document.getElementById('transition-steps-container');
 
-    function populatePilots() {
+    async function populatePilots() {
         if (!selPilot) return;
-        selPilot.innerHTML = GovData.pilots.map(p => `
-            <option value="${p.id}">[${p.id}] ${p.name} (${p.status})</option>
+        let pilots = GovData.pilots;
+        try {
+            if (window.GovApi) {
+                const res = await GovApi.getPilots();
+                if (res.success && res.data) {
+                    pilots = res.data;
+                    GovData.pilots = pilots;
+                }
+            }
+        } catch (e) {
+            console.warn('Backend unavailable, using local data:', e.message);
+        }
+        selPilot.innerHTML = pilots.map(p => `
+            <option value="${p.dbId || p.id}">[${p.id || p.dbId}] ${p.name} (${p.status})</option>
         `).join('');
     }
 
-    function renderScaleup(pilotId) {
-        const p = GovData.pilots.find(item => item.id === pilotId) || GovData.pilots[0];
+    async function renderScaleup(pilotId) {
+        let pilots = GovData.pilots || [];
+        let p = pilots.find(item => item.id === pilotId || item.dbId === pilotId) || pilots[0];
+        
+        try {
+            if (window.GovApi) {
+                const res = await GovApi.getPilotById(pilotId);
+                if (res.success && res.data) {
+                    p = res.data;
+                }
+            }
+        } catch (e) {
+            console.warn('Backend unavailable for pilot:', e.message);
+        }
+
         if (!p) return;
 
         const su = (GovData.startups && GovData.startups.find(s => s.id === p.startupId)) || { name: p.startupId || 'Innovator Entity' };
-        const decision = (GovData.scaleupDecisions && GovData.scaleupDecisions.find(d => d.pilotId === pilotId)) || {
+        let decision = (GovData.scaleupDecisions && GovData.scaleupDecisions.find(d => d.pilotId === pilotId)) || {
             pilotId: pilotId,
             successScore: p.status === 'Completed' ? 90 : 88,
             recommendation: p.status === 'Completed' ? 'Scale to Full Procurement' : 'Trial in Progress / Scale Ready',
@@ -95,6 +120,20 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         };
 
+        try {
+            if (window.GovApi) {
+                const recRes = await GovApi.getRecommendations(p.dbId || p.id);
+                if (recRes.success && recRes.data) {
+                    decision.recommendation = recRes.data.recommendation || decision.recommendation;
+                    decision.successScore = recRes.data.targetAchievementScore || decision.successScore;
+                    decision.reasoning = recRes.data.rationale || decision.reasoning;
+                    decision.procurementPathway = recRes.data.procurementAction || decision.procurementPathway;
+                }
+            }
+        } catch (e) {
+            console.warn('Backend unavailable for recommendations:', e.message);
+        }
+
         const isScale = decision.recommendation && decision.recommendation.includes('Scale');
 
         if (valSuccessScore) {
@@ -106,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             valDecisionBadge.textContent = 'RECOMMENDED FOR SCALE';
         }
         if (valDecisionTitle) {
-            valDecisionTitle.textContent = `Outcome Decision: Full Scale Procurement for ${su.name}`;
+            valDecisionTitle.textContent = `Outcome Decision: ${decision.recommendation} for ${su.name}`;
         }
         if (valDecisionReason) {
             valDecisionReason.textContent = decision.reasoning;
@@ -117,29 +156,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Comparison Matrix
         if (comparisonTbody) {
+            let accuracy = p.metrics?.accuracy || (p.status === 'Completed' ? '91.2% Achieved' : '90.4% (Achieved)');
+            let latency = p.metrics?.latency || (p.status === 'Completed' ? '42% Reduction' : '38% Reduction');
+            let security = p.metrics?.security || '0 Critical / Low Risk';
+            let adoption = p.metrics?.adoption || '85% Positive Feedback';
+
             comparisonTbody.innerHTML = `
                 <tr>
                     <td class="fw-bold text-navy">Performance Accuracy</td>
                     <td>≥ 90% Target Accuracy</td>
-                    <td><strong class="text-success">${p.status === 'Completed' ? '91.2% Achieved' : '90.4% (Achieved)'}</strong></td>
+                    <td><strong class="text-success">${accuracy}</strong></td>
                     <td><span class="badge bg-success">Passed Verification</span></td>
                 </tr>
                 <tr>
                     <td class="fw-bold text-navy">Operational Latency Reduction</td>
                     <td>≥ 30% Turnaround Time Saved</td>
-                    <td><strong class="text-success">${p.status === 'Completed' ? '42% Reduction' : '38% Reduction'}</strong></td>
+                    <td><strong class="text-success">${latency}</strong></td>
                     <td><span class="badge bg-success">Passed Verification</span></td>
                 </tr>
                 <tr>
                     <td class="fw-bold text-navy">Cybersecurity & Data Privacy</td>
                     <td>Zero Critical CERT-In Vulnerabilities</td>
-                    <td><strong class="text-success">0 Critical / Low Risk</strong></td>
+                    <td><strong class="text-success">${security}</strong></td>
                     <td><span class="badge bg-success">Passed Audit</span></td>
                 </tr>
                 <tr>
                     <td class="fw-bold text-navy">User / Engineer Adoption</td>
                     <td>≥ 80% Field Inspector Satisfaction</td>
-                    <td><strong class="text-success">85% Positive Feedback</strong></td>
+                    <td><strong class="text-success">${adoption}</strong></td>
                     <td><span class="badge bg-success">Passed Survey</span></td>
                 </tr>
             `;
@@ -209,8 +253,13 @@ document.addEventListener('DOMContentLoaded', () => {
         renderScaleup(e.target.value);
     });
 
-    populatePilots();
-    if (GovData.pilots && GovData.pilots.length > 0) {
-        renderScaleup(selPilot ? (selPilot.value || GovData.pilots[0].id) : GovData.pilots[0].id);
+    async function init() {
+        await populatePilots();
+        if (GovData.pilots && GovData.pilots.length > 0) {
+            const initialId = selPilot ? (selPilot.value || GovData.pilots[0].dbId || GovData.pilots[0].id) : (GovData.pilots[0].dbId || GovData.pilots[0].id);
+            await renderScaleup(initialId);
+        }
     }
+    
+    init();
 });

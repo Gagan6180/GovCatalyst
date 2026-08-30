@@ -352,13 +352,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ─────────────────────────────────────────────────────────────
     // 4. RENDER MILESTONE CARDS GROUPED BY 4 PHASES
     // ─────────────────────────────────────────────────────────────
-    function renderMilestoneCards(pilotId) {
+    async function renderMilestoneCards(pilotId) {
         const p = GovData.pilots.find(item => item.id === pilotId || item.dbId === pilotId);
         if (!p) return;
 
         const su = GovData.startups.find(s => s.id === p.startupId) || { name: p.startupId, sector: 'GovTech' };
         if (partnerName) partnerName.textContent = `${su.name || p.startupId} · ${p.location || 'Maharashtra Sandbox'}`;
         if (pilotStatusBadge) pilotStatusBadge.textContent = p.status || 'Active Sandbox';
+
+        // Try loading KPIs and evidences from backend
+        let backendKpis = [];
+        let backendEvidences = [];
+        const dbId = p.dbId || pilotId;
+        try {
+            if (window.GovApi) {
+                const [kpiRes, evRes] = await Promise.all([
+                    GovApi.getPilotKpis(dbId).catch(() => null),
+                    GovApi.getPilotEvidences(dbId).catch(() => null)
+                ]);
+                if (kpiRes && kpiRes.success && Array.isArray(kpiRes.data)) backendKpis = kpiRes.data;
+                if (evRes && evRes.success && Array.isArray(evRes.data)) backendEvidences = evRes.data;
+            }
+        } catch (e) {
+            console.warn('Backend KPI/evidence fetch fallback:', e.message);
+        }
+
+        // Store backend data for use in milestone cards
+        p._backendKpis = backendKpis;
+        p._backendEvidences = backendEvidences;
 
         // Filter milestones for this pilot
         const pMilestones = GovData.milestones.filter(m => m.pilotId === pilotId);
@@ -542,7 +563,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ─────────────────────────────────────────────────────────────
     // 6. ADD NEW MILESTONE FORM SUBMIT
     // ─────────────────────────────────────────────────────────────
-    formAddMilestone?.addEventListener('submit', (e) => {
+    formAddMilestone?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const pId = selPilot.value;
         if (!pId) {
@@ -603,6 +624,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         formAddMilestone.reset();
         toggleMilestoneForm(false);
         renderMilestoneCards(pId);
+
+        // Sync new milestone to backend as a pilot evidence record
+        try {
+            if (window.GovApi) {
+                const pilot = GovData.pilots.find(item => item.id === pId || item.dbId === pId);
+                const backendPilotId = pilot?.dbId || pId;
+                await GovApi.submitPilotEvidence(backendPilotId, {
+                    title: `Phase ${phase}: ${name}`,
+                    description: desc,
+                    evidenceType: evidence || 'milestone_deliverable',
+                    milestoneRef: newId
+                });
+            }
+        } catch (syncErr) {
+            console.warn('Backend milestone sync notice:', syncErr.message);
+        }
 
         GovUtils.showToast(`Milestone ${newId} added to Phase ${phase} successfully!`, 'success');
     });
@@ -698,8 +735,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         GovUtils.openModal(`Bilateral Pilot Agreement — ${p.name}`, content);
     });
 
-    selPilot?.addEventListener('change', (e) => {
-        renderMilestoneCards(e.target.value);
+    selPilot?.addEventListener('change', async (e) => {
+        await renderMilestoneCards(e.target.value);
     });
 
     // ─────────────────────────────────────────────────────────────
@@ -709,7 +746,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderClauses();
     if (GovData.pilots.length > 0) {
         const initialPilotId = selPilot.value || GovData.pilots[0].id;
-        renderMilestoneCards(initialPilotId);
+        await renderMilestoneCards(initialPilotId);
     }
 });
 

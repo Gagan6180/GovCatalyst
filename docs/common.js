@@ -1718,6 +1718,215 @@ window.GovApi = {
         return this.request(`/api/pilots/${pilotId}/recommendations`);
     },
 
+    // --- CHALLENGE CRUD ---
+    async getChallengeById(id) {
+        return this.request(`/api/challenges/${id}`);
+    },
+
+    async getMyChallenges() {
+        return this.request('/api/challenges/my');
+    },
+
+    async updateChallenge(id, data) {
+        return this.request(`/api/challenges/${id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async publishChallenge(id) {
+        return this.request(`/api/challenges/${id}/publish`, { method: 'PATCH' });
+    },
+
+    // --- APPLICATION ENDPOINTS ---
+    async applyToChallenge(challengeId, proposalData) {
+        return this.request(`/api/applications/challenge/${challengeId}/apply`, {
+            method: 'POST',
+            body: JSON.stringify(proposalData)
+        });
+    },
+
+    async getMyApplications() {
+        return this.request('/api/applications/my');
+    },
+
+    async getApplicationsByChallenge(challengeId, params = '') {
+        return this.request(`/api/applications/challenge/${challengeId}${params ? '?' + params : ''}`);
+    },
+
+    // --- EVALUATION ENDPOINTS ---
+    async getEvaluationCriteria(challengeId) {
+        return this.request(`/api/evaluations/criteria/${challengeId}`);
+    },
+
+    async seedEvaluationCriteria(challengeId) {
+        return this.request(`/api/evaluations/criteria/seed/${challengeId}`, { method: 'POST' });
+    },
+
+    async createEvaluationCriterion(data) {
+        return this.request('/api/evaluations/criteria', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async assignEvaluator(data) {
+        return this.request('/api/evaluations/assign', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async getMyEvalAssignments() {
+        return this.request('/api/evaluations/assignments/my');
+    },
+
+    async submitEvaluationScores(data) {
+        return this.request('/api/evaluations/scores/submit', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async getEvalScoresByApplication(applicationId) {
+        return this.request(`/api/evaluations/scores/${applicationId}`);
+    },
+
+    async finalizePanel(applicationId, summary) {
+        return this.request(`/api/evaluations/panel/${applicationId}/finalize`, {
+            method: 'POST',
+            body: JSON.stringify({ panelSummary: summary })
+        });
+    },
+
+    async getPanelDecision(applicationId) {
+        return this.request(`/api/evaluations/panel/${applicationId}`);
+    },
+
+    async getEvaluationSummary(applicationId) {
+        return this.request(`/api/evaluations/summary/${applicationId}`);
+    },
+
+    async submitAppeal(applicationId, reason, docs) {
+        return this.request(`/api/evaluations/appeal/${applicationId}`, {
+            method: 'POST',
+            body: JSON.stringify({ appealReason: reason, supportingDocs: docs })
+        });
+    },
+
+    async getPendingAppeals() {
+        return this.request('/api/evaluations/appeals/pending');
+    },
+
+    // --- PILOT SUB-RESOURCE ENDPOINTS ---
+    async getPilotKpis(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/kpis`);
+    },
+
+    async createPilotKpi(pilotId, data) {
+        return this.request(`/api/pilots/${pilotId}/kpis`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async updateKpiReading(pilotId, kpiId, current) {
+        return this.request(`/api/pilots/${pilotId}/kpis/${kpiId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ current })
+        });
+    },
+
+    async getPilotRisks(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/risks`);
+    },
+
+    async createPilotRisk(pilotId, data) {
+        return this.request(`/api/pilots/${pilotId}/risks`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async getPilotIssues(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/issues`);
+    },
+
+    async createPilotIssue(pilotId, data) {
+        return this.request(`/api/pilots/${pilotId}/issues`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async getPilotFeedback(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/feedback`);
+    },
+
+    async submitPilotFeedback(pilotId, data) {
+        return this.request(`/api/pilots/${pilotId}/feedback`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async getPilotEvidences(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/evidences`);
+    },
+
+    async submitPilotEvidence(pilotId, data) {
+        return this.request(`/api/pilots/${pilotId}/evidences`, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        });
+    },
+
+    async verifyPilotEvidence(pilotId, evidenceId, status) {
+        return this.request(`/api/pilots/${pilotId}/evidences/${evidenceId}/verify`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status })
+        });
+    },
+
+    async getPilotTelemetry(pilotId, limit = 100) {
+        return this.request(`/api/pilots/${pilotId}/telemetry?limit=${limit}`);
+    },
+
+    async batchIngestTelemetry(pilotId, readings, sourceType) {
+        return this.request(`/api/pilots/${pilotId}/telemetry/batch`, {
+            method: 'POST',
+            body: JSON.stringify({ readings, sourceType })
+        });
+    },
+
+    async acknowledgePilotAlert(pilotId, alertId) {
+        return this.request(`/api/pilots/${pilotId}/alerts/${alertId}/ack`, {
+            method: 'PATCH'
+        });
+    },
+
+    async updatePilotStatus(pilotId, targetStatus, reason) {
+        return this.request(`/api/pilots/${pilotId}/status`, {
+            method: 'PATCH',
+            body: JSON.stringify({ targetStatus, reason })
+        });
+    },
+
+    async evaluatePilot(pilotId, committeeDecision) {
+        return this.request(`/api/pilots/${pilotId}/evaluate`, {
+            method: 'POST',
+            body: JSON.stringify({ committeeDecision })
+        });
+    },
+
+    async getPilotReport(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/report`);
+    },
+
+    async getPilotAudit(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/audit`);
+    },
+
     // --- FILE UPLOADS ---
     async uploadFile(file) {
         const formData = new FormData();
