@@ -124,6 +124,22 @@ async function publishChallenge(req, res) {
   }
 }
 
+// POST /api/challenges/ai-draft  (dept_admin only)
+async function draftWithAI(req, res) {
+  try {
+    const { raw_problem_input, sector, budget_ceiling } = req.body;
+    if (!raw_problem_input) {
+      return res.status(400).json({ success: false, message: 'Problem description is required' });
+    }
+
+    const aiResult = await processChallengeInput(raw_problem_input, { sector, budget_ceiling });
+    return res.json({ success: true, ai_draft: aiResult });
+  } catch (err) {
+    console.error('draftWithAI error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to generate AI draft' });
+  }
+}
+
 module.exports = {
   createChallenge,
   listChallenges,
@@ -131,4 +147,5 @@ module.exports = {
   getMyChallenges,
   updateChallenge,
   publishChallenge,
+  draftWithAI,
 };

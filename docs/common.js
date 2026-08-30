@@ -107,57 +107,8 @@ window.GovLang = {
 window.GovData = {
 
     // --- MODULE 1: AUTH & REGISTRATION WORKFLOW ---
-    pendingRegistrations: [
-        {
-            id: 'REG-001',
-            name: 'Shri Sandeep More',
-            email: 'sandeep.more@pwd.maharashtra.gov.in',
-            role: 'Dept Admin',
-            roleKey: 'dept_admin',
-            department: 'Public Works Department (PWD)',
-            designation: 'Superintending Engineer',
-            status: 'pending',
-            appliedAt: '2026-08-28 14:30',
-            otpCode: null
-        },
-        {
-            id: 'REG-002',
-            name: 'Prof. Anjali Deshpande',
-            email: 'a.deshpande@iitb.ac.in',
-            role: 'Evaluator',
-            roleKey: 'evaluator',
-            department: 'IIT Bombay / AI Domain Expert',
-            designation: 'Professor of Computer Science',
-            status: 'pending',
-            appliedAt: '2026-08-28 16:45',
-            otpCode: null
-        },
-        {
-            id: 'REG-003',
-            name: 'Shri Rakesh Kulkarni',
-            email: 'rakesh.kulkarni@audit.gov.in',
-            role: 'Validator',
-            roleKey: 'validator',
-            department: 'Directorate of Accounts & Treasury',
-            designation: 'Senior Audit Officer',
-            status: 'approved_awaiting_otp',
-            appliedAt: '2026-08-27 11:20',
-            otpCode: '582914'
-        },
-        {
-            id: 'REG-004',
-            name: 'Dr. Nitin Shinde',
-            email: 'nitin.shinde@privateconsulting.com',
-            role: 'Evaluator',
-            roleKey: 'evaluator',
-            department: 'External Consultant',
-            designation: 'Technical Advisor',
-            status: 'rejected',
-            appliedAt: '2026-08-26 10:15',
-            rejectionReason: 'Non-official email domain; unverified institutional credentials',
-            otpCode: null
-        }
-    ],
+    // Live data fetched from PostgreSQL via GovApi.getPendingUsers()
+    pendingRegistrations: [],
 
 
     // --- MODULE 1: CHALLENGES ---
@@ -660,33 +611,98 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Accessibility Popover Toggle
+    const accessBtn = document.getElementById('top-access-btn');
+    const accessPopover = document.getElementById('access-popover');
+    if (accessBtn && accessPopover) {
+        accessBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const show = accessPopover.style.display === 'none';
+            accessPopover.style.display = show ? 'flex' : 'none';
+        });
+        document.addEventListener('click', (e) => {
+            if (!accessPopover.contains(e.target) && e.target !== accessBtn && !accessBtn.contains(e.target)) {
+                accessPopover.style.display = 'none';
+            }
+        });
+    }
+
     // Accessibility Font Resizer (A- / A / A+)
-    let currentFontSizePercent = 100;
+    let currentFontSizePercent = parseInt(localStorage.getItem('font-size-percent')) || 100;
     const fontDecBtn = document.getElementById('font-dec');
     const fontResetBtn = document.getElementById('font-reset');
     const fontIncBtn = document.getElementById('font-inc');
 
+    function applyFontSize(percent) {
+        currentFontSizePercent = percent;
+        document.documentElement.style.fontSize = percent + '%';
+        // Robust zoom to handle fixed pixel layouts
+        if (document.body) {
+            document.body.style.zoom = percent / 100;
+        }
+        localStorage.setItem('font-size-percent', percent);
+    }
+
+    // Apply saved font size on page load
+    applyFontSize(currentFontSizePercent);
+
     if (fontDecBtn) {
-        fontDecBtn.addEventListener('click', () => {
-            if (currentFontSizePercent > 85) {
-                currentFontSizePercent -= 5;
-                document.documentElement.style.fontSize = currentFontSizePercent + '%';
+        fontDecBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentFontSizePercent > 80) {
+                applyFontSize(currentFontSizePercent - 10);
             }
         });
     }
     if (fontResetBtn) {
-        fontResetBtn.addEventListener('click', () => {
-            currentFontSizePercent = 100;
-            document.documentElement.style.fontSize = '100%';
+        fontResetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyFontSize(100);
         });
     }
     if (fontIncBtn) {
-        fontIncBtn.addEventListener('click', () => {
-            if (currentFontSizePercent < 125) {
-                currentFontSizePercent += 5;
-                document.documentElement.style.fontSize = currentFontSizePercent + '%';
+        fontIncBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentFontSizePercent < 120) {
+                applyFontSize(currentFontSizePercent + 10);
             }
         });
+    }
+
+    // Modern Dark Mode Theme Toggle
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    function updateThemeBtnState(isDark) {
+        if (!themeToggleBtn) return;
+        if (isDark) {
+            themeToggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i> Light Mode';
+            themeToggleBtn.style.backgroundColor = '#f8fafc';
+            themeToggleBtn.style.color = '#0f172a';
+            themeToggleBtn.style.borderColor = '#f8fafc';
+        } else {
+            themeToggleBtn.innerHTML = '<i class="bi bi-moon-stars-fill"></i> Dark Mode';
+            themeToggleBtn.style.backgroundColor = '#0f172a';
+            themeToggleBtn.style.color = '#ffffff';
+            themeToggleBtn.style.borderColor = '#0f172a';
+        }
+    }
+
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isDark = document.documentElement.classList.toggle('dark-mode');
+            localStorage.setItem('dark-mode', isDark ? 'true' : 'false');
+            updateThemeBtnState(isDark);
+            GovUtils.showToast(isDark ? 'Dark Mode Enabled' : 'Light Mode Enabled', 'info');
+        });
+    }
+
+    // Load saved dark-mode theme
+    const savedTheme = localStorage.getItem('dark-mode');
+    if (savedTheme === 'true') {
+        document.documentElement.classList.add('dark-mode');
+        updateThemeBtnState(true);
+    } else {
+        updateThemeBtnState(false);
     }
 
     // Hero Search Handler
@@ -940,16 +956,9 @@ window.GovAuth = {
         }
 
         // 3. New / Unregistered
-        return {
-            status: 'unregistered',
-            promptHtml: `<div class="alert alert-secondary d-flex align-items-center mb-3">
-                <i class="bi bi-info-circle-fill fs-4 me-3 text-secondary"></i>
-                <div>
-                    <strong>Account Not Found</strong>
-                    <div class="small">No account found with this email. Please register as a Startup or submit a Government Official request.</div>
-                </div>
-            </div>`
-        };
+        // When connected to the live backend, we shouldn't assume the account is not found 
+        // just because it's not in the mock array.
+        return null;
     },
 
     openAuthModal(defaultTab = 'login') {
@@ -962,6 +971,17 @@ window.GovAuth = {
             modalEl.classList.add('show');
             document.body.style.overflow = 'hidden';
             this.switchTab(defaultTab);
+            const user = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser());
+            const promptContainer = document.getElementById('auth-status-prompt');
+            if (user && promptContainer) {
+                promptContainer.innerHTML = `<div class="alert alert-info d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <i class="bi bi-person-check-fill me-2 text-primary"></i>
+                        Signed in as <strong>${user.name || user.email}</strong> (<em>${user.role}</em>)
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="GovPageAuth.logout()">Sign Out</button>
+                </div>`;
+            }
         }
     },
 
@@ -1122,9 +1142,15 @@ window.GovAuth = {
                                     <input type="text" class="form-control form-control-sm" id="reg-gov-desig" placeholder="e.g. Executive Engineer" required>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold small">Government Department / Institutional Body <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control form-control-sm" id="reg-gov-dept" placeholder="e.g. Public Works Department / Water Supply Dept" required>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Government Department / Institutional Body <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control form-control-sm" id="reg-gov-dept" placeholder="e.g. Public Works Department" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold small">Create Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control form-control-sm" id="reg-gov-pwd" placeholder="Minimum 8 characters" required>
+                                </div>
                             </div>
                             <button type="submit" class="btn btn-gov w-100 py-2">
                                 <i class="bi bi-send-check me-1"></i> Submit Official Verification Request
@@ -1174,18 +1200,77 @@ window.GovAuth = {
         }
     },
 
-    handleLoginSubmit() {
-        const email = document.getElementById('login-email')?.value;
-        const res = this.checkAccountStatus(email);
+    async handleLoginSubmit() {
+        const email = document.getElementById('login-email')?.value?.trim();
+        const password = document.getElementById('login-password')?.value;
         const promptContainer = document.getElementById('auth-status-prompt');
+
+        try {
+            // Attempt live backend authentication
+            const data = await GovApi.login(email, password);
+            if (data.success && data.token) {
+                GovApi.setToken(data.token, data.user);
+                GovUtils.showToast(`Logged in as ${data.user.name} (${data.user.role})!`, 'success');
+                if (promptContainer) {
+                    promptContainer.innerHTML = `<div class="alert alert-success d-flex align-items-center mb-3">
+                        <i class="bi bi-shield-check fs-4 me-3 text-success"></i>
+                        <div>
+                            <strong>Authentication Successful</strong>
+                            <div class="small">Authenticated via PostgreSQL JWT backend. Redirecting...</div>
+                        </div>
+                    </div>`;
+                }
+                setTimeout(() => {
+                    GovAuth.closeAuthModal();
+                    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                        const userRole = (data.user && data.user.role) ? data.user.role.toLowerCase() : '';
+                        if (userRole.includes('admin') || userRole.includes('validator')) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        window.location.reload();
+                    }
+                }, 1000);
+                return;
+            }
+        } catch (apiErr) {
+            console.log('Live login attempt:', apiErr.message);
+            // Show the actual error from the backend (e.g. Invalid credentials, 403, or Network Error)
+            if (promptContainer) {
+                promptContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-danger"></i>
+                    <div>
+                        <strong>Login Failed</strong>
+                        <div class="small">${apiErr.message || 'Network Error: Make sure your local backend server is running on port 5009.'}</div>
+                    </div>
+                </div>`;
+            }
+            GovUtils.showToast(apiErr.message || 'Login Failed', 'error');
+            return;
+        }
+
+        // Fallback to local state
+        const res = this.checkAccountStatus(email);
         if (promptContainer && res) {
             promptContainer.innerHTML = res.promptHtml;
             if (res.status === 'active') {
+                if (res.user) {
+                    GovApi.setToken('mock-jwt-token-' + (res.user.id || 'usr'), res.user);
+                }
                 GovUtils.showToast('Login successful! Redirecting to dashboard...', 'success');
                 setTimeout(() => {
                     GovAuth.closeAuthModal();
                     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
-                        window.location.href = 'admin.html';
+                        const userRole = (res.user && res.user.role) ? res.user.role.toLowerCase() : '';
+                        if (userRole.includes('admin') || userRole.includes('validator')) {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.reload();
+                        }
+                    } else {
+                        window.location.reload();
                     }
                 }, 1200);
             } else if (res.status === 'approved_awaiting_otp') {
@@ -1198,11 +1283,51 @@ window.GovAuth = {
         }
     },
 
-    handleStartupRegSubmit() {
+    async handleStartupRegSubmit() {
+        // RBAC Guard: Block logged-in government officials from registering startups
+        const loggedInUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser());
+        if (loggedInUser && loggedInUser.role) {
+            const normRole = loggedInUser.role.toLowerCase().replace(/[\s-]/g, '_');
+            if (normRole !== 'startup') {
+                GovUtils.showToast(`Access Denied: You are signed in as ${loggedInUser.name} (${loggedInUser.role}). Government officials cannot register startup accounts.`, 'error');
+                const promptContainer = document.getElementById('auth-status-prompt');
+                if (promptContainer) {
+                    promptContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-3">
+                        <i class="bi bi-shield-x fs-4 me-3 text-danger"></i>
+                        <div>
+                            <strong>Access Denied: Role Conflict</strong>
+                            <div class="small">You are currently authenticated as <strong>${loggedInUser.name}</strong> (<em>${loggedInUser.role}</em>). Government accounts cannot register startups. Please sign out first.</div>
+                        </div>
+                    </div>`;
+                }
+                return;
+            }
+        }
+
         const name = document.getElementById('reg-su-rep')?.value;
         const company = document.getElementById('reg-su-company')?.value;
         const email = document.getElementById('reg-su-email')?.value;
         const dpiit = document.getElementById('reg-su-dpiit')?.value;
+        const password = document.getElementById('reg-su-pwd')?.value || 'Password@123';
+
+        try {
+            const data = await GovApi.register({
+                name: name,
+                email: email,
+                password: password,
+                role: 'startup',
+                company_name: company
+            });
+            if (data.success && data.token) {
+                GovApi.setToken(data.token, data.user);
+            }
+        } catch (e) {
+            console.log('Live startup reg fallback to local:', e.message);
+            if (e.status === 403) {
+                GovUtils.showToast(e.message || 'Registration rejected by security policy', 'error');
+                return;
+            }
+        }
 
         GovData.users.unshift({
             id: 'USR-' + (GovData.users.length + 1).toString().padStart(3, '0'),
@@ -1231,9 +1356,17 @@ window.GovAuth = {
         }, 1200);
     },
 
-    handleGovRegSubmit() {
+    async handleGovRegSubmit() {
+        // RBAC Guard: Block already logged-in users from duplicate registration
+        const loggedInUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser());
+        if (loggedInUser) {
+            GovUtils.showToast(`You are already signed in as ${loggedInUser.name} (${loggedInUser.role}). Please sign out first.`, 'warning');
+            return;
+        }
+
         const name = document.getElementById('reg-gov-name')?.value;
         const email = document.getElementById('reg-gov-email')?.value;
+        const password = document.getElementById('reg-gov-pwd')?.value;
         const roleKey = document.getElementById('reg-gov-role')?.value;
         const desig = document.getElementById('reg-gov-desig')?.value;
         const dept = document.getElementById('reg-gov-dept')?.value;
@@ -1243,6 +1376,37 @@ window.GovAuth = {
             'evaluator': 'Evaluator',
             'validator': 'Validator'
         };
+
+        let regSuccess = false;
+        try {
+            const data = await GovApi.register({
+                name: name,
+                email: email,
+                password: password,
+                role: roleKey,
+                department_name: dept,
+                designation: desig
+            });
+            if (data && data.success) {
+                regSuccess = true;
+            }
+        } catch (e) {
+            console.log('Live gov reg API response:', e.message);
+            if (e.status === 409) {
+                GovUtils.showToast(`Email ${email} is already registered! Please sign in.`, 'warning');
+                const promptContainer = document.getElementById('auth-status-prompt');
+                if (promptContainer) {
+                    promptContainer.innerHTML = `<div class="alert alert-warning d-flex align-items-center mb-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                        <div>
+                            <strong>Email Already Registered</strong>
+                            <div class="small">An account with <strong>${email}</strong> is already registered. Switch to the <strong>Sign In</strong> tab to log in, or click <strong>Check Verification Status</strong>.</div>
+                        </div>
+                    </div>`;
+                }
+                return;
+            }
+        }
 
         const newReq = {
             id: 'REG-' + (GovData.pendingRegistrations.length + 1).toString().padStart(3, '0'),
@@ -1275,7 +1439,7 @@ window.GovAuth = {
                 <i class="bi bi-clock-history fs-4 me-3 text-warning"></i>
                 <div>
                     <strong>Request Submitted Successfully</strong>
-                    <div class="small">Your registration is currently awaiting verification by the Super Administrator. You will receive an email once approved.</div>
+                    <div class="small">Your registration for <strong>${name}</strong> is now in the MSInS Super Admin approval queue.</div>
                 </div>
             </div>`;
         }
@@ -1283,9 +1447,22 @@ window.GovAuth = {
         GovUtils.showToast('Verification request submitted to MSInS Super Admin queue.', 'info');
     },
 
-    handleOtpSubmit() {
+    async handleOtpSubmit() {
         const email = document.getElementById('otp-email')?.value.trim().toLowerCase();
         const code = document.getElementById('otp-code')?.value.trim();
+
+        try {
+            const data = await GovApi.verifyOtp(email, code);
+            if (data.success) {
+                GovUtils.showToast('Account activated successfully! Please log in.', 'success');
+                setTimeout(() => {
+                    GovAuth.switchTab('login');
+                }, 1200);
+                return;
+            }
+        } catch (e) {
+            console.log('Live OTP verification fallback to local:', e.message);
+        }
 
         const reg = GovData.pendingRegistrations.find(r => r.email.toLowerCase() === email);
         if (reg && reg.status === 'approved_awaiting_otp') {
@@ -1312,10 +1489,9 @@ window.GovAuth = {
                     detail: `Account for ${reg.name} successfully activated via 6-digit OTP.`
                 });
 
-                GovUtils.showToast('Account activated successfully! Logging in...', 'success');
+                GovUtils.showToast('Account activated successfully! Please log in.', 'success');
                 setTimeout(() => {
-                    GovAuth.closeAuthModal();
-                    window.location.href = 'admin.html';
+                    GovAuth.switchTab('login');
                 }, 1200);
                 return;
             }
@@ -1324,3 +1500,466 @@ window.GovAuth = {
         GovUtils.showToast('Invalid or expired OTP code. Please check your email.', 'error');
     }
 };
+
+/* =============================================
+   GovApi: Centralized REST API Client & Dispatcher
+   ============================================= */
+window.GovApi = {
+    getBaseUrl() {
+        if (window.GOV_API_BASE) return window.GOV_API_BASE;
+        const origin = window.location.origin || '';
+        
+        // If accessed from GitHub Pages, route to production Render API
+        if (origin.includes('github.io')) {
+            return 'https://govcatalyst.onrender.com';
+        }
+
+        // If accessed via file:// protocol during local testing, route to local server
+        if (window.location.protocol === 'file:') {
+            return 'http://localhost:5009';
+        }
+        
+        // If local development on another port (e.g. 5500 Live Server)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            if (window.location.port === '5009') return '';
+            return 'http://localhost:5009';
+        }
+        
+        // Direct Render domain or same-origin deployment
+        return '';
+    },
+
+    getToken() {
+        return sessionStorage.getItem('gov_jwt_token') || sessionStorage.getItem('token') || localStorage.getItem('gov_jwt_token') || localStorage.getItem('token') || '';
+    },
+
+    setToken(token, user) {
+        if (token) {
+            sessionStorage.setItem('gov_jwt_token', token);
+            sessionStorage.setItem('token', token);
+            // Clean up any stale localStorage tokens
+            localStorage.removeItem('gov_jwt_token');
+            localStorage.removeItem('token');
+        }
+        if (user) {
+            sessionStorage.setItem('gov_user', JSON.stringify(user));
+            localStorage.removeItem('gov_user');
+        }
+    },
+
+    clearToken() {
+        sessionStorage.removeItem('gov_jwt_token');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('gov_user');
+        localStorage.removeItem('gov_jwt_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('gov_user');
+    },
+
+    getCurrentUser() {
+        try {
+            const u = sessionStorage.getItem('gov_user') || localStorage.getItem('gov_user');
+            return u ? JSON.parse(u) : null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    async request(endpoint, options = {}) {
+        const url = `${this.getBaseUrl()}${endpoint}`;
+        const headers = options.headers || {};
+
+        const token = this.getToken();
+        if (token && !headers['Authorization']) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+            headers['Content-Type'] = 'application/json';
+        }
+
+        try {
+            const res = await fetch(url, { ...options, headers });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                const err = new Error(data.message || `HTTP ${res.status}`);
+                err.status = res.status;
+                err.data = data;
+                throw err;
+            }
+            return data;
+        } catch (err) {
+            console.warn(`GovApi request to ${endpoint} failed:`, err.message);
+            throw err;
+        }
+    },
+
+    // --- AUTH ENDPOINTS ---
+    async login(email, password) {
+        return this.request('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({ email, password })
+        });
+    },
+
+    async register(userData) {
+        return this.request('/api/auth/register', {
+            method: 'POST',
+            body: JSON.stringify(userData)
+        });
+    },
+
+    async getMe() {
+        return this.request('/api/auth/me');
+    },
+
+    async getPendingUsers() {
+        return this.request('/api/auth/pending-users');
+    },
+
+    async approveUser(userId) {
+        return this.request(`/api/auth/approve/${userId}`, { method: 'POST' });
+    },
+
+    async rejectUser(userId) {
+        return this.request(`/api/auth/reject/${userId}`, { method: 'POST' });
+    },
+
+    async verifyOtp(email, otp) {
+        return this.request('/api/auth/verify-otp', {
+            method: 'POST',
+            body: JSON.stringify({ email, otp })
+        });
+    },
+
+    // --- CHALLENGES ENDPOINTS ---
+    async getChallenges() {
+        return this.request('/api/challenges');
+    },
+
+    async createChallenge(challengeData) {
+        return this.request('/api/challenges', {
+            method: 'POST',
+            body: JSON.stringify(challengeData)
+        });
+    },
+
+    async generateChallengeDraft(draftData) {
+        return this.request('/api/challenges/ai-draft', {
+            method: 'POST',
+            body: JSON.stringify(draftData)
+        });
+    },
+
+    // --- APPLICATIONS ENDPOINTS ---
+    async getApplications() {
+        return this.request('/api/applications');
+    },
+
+    async submitApplication(appData) {
+        return this.request('/api/applications', {
+            method: 'POST',
+            body: JSON.stringify(appData)
+        });
+    },
+
+    // --- PILOT & M&E ENDPOINTS ---
+    async getPilots() {
+        return this.request('/api/pilots');
+    },
+
+    async getPilotById(pilotId) {
+        return this.request(`/api/pilots/${pilotId}`);
+    },
+
+    async createPilot(pilotData) {
+        return this.request('/api/pilots', {
+            method: 'POST',
+            body: JSON.stringify(pilotData)
+        });
+    },
+
+    async ingestTelemetry(pilotId, kpiId, payload) {
+        return this.request(`/api/pilots/${pilotId}/kpis/${kpiId}/telemetry`, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+    },
+
+    async getPilotAlerts(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/alerts`);
+    },
+
+    async getEvaluationReport(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/evaluation-report`);
+    },
+
+    async getRecommendations(pilotId) {
+        return this.request(`/api/pilots/${pilotId}/recommendations`);
+    },
+
+    // --- FILE UPLOADS ---
+    async uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.request('/api/upload/single', {
+            method: 'POST',
+            body: formData
+        });
+    },
+
+    async uploadCsvTelemetry(csvFile) {
+        const formData = new FormData();
+        formData.append('file', csvFile);
+        return this.request('/api/upload/csv-telemetry', {
+            method: 'POST',
+            body: formData
+        });
+    }
+};
+
+
+// ============================================================
+// PAGE-LEVEL AUTHENTICATION GUARD (GovPageAuth)
+// ============================================================
+// Role-Based Access Control (RBAC) for frontend pages.
+// Each page specifies which roles can access it.
+// Unauthorized users see a branded access-denied overlay and are redirected.
+// ============================================================
+
+window.GovPageAuth = {
+
+    // Page → Allowed Roles mapping
+    pageRoles: {
+        'index.html':        ['*'],               // Public landing page
+        'forgot-password.html': ['*'],            // Public
+        'startups.html':     ['*'],               // Public directory browsing (creation is role-gated)
+        'challenges.html':   ['*'],               // Public challenge browsing (creation is role-gated)
+        'eligibility.html':  ['startup', 'dept_admin', 'super_admin', 'evaluator'],
+        'evaluation.html':   ['evaluator', 'super_admin', 'dept_admin'],
+        'pilot-design.html': ['dept_admin', 'startup', 'super_admin', 'validator'],
+        'milestones.html':   ['dept_admin', 'startup', 'super_admin', 'validator'],
+        'performance.html':  ['dept_admin', 'startup', 'super_admin', 'evaluator', 'validator'],
+        'payments.html':     ['dept_admin', 'super_admin', 'startup'],
+        'scaleup.html':      ['dept_admin', 'startup', 'super_admin'],
+        'admin.html':        ['super_admin', 'dept_admin', 'validator']
+    },
+
+    /**
+     * Get currently logged-in user from sessionStorage (or legacy localStorage)
+     */
+    getUser() {
+        try {
+            const u = sessionStorage.getItem('gov_user') || localStorage.getItem('gov_user');
+            return u ? JSON.parse(u) : null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    /**
+     * Check if user has a valid JWT token
+     */
+    isLoggedIn() {
+        const token = sessionStorage.getItem('gov_jwt_token') || sessionStorage.getItem('token') || localStorage.getItem('gov_jwt_token') || localStorage.getItem('token');
+        const user = this.getUser();
+        return !!(token && user);
+    },
+
+    /**
+     * Get current page filename
+     */
+    getCurrentPage() {
+        const path = window.location.pathname;
+        const page = path.split('/').pop() || 'index.html';
+        return page;
+    },
+
+    /**
+     * Check if user role is allowed on this page (handles normalized role matching)
+     */
+    isAuthorized(allowedRoles) {
+        if (!allowedRoles || allowedRoles.includes('*')) return true;
+        const user = this.getUser();
+        if (!user || !user.role) return false;
+        const normUserRole = user.role.toLowerCase().replace(/[\s-]/g, '_');
+        const normAllowed = allowedRoles.map(r => r.toLowerCase().replace(/[\s-]/g, '_'));
+        return normAllowed.includes(normUserRole);
+    },
+
+    /**
+     * Show branded access-denied overlay
+     */
+    showAccessDenied(reason) {
+        const overlay = document.createElement('div');
+        overlay.id = 'gov-auth-overlay';
+        overlay.style.cssText = `
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c1220 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        `;
+        overlay.innerHTML = `
+            <div style="text-align: center; color: #e2e8f0; max-width: 480px; padding: 40px;">
+                <div style="font-size: 64px; margin-bottom: 16px;">🔒</div>
+                <h2 style="font-size: 24px; font-weight: 700; color: #f8fafc; margin-bottom: 8px;">
+                    Authentication Required
+                </h2>
+                <p style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 24px;">
+                    ${reason}
+                </p>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="window.location.href='index.html'" style="
+                        background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white;
+                        border: none; padding: 12px 28px; border-radius: 8px; font-size: 14px;
+                        font-weight: 600; cursor: pointer; transition: all 0.2s;
+                    ">
+                        <span style="margin-right: 6px;">🏠</span> Go to Home & Sign In
+                    </button>
+                    <button onclick="history.back()" style="
+                        background: transparent; color: #94a3b8; border: 1px solid #334155;
+                        padding: 12px 28px; border-radius: 8px; font-size: 14px;
+                        font-weight: 500; cursor: pointer;
+                    ">
+                        ← Go Back
+                    </button>
+                </div>
+                <p style="color: #475569; font-size: 12px; margin-top: 32px;">
+                    GovCatalyst • MSInS State Innovation Society • Section 65B Compliant
+                </p>
+            </div>
+        `;
+        document.body.innerHTML = '';
+        document.body.appendChild(overlay);
+    },
+
+    /**
+     * Show role badge in navbar for logged-in users
+     */
+    renderUserBadge() {
+        const user = this.getUser();
+        if (!user) return;
+
+        const normRole = (user.role || '').toLowerCase().replace(/[\s-]/g, '_');
+
+        const roleColors = {
+            'super_admin': '#dc2626',
+            'dept_admin': '#2563eb',
+            'evaluator': '#7c3aed',
+            'validator': '#059669',
+            'startup': '#d97706'
+        };
+
+        const roleLabels = {
+            'super_admin': '👑 Super Admin',
+            'dept_admin': '🏛️ Dept Admin',
+            'evaluator': '📋 Evaluator',
+            'validator': '✅ Validator',
+            'startup': '🚀 Startup'
+        };
+
+        // If top auth button exists on page (e.g. index.html), update it
+        const topAuthBtn = document.getElementById('btn-top-auth');
+        if (topAuthBtn) {
+            topAuthBtn.innerHTML = `<i class="bi bi-person-fill-check"></i> <span>${user.name || user.email} (${roleLabels[normRole] || user.role})</span>`;
+            topAuthBtn.onclick = () => GovPageAuth.showUserMenu();
+        }
+
+        // Avoid duplicate floating badges
+        const oldBadge = document.getElementById('gov-user-badge');
+        if (oldBadge) oldBadge.remove();
+
+        const badge = document.createElement('div');
+        badge.id = 'gov-user-badge';
+        badge.style.cssText = `
+            position: fixed; top: 12px; right: 16px; z-index: 9999;
+            background: ${roleColors[normRole] || '#475569'}; color: white;
+            padding: 8px 16px; border-radius: 20px; font-size: 13px;
+            font-weight: 600; font-family: 'Inter', sans-serif;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex; align-items: center; gap: 8px;
+        `;
+        badge.innerHTML = `
+            <span>${roleLabels[normRole] || user.role}</span>
+            <span style="font-weight: 400; opacity: 0.85; font-size: 11px;">${user.name || user.email}</span>
+            <button onclick="GovPageAuth.logout()" title="Sign Out" style="
+                background: rgba(255,255,255,0.2); border: none; color: white;
+                width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+                font-size: 11px; display: flex; align-items: center; justify-content: center;
+                margin-left: 4px;
+            ">✕</button>
+        `;
+        document.body.appendChild(badge);
+    },
+
+    showUserMenu() {
+        const user = this.getUser();
+        if (!user) return;
+        if (confirm(`Signed in as: ${user.name || user.email}\nRole: ${user.role}\n\nWould you like to sign out?`)) {
+            this.logout();
+        }
+    },
+
+    /**
+     * Logout: clear tokens and redirect
+     */
+    logout() {
+        sessionStorage.removeItem('gov_jwt_token');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('gov_user');
+        localStorage.removeItem('gov_jwt_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('gov_user');
+        window.location.href = 'index.html';
+    },
+
+    /**
+     * Main entry point: call this on every protected page.
+     * Usage: GovPageAuth.require() or GovPageAuth.require(['super_admin', 'dept_admin'])
+     */
+    require(allowedRoles) {
+        const page = this.getCurrentPage();
+
+        // Auto-detect roles from pageRoles map if not specified
+        if (!allowedRoles) {
+            allowedRoles = this.pageRoles[page] || null;
+        }
+
+        // Public pages — no auth needed
+        if (!allowedRoles || allowedRoles.includes('*')) {
+            if (this.isLoggedIn()) this.renderUserBadge();
+            return true;
+        }
+
+        // Not logged in
+        if (!this.isLoggedIn()) {
+            this.showAccessDenied(
+                'You must be signed in with an authorized government account to access this module. Please return to the home page and sign in.'
+            );
+            return false;
+        }
+
+        // Logged in but wrong role
+        if (!this.isAuthorized(allowedRoles)) {
+            const user = this.getUser();
+            this.showAccessDenied(
+                `Your role <strong>${user.role}</strong> does not have permission to access this module. Required: <strong>${allowedRoles.join(', ')}</strong>.`
+            );
+            return false;
+        }
+
+        // Authorized — show user badge
+        this.renderUserBadge();
+        return true;
+    }
+};
+
+// Auto-guard on DOMContentLoaded for all pages except index.html
+document.addEventListener('DOMContentLoaded', () => {
+    const page = GovPageAuth.getCurrentPage();
+    if (page !== 'index.html' && page !== 'forgot-password.html' && page !== '') {
+        GovPageAuth.require();
+    } else if (GovPageAuth.isLoggedIn()) {
+        GovPageAuth.renderUserBadge();
+    }
+});

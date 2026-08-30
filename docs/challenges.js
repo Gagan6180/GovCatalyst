@@ -14,6 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-challenge');
     const filterStatus = document.getElementById('filter-status');
 
+    // Role-based Access Control (RBAC) on UI
+    const currentUser = window.GovApi ? GovApi.getCurrentUser() : null;
+    if (currentUser && btnToggle) {
+        // Only allow dept_admin (and super_admin) to create challenges
+        if (currentUser.role !== 'dept_admin' && currentUser.role !== 'super_admin') {
+            btnToggle.style.display = 'none';
+        }
+    }
+
     // Toggle Form visibility
     function toggleForm(show) {
         cardForm.style.display = show ? 'block' : 'none';
@@ -39,12 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // AI Rewrite Simulation
-    btnAiRewrite?.addEventListener('click', () => {
+    // AI Rewrite Integration (Google Gemini)
+    btnAiRewrite?.addEventListener('click', async () => {
         const title = document.getElementById('inp-title').value.trim();
         const desc = document.getElementById('inp-desc').value.trim();
         const dept = document.getElementById('inp-dept').value || 'Department';
         const cat = document.getElementById('inp-cat').value;
+        const budget = document.getElementById('inp-turnover').value;
 
         if (!desc) {
             GovUtils.showToast('Please enter a problem description first to rewrite.', 'warning');
@@ -54,21 +64,31 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAiRewrite.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Formulating Measurable Outcomes...';
         btnAiRewrite.disabled = true;
 
-        setTimeout(() => {
-            let measurableOutcome = '';
-            if (cat === 'AI/ML' || desc.toLowerCase().includes('inspect') || desc.toLowerCase().includes('detect')) {
-                measurableOutcome = `[OUTCOME-BASED OBJECTIVE] Deploy a non-invasive ${cat} solution capable of achieving ≥ 40% reduction in operational turnaround time compared to current departmental baseline, maintaining ≥ 90% accuracy in automated defect/pattern recognition across a controlled pilot sample of 50-100 instances over 8 weeks, integrated with ${dept} reporting workflows.`;
-            } else if (cat === 'IoT' || desc.toLowerCase().includes('water') || desc.toLowerCase().includes('sensor')) {
-                measurableOutcome = `[OUTCOME-BASED OBJECTIVE] Implement real-time automated telemetry and sensor monitoring across the pilot jurisdiction to achieve ≥ 85% event detection rate with incident response time reduced to under 4 hours, verified through automated KPI telemetry over a 12-week sandbox trial.`;
-            } else {
-                measurableOutcome = `[OUTCOME-BASED OBJECTIVE] Deliver a citizen-centric digital workflow automating manual interventions, reducing end-to-end processing latency by ≥ 50% with zero physical visits required, ensuring 99.9% uptime and compliance with Maharashtra digital governance standards.`;
+        if (window.GovApi) {
+            try {
+                const res = await GovApi.generateChallengeDraft({
+                    raw_problem_input: desc,
+                    sector: cat,
+                    budget_ceiling: budget
+                });
+                
+                if (res.success && res.ai_draft) {
+                    document.getElementById('inp-outcome').value = res.ai_draft.outcome_statement;
+                    if (res.ai_draft.tech_tags && res.ai_draft.tech_tags.length > 0) {
+                        document.getElementById('inp-tech-tags').value = res.ai_draft.tech_tags.join(', ');
+                    }
+                    GovUtils.showToast('Problem rewritten into GFR Rule 194 compliant outcome statement!', 'success');
+                }
+            } catch (err) {
+                console.error('AI Draft Error:', err);
+                GovUtils.showToast('Failed to generate AI draft. Please try again.', 'error');
             }
+        } else {
+            GovUtils.showToast('GovApi is not available. Ensure you are running the backend server.', 'error');
+        }
 
-            document.getElementById('inp-outcome').value = measurableOutcome;
-            btnAiRewrite.innerHTML = '<i class="bi bi-robot me-1"></i> AI Rewrite → Convert to Measurable Outcome Statement';
-            btnAiRewrite.disabled = false;
-            GovUtils.showToast('Problem rewritten into GFR Rule 194 compliant outcome statement!', 'success');
-        }, 600);
+        btnAiRewrite.innerHTML = '<i class="bi bi-robot me-1"></i> AI Rewrite → Convert to Measurable Outcome Statement (GFR 194)';
+        btnAiRewrite.disabled = false;
     });
 
     // Form submission
@@ -88,6 +108,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         GovData.challenges.unshift(newChallenge);
         
+        // Dispatch live to PostgreSQL backend if available
+        if (window.GovApi) {
+            GovApi.createChallenge({
+                title: newChallenge.title,
+                problem_statement: newChallenge.description,
+                outcome_objective: newChallenge.outcomeStatement,
+                sector: newChallenge.category,
+                department: newChallenge.department
+            }).then(res => {
+                console.log('✅ Challenge saved in PostgreSQL backend:', res);
+            }).catch(err => {
+                console.log('Challenge backend sync fallback:', err.message);
+            });
+        }
+
         // Log in audit trail
         GovData.auditTrail.unshift({
             id: GovData.auditTrail.length + 1,
@@ -140,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <button class="btn btn-outline-primary btn-view" data-id="${c.id}" title="View Details">
                             <i class="bi bi-eye"></i> View
                         </button>
-                        ${c.status === 'Draft' ? `
+                        ${c.status === 'Draft' && currentUser && (currentUser.role === 'dept_admin' || currentUser.role === 'super_admin') ? `
                             <button class="btn btn-outline-success btn-publish" data-id="${c.id}" title="Publish to Startups">
                                 <i class="bi bi-send"></i> Publish
                             </button>
@@ -192,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
 
                 <div class="mt-4 pt-3 border-top text-end">
-                    ${c.status === 'Draft' ? `
+                    ${c.status === 'Draft' && currentUser && (currentUser.role === 'dept_admin' || currentUser.role === 'super_admin') ? `
                         <button class="btn btn-success btn-sm me-2" onclick="document.querySelector('.btn-publish[data-id=\\'${c.id}\\']')?.click(); GovUtils.closeModal();">
                             <i class="bi bi-send me-1"></i> Publish Statement
                         </button>

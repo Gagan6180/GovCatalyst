@@ -33,8 +33,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const valCost = document.getElementById('val-cost');
     const liveTotalScore = document.getElementById('live-total-score');
 
+    const currentUser = (window.GovApi && GovApi.getCurrentUser()) || (window.GovPageAuth && GovPageAuth.getUser()) || null;
+    const normRole = currentUser && currentUser.role ? currentUser.role.toLowerCase().replace(/[\s-]/g, '_') : '';
+
+    // Only evaluator and super_admin can submit scoring
+    if (currentUser && normRole !== 'evaluator' && normRole !== 'super_admin') {
+        if (btnToggleScoring) btnToggleScoring.style.display = 'none';
+    }
+
     // Toggle scoring form
     function toggleScoring(show) {
+        if (currentUser && normRole !== 'evaluator' && normRole !== 'super_admin') {
+            GovUtils.showToast('Access Denied: Only certified Evaluators can submit scores.', 'error');
+            return;
+        }
         cardScoringForm.style.display = show ? 'block' : 'none';
         if (show) cardScoringForm.scrollIntoView({ behavior: 'smooth' });
     }

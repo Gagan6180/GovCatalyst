@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html lang="en-IN">
 <head>
+    <!-- Dark Mode & Font Size Fast Load Script (Prevents white flash on load) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('dark-mode');
+            if (savedTheme === 'true') {
+                document.documentElement.classList.add('dark-mode');
+            }
+            const savedZoom = localStorage.getItem('font-size-percent');
+            if (savedZoom) {
+                document.documentElement.style.fontSize = savedZoom + '%';
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (document.body) document.body.style.zoom = parseInt(savedZoom) / 100;
+                });
+            }
+        })();
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sandbox / Pilot Design — GovCatalyst | महाराष्ट्र शासन</title>
@@ -59,17 +75,16 @@
             </div>
 
             <!-- Summary Stats Row -->
-            
             <div class="row g-3 mb-4">
                 <div class="col-6 col-md-3">
                     <div class="stat-card">
-                        <div class="stat-number text-primary">6</div>
+                        <div class="stat-number text-primary" id="stat-active-pilots">0</div>
                         <div class="stat-label">Active Sandbox Pilots</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
                     <div class="stat-card">
-                        <div class="stat-number text-success">5</div>
+                        <div class="stat-number text-success" id="stat-sandbox-sites">0</div>
                         <div class="stat-label">Dept Sandbox Sites</div>
                     </div>
                 </div>
